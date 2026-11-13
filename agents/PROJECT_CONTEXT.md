@@ -45,7 +45,7 @@ Deterministic UI runs need `build-for-testing`, install, `simctl privacy grant p
 
 ## Known constraints
 
-- CodeDrift's indexer currently has no Swift parser; CodeDrift memory/context works, but use `grep`/`glob` for Swift source.
+- CodeDrift's indexer currently has no Swift parser; CodeDrift memory/context works, but the structural index covers only `docs/index.html`. Use `grep`/`glob` for Swift source. **Known improvement:** add a Swift language adapter to CodeDrift so `.swift` symbols, calls and imports are indexed; until then, do not claim Swift symbol indexing.
 - Vision feature prints return nil in the iOS 18.4 Simulator; fallback is intentional.
 - Imported simulator images are not marked as screenshots; UI tests use the DEBUG-only `-uiFixtures` dimension check. Release uses `.photoScreenshot` only.
 - Device install requires signing in Xcode as `s.tawfik@outlook.de` and selecting team `U75G5FCH98`.

@@ -22,7 +22,7 @@ You continue **Sift**, the open-source iPhone cleaner in this repository.
 
 1. `codedrift_memory(query: "Sift iPhone cleaner architecture release")` — recall the proven context set before searching.
 2. Read `agents/PROJECT_CONTEXT.md`, `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, `docs/DESIGN.md`, `docs/QA.md`.
-3. Use `codedrift_overview` / `codedrift_search` for indexed files. **CodeDrift currently indexes only the HTML landing page, not Swift** — use `grep`/`glob` for `.swift` source.
+3. Use `codedrift_overview` / `codedrift_search` for indexed files. **CodeDrift currently indexes only the HTML landing page, not Swift** — use `grep`/`glob` for `.swift` source. Do not claim Swift symbols are indexed; adding a Swift adapter to CodeDrift is a known improvement.
 4. `git log --oneline -3` and `git status --short` before changing anything.
 
 ## Non-negotiables
