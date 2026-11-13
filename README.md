@@ -8,6 +8,8 @@ Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, ne
 [![Platform](https://img.shields.io/badge/iOS-17%2B-black.svg)](#requirements)
 [![No network](https://img.shields.io/badge/network-none-black.svg)](docs/PRIVACY.md)
 
+**Website:** [modernamusements.github.io/sift](https://modernamusements.github.io/sift)
+
 <img src="docs/screenshots/01-home.png" width="240" alt="Sift home"> <img src="docs/screenshots/02-results.png" width="240" alt="Sift scan results"> <img src="docs/screenshots/05-similar.png" width="240" alt="Sift similar photos">
 
 ## Why another cleaner?
