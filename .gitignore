@@ -17,3 +17,8 @@ build/testmedia/
 # Local agent state
 .opencode/node_modules/
 .opencode/bun.lock
+
+# Device build output
+build-device/
+*.mobileprovision
+*.ipa
