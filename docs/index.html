@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sift — A lighter iPhone</title>
+  <meta name="description" content="Sift is a free, open-source iPhone cleaner. Find screenshots, duplicates, blurry photos, large videos and duplicate contacts entirely on your iPhone.">
+  <link rel="icon" href="icon.png">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --tertiary: #86868b;
+      --line: rgba(0, 0, 0, 0.08);
+      --green: #34c759;
+      --radius: 28px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card: #1c1c1e;
+        --ink: #f5f5f7;
+        --muted: #a1a1a6;
+        --tertiary: #86868b;
+        --line: rgba(255, 255, 255, 0.12);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.45;
+    }
+    a { color: inherit; }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0;
+    }
+    .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.02em; font-size: 20px; text-decoration: none; }
+    .wordmark img { width: 30px; height: 30px; border-radius: 8px; }
+    nav { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+    nav a { text-decoration: none; }
+    nav a:hover { color: var(--ink); }
+    .hero {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px;
+      align-items: center; padding: 72px 0 40px;
+    }
+    .kicker { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 18px; }
+    h1 {
+      font-size: clamp(48px, 7vw, 88px); line-height: 0.98; letter-spacing: -0.045em;
+      font-weight: 700; margin: 0 0 24px;
+    }
+    .lede { font-size: 20px; color: var(--muted); max-width: 46ch; margin: 0 0 30px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 50px; padding: 0 24px; border-radius: 999px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      background: var(--ink); color: var(--bg);
+    }
+    .button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    .phone {
+      border-radius: 42px; overflow: hidden; background: var(--card);
+      border: 1px solid var(--line); box-shadow: 0 40px 80px rgba(0,0,0,0.14);
+      max-width: 340px; margin-left: auto;
+    }
+    .phone img { display: block; width: 100%; height: auto; }
+    .note { font-size: 13px; color: var(--tertiary); margin-top: 16px; }
+    section { padding: 72px 0; }
+    h2 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.035em; line-height: 1.05; margin: 0 0 14px; }
+    .sub { font-size: 17px; color: var(--muted); max-width: 60ch; margin: 0 0 34px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 26px;
+      border: 1px solid var(--line);
+    }
+    .symbol {
+      width: 42px; height: 42px; border-radius: 50%; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 18px;
+    }
+    .card h3 { font-size: 17px; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .card p { font-size: 14px; color: var(--muted); margin: 0; }
+    .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .strip figure { margin: 0; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: var(--card); }
+    .strip img { display: block; width: 100%; height: auto; }
+    .strip figcaption { font-size: 13px; color: var(--muted); padding: 12px 16px; }
+    .honest { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .honest .card { padding: 30px; }
+    .honest h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 16px; }
+    .honest ul { margin: 0; padding: 0; list-style: none; }
+    .honest li { display: flex; gap: 10px; font-size: 15px; padding: 9px 0; border-top: 1px solid var(--line); }
+    .honest li:first-child { border-top: 0; }
+    .yes { color: var(--green); font-weight: 700; }
+    .no { color: var(--tertiary); font-weight: 700; }
+    .privacy {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 36px; display: flex; gap: 22px; align-items: flex-start;
+    }
+    .privacy .symbol { background: var(--bg); flex: 0 0 auto; margin: 0; }
+    .privacy p { color: var(--muted); margin: 8px 0 0; max-width: 70ch; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+    footer { padding: 46px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .footer-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; padding-top: 40px; gap: 36px; }
+      .phone { margin: 0 auto; max-width: 300px; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .strip { grid-template-columns: 1fr; }
+      .honest { grid-template-columns: 1fr; }
+      nav { gap: 14px; }
+    }
+    @media (max-width: 540px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 28px; }
+      section { padding: 52px 0; }
+      nav a:first-child { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="wordmark" href="#top"><img src="icon.png" alt="">Sift</a>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#honest">What it can't do</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/ModernAmusements/sift">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <p class="kicker">FREE · OPEN SOURCE · ON-DEVICE</p>
+          <h1>A lighter<br>iPhone.</h1>
+          <p class="lede">Sift finds the screenshots, duplicates, blurry photos, giant videos and repeated contacts you no longer need. It works on your iPhone and never sends anything anywhere.</p>
+          <div class="actions">
+            <a class="button" href="https://github.com/ModernAmusements/sift/releases/tag/v1.0.0">Get the source</a>
+            <a class="button secondary" href="https://github.com/ModernAmusements/sift">View on GitHub</a>
+          </div>
+          <p class="note">MIT licensed. No account, ads, analytics or subscription.</p>
+        </div>
+        <div class="phone">
+          <img src="screenshots/01-home.png" alt="Sift home screen with storage ring and scan button" width="1170" height="2532">
+        </div>
+      </section>
+
+      <section id="features">
+        <h2>Six quiet ways to make room.</h2>
+        <p class="sub">No fake gauges. No “boost” buttons. Sift only touches media and contacts you own, through Apple's frameworks.</p>
+        <div class="grid">
+          <div class="card"><div class="symbol">▣</div><h3>Screenshots</h3><p>Tickets, chats and receipts you already used.</p></div>
+          <div class="card"><div class="symbol">▤</div><h3>Duplicates</h3><p>Perceptual hash plus Vision, so the same frame is caught once.</p></div>
+          <div class="card"><div class="symbol">▥</div><h3>Similar photos</h3><p>Same-day lookalikes grouped, with the sharpest shot kept.</p></div>
+          <div class="card"><div class="symbol">◌</div><h3>Blurry photos</h3><p>A conservative sharpness ranking, not a guess.</p></div>
+          <div class="card"><div class="symbol">▷</div><h3>Large videos</h3><p>Clips over 50 MB or one minute, sorted by size.</p></div>
+          <div class="card"><div class="symbol">○○</div><h3>Duplicate contacts</h3><p>Shared phone or email only. Preview before merging.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>The whole flow.</h2>
+        <p class="sub">Home, review, keep the best. Deletions go through Apple's Recently Deleted, so you have 30 days to change your mind.</p>
+        <div class="strip">
+          <figure><img src="screenshots/02-results.png" alt="Scan results with storage dashboard" loading="lazy"><figcaption>One scan. Every category.</figcaption></figure>
+          <figure><img src="screenshots/05-similar.png" alt="Similar photos with a best-shot badge" loading="lazy"><figcaption>Best shot suggested. You decide.</figcaption></figure>
+          <figure><img src="screenshots/08-contacts.png" alt="Duplicate contacts" loading="lazy"><figcaption>Merge repeated contact cards.</figcaption></figure>
+        </div>
+      </section>
+
+      <section id="honest">
+        <h2>What it can't do.</h2>
+        <p class="sub">iOS does not let any third-party app clear another app's cache, free RAM or cool the CPU. Cleaner apps that claim otherwise are selling a feeling.</p>
+        <div class="honest">
+          <div class="card">
+            <h3>Sift does</h3>
+            <ul>
+              <li><span class="yes">✓</span><span>Find and remove media you own</span></li>
+              <li><span class="yes">✓</span><span>Group lookalikes and suggest the best shot</span></li>
+              <li><span class="yes">✓</span><span>Merge duplicate contacts with a preview</span></li>
+              <li><span class="yes">✓</span><span>Show honest device storage numbers</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Sift does not</h3>
+            <ul>
+              <li><span class="no">—</span><span>Clean another app's cache or system “other” data</span></li>
+              <li><span class="no">—</span><span>Boost RAM, cool the phone or extend battery</span></li>
+              <li><span class="no">—</span><span>Upload your library or show ads</span></li>
+              <li><span class="no">—</span><span>Charge a subscription</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="privacy">
+        <div class="privacy">
+          <div class="symbol">⌂</div>
+          <div>
+            <h2 style="font-size:30px;margin-bottom:4px;">No network. No analytics.</h2>
+            <p>There is no networking code in Sift. No account, no crash reporter, no third-party SDK. Photos and contacts stay in the app sandbox and Apple's frameworks. The privacy manifest declares no tracking and no collected data.</p>
+            <p style="font-size:13px;">Verify it: <code>grep -rnE "URLSession|NWConnection|Analytics" Sift</code> returns nothing.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-row">
+        <span>Sift 1.0.0 · MIT License · Built with SwiftUI, PhotoKit, Vision and Contacts.</span>
+        <span><a href="https://github.com/ModernAmusements/sift">GitHub</a> · <a href="https://github.com/ModernAmusements/sift/blob/main/docs/PRIVACY.md">Privacy</a> · <a href="https://github.com/ModernAmusements/sift/blob/main/docs/QA.md">QA</a></span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
