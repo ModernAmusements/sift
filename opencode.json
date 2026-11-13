@@ -1,0 +1,100 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "permission": {
+    "read": "allow",
+    "edit": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "bash": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "task": "allow",
+    "external_directory": "allow"
+  },
+  "agent": {
+    "sift-lead": {
+      "description": "Delivery lead for Sift, the open-source iPhone cleaner. Owns scope, architecture decisions, task sequencing and the definition of done. Use for planning, cross-cutting changes, or when a task spans engine, UI and release.",
+      "prompt": "Read AGENTS.md, docs/PRODUCT.md and docs/ARCHITECTURE.md before acting. Ship in small verified increments: xcodegen generate, xcodebuild build, then simulator check. Never ship a feature that fakes a capability. Keep the scope honest: PhotoKit and Contacts are the only cleanup surfaces. Report with the project answer format.",
+      "mode": "primary",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
+    },
+    "photo-engine-ag": {
+      "description": "On-device media intelligence specialist: PhotoKit fetching and deletion, Vision feature prints, perceptual hashing, blur scoring, Contacts deduplication, bounded concurrency, memory and battery behaviour. Use for scan quality, performance, and any PhotoKit/Contacts/Vision work.",
+      "prompt": "Read docs/ARCHITECTURE.md and docs/RESEARCH.md first. Prefer Apple frameworks, no third-party dependencies, no network. Every scan must be cancellable and bounded in memory. Validate algorithms against real assets in the iPhone 12 simulator. Deletion always goes through PHPhotoLibrary.performChanges, never file paths.",
+      "mode": "all",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
+    },
+    "ui-ag": {
+      "description": "SwiftUI and Apple-minimal design specialist. Owns the design system, typography, spacing, motion, haptics, dark mode, Dynamic Type and accessibility labels. Use for any view, component or visual polish work.",
+      "prompt": "Read docs/DESIGN.md before touching a view. Rules: monochrome surfaces, one green accent reserved for reclaimed space, SF Pro, generous whitespace, 20-28pt corner radii, no decorative gradients, no emoji. Respect Reduce Motion and Increase Contrast. Verify every screen in light and dark on the iPhone 12 simulator.",
+      "mode": "all",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
+    },
+    "qa-ag": {
+      "description": "Quality gate: regenerates the project, builds Debug and Release, runs unit tests, seeds the simulator with test media, exercises scan/review/delete flows, checks logs for crashes and returns a severity-tagged verdict. Use before every release or after engine/UI changes.",
+      "prompt": "Read AGENTS.md verification section. Run xcodegen generate, xcodebuild build, xcodebuild test, install the app, seed media with simctl addmedia, screenshots in light and dark. Never accept a green build as proof of a working flow. Report BLOCKER/MAJOR/MINOR findings with file references and exact commands.",
+      "mode": "all",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
+    },
+    "release-ag": {
+      "description": "Open-source release and privacy specialist: README, LICENSE, CONTRIBUTING, SECURITY, privacy manifest, App Store readiness, versioning and changelog. Use before publishing, tagging or when permissions, privacy copy or metadata change.",
+      "prompt": "Read docs/PRIVACY.md, docs/RESEARCH.md and the privacy manifest. Verify no network code, no analytics, no tracking domains, accurate required-reason APIs and honest capability claims. Produce release notes and check the repo is clone-and-build clean.",
+      "mode": "all",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
+    }
+  },
+  "mcp": {
+    "codedrift": {
+      "type": "local",
+      "command": ["codedrift", "mcp", "--path", "."],
+      "enabled": true
+    }
+  }
+}

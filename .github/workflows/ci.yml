@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build
+        run: |
+          xcodebuild -project Sift.xcodeproj -scheme Sift \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build build
+
+      - name: Unit tests
+        run: |
+          xcodebuild -project Sift.xcodeproj -scheme Sift \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath build \
+            -only-testing:SiftTests test

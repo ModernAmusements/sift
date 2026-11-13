@@ -1,0 +1,211 @@
+import XCTest
+
+final class SiftUITests: XCTestCase {
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = [
+            "-hasOnboarded", "YES",
+            "-seedContacts", "YES",
+            "-reseedContacts", "YES",
+            "-uiFixtures", "YES"
+        ]
+        app.launch()
+        addUIInterruptionMonitor(withDescription: "System permission") { alert in
+            for label in ["Allow Full Access", "Vollen Zugriff erlauben", "Allow", "Erlauben", "OK"] {
+                if alert.buttons[label].exists {
+                    alert.buttons[label].tap()
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
+    func testOnboarding() {
+        app.terminate()
+        app.launchArguments = ["-resetOnboarding", "YES"]
+        app.launch()
+
+        let hero = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS %@", "A lighter")
+        ).firstMatch
+        XCTAssertTrue(hero.waitForExistence(timeout: 10))
+        capture("00-onboarding")
+
+        app.buttons["Get started"].tap()
+        XCTAssertTrue(app.buttons["Scan my iPhone"].waitForExistence(timeout: 10))
+    }
+
+    func testScanAndBrowse() {
+        XCTAssertTrue(app.buttons["Scan my iPhone"].waitForExistence(timeout: 15))
+        capture("01-home")
+
+        app.buttons["Scan my iPhone"].tap()
+        allowSystemPrompt()
+
+        let found = app.staticTexts["Found"]
+        XCTAssertTrue(found.waitForExistence(timeout: 180), "Scan did not finish")
+        sleep(1)
+        capture("02-results")
+
+        // Screenshots
+        openRow(containing: "Screenshots")
+        XCTAssertTrue(app.navigationBars["Screenshots"].waitForExistence(timeout: 8))
+        capture("03-screenshots")
+        back()
+
+        // Duplicates
+        openRow(containing: "Duplicates")
+        XCTAssertTrue(app.navigationBars["Duplicates"].waitForExistence(timeout: 8))
+        capture("04-duplicates")
+        back()
+
+        // Similar
+        openRow(containing: "Similar photos")
+        XCTAssertTrue(app.navigationBars["Similar photos"].waitForExistence(timeout: 8))
+        capture("05-similar")
+        back()
+
+        // Blurry
+        openRow(containing: "Blurry photos")
+        XCTAssertTrue(app.navigationBars["Blurry photos"].waitForExistence(timeout: 8))
+        capture("06-blurry")
+        back()
+
+        // Large videos
+        openRow(containing: "Large videos")
+        XCTAssertTrue(app.navigationBars["Large videos"].waitForExistence(timeout: 8))
+        capture("07-videos")
+        back()
+
+        // Contacts
+        openRow(containing: "Duplicate contacts")
+        XCTAssertTrue(app.navigationBars["Duplicate contacts"].waitForExistence(timeout: 8))
+        sleep(2)
+        capture("08-contacts")
+        back()
+
+        // Swipe review
+        app.swipeUp()
+        openRow(containing: "Swipe review")
+        XCTAssertTrue(app.navigationBars["Swipe review"].waitForExistence(timeout: 8))
+        sleep(2)
+        capture("09-swipe")
+        back()
+
+        // Settings
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 8))
+        capture("10-settings")
+    }
+
+    private func openRow(containing label: String) {
+        let predicate = NSPredicate(format: "label CONTAINS %@", label)
+        let button = app.buttons.matching(predicate).firstMatch
+        if button.waitForExistence(timeout: 5) {
+            button.tap()
+            return
+        }
+        let text = app.staticTexts.matching(predicate).firstMatch
+        XCTAssertTrue(text.waitForExistence(timeout: 5), "Row \(label) not found")
+        text.tap()
+    }
+
+    func testContactMerge() throws {
+        openRow(containing: "Duplicate contacts")
+        let groups = app.staticTexts["3 groups"]
+        guard groups.waitForExistence(timeout: 20) else {
+            throw XCTSkip("Contacts permission was not granted or fixtures were not seeded")
+        }
+        capture("11-contacts-before-merge")
+
+        let ada = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS %@", "Ada Lovelace")
+        ).firstMatch
+        XCTAssertTrue(ada.waitForExistence(timeout: 5))
+        ada.tap()
+
+        XCTAssertTrue(app.navigationBars["Merge contact"].waitForExistence(timeout: 5))
+        capture("12-contact-merge-sheet")
+
+        let merge = app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Merge 2 duplicate")
+        ).firstMatch
+        XCTAssertTrue(merge.waitForExistence(timeout: 5))
+        merge.tap()
+
+        let alert = app.alerts["Merge these cards?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        alert.buttons["Merge"].tap()
+
+        XCTAssertTrue(app.staticTexts["2 groups"].waitForExistence(timeout: 10))
+        capture("13-contacts-after-merge")
+    }
+
+    func testDeleteScreenshots() throws {
+        app.buttons["Scan my iPhone"].tap()
+        allowSystemPrompt()
+        guard app.staticTexts["Found"].waitForExistence(timeout: 180) else {
+            throw XCTSkip("Scan did not finish")
+        }
+
+        openRow(containing: "Screenshots")
+        guard app.navigationBars["Screenshots"].waitForExistence(timeout: 8) else {
+            throw XCTSkip("Screenshot category unavailable")
+        }
+        guard app.buttons["Select all"].waitForExistence(timeout: 5) else {
+            throw XCTSkip("No screenshot fixtures in this library")
+        }
+        capture("14-screenshots-before-delete")
+
+        app.buttons["Select all"].tap()
+        app.buttons["Move to Recently Deleted"].tap()
+
+        let confirm = app.buttons["Delete"].firstMatch
+        if confirm.waitForExistence(timeout: 10) {
+            capture("15-delete-confirmation")
+            confirm.tap()
+        } else {
+            let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+            let springboardDelete = springboard.buttons["Delete"].firstMatch
+            XCTAssertTrue(springboardDelete.waitForExistence(timeout: 10), "No system delete confirmation")
+            springboardDelete.tap()
+        }
+
+        XCTAssertTrue(app.buttons["Scan again"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["0 screenshots"].waitForExistence(timeout: 10))
+        capture("16-after-delete")
+    }
+
+    private func back() {
+        let button = app.navigationBars.buttons.element(boundBy: 0)
+        if button.exists { button.tap() }
+    }
+
+    private func capture(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    private func allowSystemPrompt() {
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let labels = ["Allow Full Access", "Vollen Zugriff erlauben", "Allow", "Erlauben", "OK"]
+        for label in labels {
+            let springboardButton = springboard.buttons[label]
+            if springboardButton.waitForExistence(timeout: 2) {
+                springboardButton.tap()
+                return
+            }
+            let appButton = app.buttons[label]
+            if appButton.exists {
+                appButton.tap()
+                return
+            }
+        }
+    }
+}

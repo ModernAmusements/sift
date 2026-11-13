@@ -1,0 +1,88 @@
+name: Sift
+options:
+  bundleIdPrefix: dev.modernamusement
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+targets:
+  Sift:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sift
+    info:
+      path: Sift/Info.plist
+      properties:
+        CFBundleDisplayName: Sift
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        NSPhotoLibraryUsageDescription: Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large videos. Nothing is uploaded.
+        NSPhotoLibraryAddUsageDescription: Sift needs access to your photo library to move the items you select into Recently Deleted.
+        NSContactsUsageDescription: Sift finds duplicate contact cards on this iPhone when you ask it to. Your contacts never leave the device.
+        ITSAppUsesNonExemptEncryption: false
+        UIApplicationSupportsIndirectInputEvents: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.modernamusement.sift
+        PRODUCT_NAME: Sift
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Sift/Info.plist
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_EMIT_LOC_STRINGS: YES
+  SiftTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/SiftTests
+    dependencies:
+      - target: Sift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.modernamusement.sift.tests
+        GENERATE_INFOPLIST_FILE: YES
+  SiftUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/SiftUITests
+    dependencies:
+      - target: Sift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.modernamusement.sift.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Sift
+schemes:
+  Sift:
+    build:
+      targets:
+        Sift: all
+        SiftTests: [test]
+        SiftUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - SiftTests
+        - SiftUITests

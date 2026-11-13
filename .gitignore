@@ -1,0 +1,19 @@
+# macOS / Xcode
+.DS_Store
+build/
+DerivedData/
+build-release/
+*.xcresult
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+Sift.xcodeproj/
+.swiftpm/
+Package.resolved
+
+# Test media is generated, not source
+build/testmedia/
+
+# Local agent state
+.opencode/node_modules/
+.opencode/bun.lock
