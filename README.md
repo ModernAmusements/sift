@@ -2,7 +2,7 @@
 
 **Keep the moments. Lose the clutter.**
 
-Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, near-duplicate shots, blurry photos, large videos and duplicate contacts — entirely on your iPhone.
+Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, near-duplicate shots, blurry photos, large files and duplicate contacts — entirely on your iPhone.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/iOS-17%2B-black.svg)](#requirements)
@@ -29,10 +29,12 @@ Commercial cleaners charge a subscription for a scan, gate the useful part, and 
 | **Duplicates** | 64-bit dHash + Vision feature print, grouped by exact dimensions |
 | **Similar photos** | Feature-print distance within the same day; falls back to an on-device color mosaic when Vision is unavailable |
 | **Blurry photos** | Variance-of-Laplacian ranking; conservative threshold |
-| **Large videos** | Over 50 MB or one minute, sorted by size |
+| **Large files** | Photos and videos over 25 MB, sorted by size |
 | **Duplicate contacts** | Shared phone/email handles, merge into the richest card |
+| **Files & documents** | Pick downloads, archives and exports from On My iPhone or iCloud Drive and delete them after confirmation |
+| **Sift cache** | Clear Sift's own temporary files from Settings |
 
-Plus a fast **swipe review** deck, a live storage dashboard, and settings for scan sensitivity.
+Plus a fast **swipe review** deck, a live storage dashboard, a Files picker, a System data guide, and settings for scan sensitivity.
 
 ## Honest limits
 
@@ -40,8 +42,16 @@ Plus a fast **swipe review** deck, a live storage dashboard, and settings for sc
 - Free space is only truly reclaimed after **Recently Deleted** is emptied in Photos (or after 30 days).
 - Contacts have no Recently Deleted. Sift previews every merge and requires confirmation.
 - Contact merging deletes the redundant cards from Contacts. If Contacts syncs to iCloud, that deletion syncs too.
+- Files are only visible after you pick them. Deleting removes them from their folder; iCloud Drive may keep a Recently Deleted copy, local files do not.
 - Vision feature prints are unavailable in some Simulator runtimes; the app automatically uses a local color-mosaic fallback. Physical devices use the stronger Vision path.
 - The app is English-only in v1. Localisation contributions are welcome.
+
+## Big files and system data
+
+- **Large files in Photos:** every photo or video over 25 MB is listed with its size.
+- **Files & documents:** the native Files picker lets you clean downloads, archives and exports from iCloud Drive or On My iPhone. Sift never scans your whole file provider.
+- **Sift cache:** Settings shows the temporary bytes Sift uses and can clear them.
+- **System data guide:** honest steps for storage iOS will not let any third-party app touch.
 
 ## Requirements
 

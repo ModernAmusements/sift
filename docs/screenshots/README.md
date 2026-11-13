@@ -11,10 +11,12 @@ Captured on an iPhone 12 simulator (1170×2532) with the system status bar pinne
 | `04-duplicates.png` | Exact duplicate groups |
 | `05-similar.png` | Similar-photo groups with best-shot suggestion |
 | `06-blurry.png` | Blurry photo review |
-| `07-videos.png` | Large video review |
+| `07-large-files.png` | Large-file review |
 | `08-contacts.png` | Duplicate contacts |
 | `09-swipe.png` | Swipe review |
 | `10-settings.png` | Settings |
+| `11-files.png` | Files & documents |
+| `12-system-data.png` | System data guide |
 
 The screenshots use generated test media and seeded demo contacts (Ada Lovelace, Grace Hopper, Katherine Johnson). No personal data is shown.
 

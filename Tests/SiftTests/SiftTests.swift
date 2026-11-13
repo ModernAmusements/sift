@@ -182,6 +182,7 @@ final class SiftTests: XCTestCase {
             totalLibraryBytes: 12_000_000,
             screenshots: [screenshot, screenshot2],
             videos: [],
+            largeFiles: [],
             blurry: [],
             duplicateGroups: [group],
             similarGroups: []
@@ -200,6 +201,31 @@ final class SiftTests: XCTestCase {
         XCTAssertEqual(Format.duration(65), "1:05")
         XCTAssertEqual(Format.count(1, "photo"), "1 photo")
         XCTAssertEqual(Format.count(3, "photo"), "3 photos")
+    }
+
+    @MainActor
+    func testPickedFileDeletion() throws {
+        let manager = FileManager.default
+        let directory = manager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try manager.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? manager.removeItem(at: directory) }
+
+        let first = directory.appendingPathComponent("first.bin")
+        let second = directory.appendingPathComponent("second.bin")
+        try Data(count: 2_048).write(to: first)
+        try Data(count: 4_096).write(to: second)
+
+        let model = FilePickerModel()
+        model.add([first, second])
+        XCTAssertEqual(model.files.count, 2)
+        XCTAssertEqual(model.files.first(where: { $0.name == "first.bin" })?.bytes, 2_048)
+
+        model.selected = [first.standardizedFileURL.path]
+        model.deleteSelected()
+
+        XCTAssertFalse(manager.fileExists(atPath: first.path))
+        XCTAssertTrue(manager.fileExists(atPath: second.path))
+        XCTAssertEqual(model.files.count, 1)
     }
 
     // MARK: - Helpers

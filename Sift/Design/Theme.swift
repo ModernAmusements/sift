@@ -228,72 +228,78 @@ struct MediaThumbnail: View {
     @State private var image: UIImage?
 
     var body: some View {
-        ZStack {
-            Rectangle().fill(Theme.fill)
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .transition(.opacity)
-            } else {
-                Image(systemName: asset.isVideo ? "video" : "photo")
-                    .font(.title3)
-                    .foregroundStyle(Theme.tertiaryInk)
-            }
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle().fill(Theme.fill)
 
-            if showsSize {
-                VStack {
-                    Spacer()
-                    HStack {
-                        if asset.isVideo {
-                            Label(Format.duration(asset.duration), systemImage: "play.fill")
-                                .font(.caption2.weight(.semibold).monospacedDigit())
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 4)
-                                .background(Capsule().fill(.black.opacity(0.55)))
-                        }
-                        Spacer()
-                    }
-                    .padding(7)
-                    .background(
-                        LinearGradient(
-                            colors: [.clear, .black.opacity(0.28)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .padding(.top, -18)
-                    )
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .transition(.opacity)
+                } else {
+                    Image(systemName: asset.isVideo ? "video" : "photo")
+                        .font(.title3)
+                        .foregroundStyle(Theme.tertiaryInk)
                 }
-            }
 
-            if let isSelected {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Theme.ink, lineWidth: isSelected ? 3 : 0)
-                VStack {
-                    HStack {
+                if showsSize {
+                    VStack {
                         Spacer()
-                        ZStack {
-                            Circle()
-                                .fill(isSelected ? Theme.ink : .black.opacity(0.22))
-                            Circle()
-                                .stroke(.white.opacity(0.9), lineWidth: 1.5)
-                            if isSelected {
-                                Image(systemName: "checkmark")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(Theme.background)
+                        HStack {
+                            if asset.isVideo {
+                                Label(Format.duration(asset.duration), systemImage: "play.fill")
+                                    .font(.caption2.weight(.semibold).monospacedDigit())
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 4)
+                                    .background(Capsule().fill(.black.opacity(0.55)))
                             }
+                            Spacer()
                         }
-                        .frame(width: 24, height: 24)
                         .padding(7)
+                        .background(
+                            LinearGradient(
+                                colors: [.clear, .black.opacity(0.28)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .padding(.top, -18)
+                        )
                     }
-                    Spacer()
+                }
+
+                if let isSelected {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Theme.ink, lineWidth: isSelected ? 3 : 0)
+                    VStack {
+                        HStack {
+                            Spacer()
+                            ZStack {
+                                Circle()
+                                    .fill(isSelected ? Theme.ink : .black.opacity(0.22))
+                                Circle()
+                                    .stroke(.white.opacity(0.9), lineWidth: 1.5)
+                                if isSelected {
+                                    Image(systemName: "checkmark")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(Theme.background)
+                                }
+                            }
+                            .frame(width: 24, height: 24)
+                            .padding(7)
+                        }
+                        Spacer()
+                    }
                 }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .aspectRatio(1, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .task(id: asset.id) {
             image = await ThumbnailCache.shared.image(
                 id: asset.id,

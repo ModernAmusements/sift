@@ -36,7 +36,7 @@ Sift never deletes files directly. Every media removal uses Apple's PhotoKit, wh
 
 ## Data collection
 
-None. `PrivacyInfo.xcprivacy` declares no tracking, no tracking domains and no collected data types. The only required-reason API is `UserDefaults` (reason `CA92.1`: app settings).
+None. `PrivacyInfo.xcprivacy` declares no tracking, no tracking domains and no collected data types. Required-reason APIs are `UserDefaults` (reason `CA92.1`: app settings) and disk-space queries (reason `E174.1`: showing free storage).
 
 ## Children
 

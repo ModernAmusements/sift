@@ -14,7 +14,7 @@ iPhone storage fills up with photos nobody chose: five versions of the same grou
 | --- | --- |
 | Scan your photo library on-device | Upload anything to a server |
 | Group similar shots and recommend the best | Auto-delete without confirmation |
-| Find screenshots, blurry photos, large videos | Claim to clear other apps' caches |
+| Find screenshots, blurry photos, large files | Claim to clear other apps' caches |
 | Merge duplicate contacts | "Boost RAM", "cool down" or "save battery" |
 | Show device storage truthfully | Sell subscriptions, ads or data |
 | Delete via PhotoKit → Recently Deleted | Touch the file system directly |
@@ -26,13 +26,17 @@ Someone with a 64 GB or 128 GB iPhone who is out of storage, does not want a sub
 ## v1 scope
 
 1. **Storage dashboard** — free/used space, library size, asset counts.
-2. **Scan** — screenshots, exact duplicates, similar photos, blurry photos, large videos, duplicate contacts. Cancellable, on-device, progress visible.
+2. **Scan** — screenshots, exact duplicates, similar photos, blurry photos, large files, duplicate contacts. Cancellable, on-device, progress visible.
 3. **Review** — grid with sizes, select/deselect, best-shot recommendation, bulk actions.
 4. **Cleanup** — PhotoKit deletion with the system confirmation and Recently Deleted safety net.
-5. **Contacts** — merge duplicate cards, keep the richest record, delete the rest.
-6. **Swipe review** — fast keep/delete pass for screenshots and photos.
-7. **Settings** — privacy statement, sensitivity, permission shortcuts, open-source links.
-8. **Onboarding** — honest explanation, permission request at the moment of use.
+5. **Large files** — photos and videos over 25 MB, sorted by size.
+6. **Contacts** — merge duplicate cards, keep the richest record, delete the rest.
+7. **Files & documents** — clean user-picked files from iCloud Drive or On My iPhone.
+8. **Sift cache** — show and clear the app's own temporary data.
+9. **System data guide** — explain what iOS does not allow third-party apps to clean.
+10. **Swipe review** — fast keep/delete pass for screenshots and photos.
+11. **Settings** — privacy statement, sensitivity, permission shortcuts, cache, open-source links.
+12. **Onboarding** — honest explanation, permission request at the moment of use.
 
 ## Out of scope for v1
 
@@ -41,6 +45,7 @@ Someone with a 64 GB or 128 GB iPhone who is out of storage, does not want a sub
 - iCloud optimisation controls (no public API).
 - Live Photo → still conversion.
 - Cleaning Safari, Mail, WhatsApp or other apps' containers (impossible on iOS).
+- Scanning the whole Files app without user selection (not permitted).
 - Android, web or Mac clients.
 
 ## Success measures

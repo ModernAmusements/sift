@@ -83,6 +83,7 @@ struct ScanReport {
     var totalLibraryBytes: Int64
     var screenshots: [ScannedAsset]
     var videos: [ScannedAsset]
+    var largeFiles: [ScannedAsset]
     var blurry: [ScannedAsset]
     var duplicateGroups: [DuplicateGroup]
     var similarGroups: [DuplicateGroup]
@@ -93,6 +94,7 @@ struct ScanReport {
         totalLibraryBytes: 0,
         screenshots: [],
         videos: [],
+        largeFiles: [],
         blurry: [],
         duplicateGroups: [],
         similarGroups: []
@@ -100,6 +102,10 @@ struct ScanReport {
 
     var largeVideos: [ScannedAsset] {
         videos.filter { $0.sizeBytes >= 50_000_000 || $0.duration >= 60 }
+    }
+
+    var largePhotos: [ScannedAsset] {
+        largeFiles.filter { !$0.isVideo }
     }
 
     var duplicateExtras: [ScannedAsset] {
@@ -124,7 +130,7 @@ struct ScanReport {
 
     private var allByID: [String: ScannedAsset] {
         var map: [String: ScannedAsset] = [:]
-        for asset in screenshots + videos + blurry { map[asset.id] = asset }
+        for asset in screenshots + videos + largeFiles + blurry { map[asset.id] = asset }
         for group in duplicateGroups + similarGroups {
             for asset in group.assets { map[asset.id] = asset }
         }
@@ -158,6 +164,7 @@ struct ScanReport {
             totalLibraryBytes: max(totalLibraryBytes - removedBytes, 0),
             screenshots: prune(screenshots),
             videos: prune(videos),
+            largeFiles: prune(largeFiles),
             blurry: prune(blurry),
             duplicateGroups: pruneGroups(duplicateGroups),
             similarGroups: pruneGroups(similarGroups)

@@ -48,6 +48,12 @@ The engine never holds full-resolution images. Signatures for 10k assets are ~10
 - **Best shot**: max sharpness, tie-break pixel count, then file size. Screenshots never win over photos.
 - **Sizes**: `PHAssetResource` file size via the documented resource metadata when available (KVC `fileSize`); if absent, size is `0` and the UI says "Size unavailable" instead of guessing.
 
+### Files, cache and system data
+
+- **Files:** the native `fileImporter` gives security-scoped URLs for user-picked files. Sift keeps the scope while the file is listed, shows its size, and deletes only after an explicit confirmation. Folders are rejected; there is no directory walking.
+- **Cache:** `CacheService` measures and clears only `Caches/` and `tmp/` inside Sift's container. It never touches the photo library, contacts or settings.
+- **System data:** iOS exposes no API for another app's cache or system "other" storage. Sift shows a guide with the steps the user can take and refuses to claim otherwise.
+
 ### Deletion
 
 ```swift
@@ -101,6 +107,7 @@ None. System frameworks only: SwiftUI, PhotosUI, Photos, Vision, Contacts, CoreI
 | --- | --- |
 | Private `fileSize` KVC changes | Fallback to size unavailable; never crash. Keep access isolated in `PhotoLibraryService`. |
 | Vision slow on old devices | Thumbnail-only, 4-way concurrency, cancellable, progress. |
+| File provider deletion fails | Show the provider error, keep the file in the list, never retry silently. |
 | False-positive similar groups | Same-day restriction, strict threshold, user reviews every deletion. |
 | Contact merge data loss | Keeper merge only, preview, one save request, no name-only merges. |
 | App Review rejects "cleaner" claims | Copy is limited to media/contacts; no cache/RAM/battery claims. |

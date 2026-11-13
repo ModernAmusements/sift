@@ -14,7 +14,7 @@ struct ReviewView: View {
         switch category {
         case .screenshots: return report.screenshots
         case .blurry: return report.blurry
-        case .videos: return report.largeVideos
+        case .largeFiles: return report.largeFiles
         }
     }
 
@@ -32,13 +32,13 @@ struct ReviewView: View {
 
             if assets.isEmpty {
                 EmptyState(
-                    symbol: category == .videos ? "video" : "checkmark.circle",
+                    symbol: category == .largeFiles ? "tray.full" : "checkmark.circle",
                     title: "Nothing here",
                     message: category == .screenshots
                         ? "No screenshots in the photos Sift can see."
                         : category == .blurry
                         ? "No soft shots worth another look."
-                        : "No videos over 50 MB or one minute."
+                        : "No photos or videos over 25 MB."
                 )
                 .padding(.horizontal, Theme.margin)
             } else {

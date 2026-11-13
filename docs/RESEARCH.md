@@ -10,6 +10,8 @@ Researched 2026-11-13 against current iOS 18/26 behaviour and the App Store clea
 | Delete photos/videos | Yes, with confirmation | `PHPhotoLibrary.performChanges`; items go to **Recently Deleted** for 30 days |
 | Analyze photo content on-device | Yes | Vision, CoreImage, Accelerate |
 | Read/write contacts | Yes, with permission | Contacts framework |
+| Delete user-picked files | Yes, per file | `UIDocumentPicker` security-scoped URLs + `FileManager` |
+| Clear Sift's own cache | Yes | `Caches/` and `tmp/` in the app container |
 | Show device free/used space | Partly | `URLResourceValues.volumeAvailableCapacityForImportantUsage` + total capacity |
 | Clear another app's cache | **No** | Apps are sandboxed; only the owning app or iOS manages its container |
 | Clear system cache / "other" storage | **No** | No public API; reboot/offload apps only |
@@ -37,7 +39,8 @@ Differentiator for Sift: **no paywall, no ads, no network, no account, auditable
 - **Best shot:** sharpness (Laplacian variance), resolution, file size. Burst photos share a timestamp; the sharpest frame is usually the keeper.
 - **Blur:** variance of the Laplacian on a small grayscale image. Fast, good enough to rank; absolute thresholds must be calibrated per pipeline. We use 160×160 and a conservative cutoff so the list is short and credible.
 - **Screenshots:** `PHAsset.mediaSubtypes.contains(.photoScreenshot)` — exact, no ML needed.
-- **Large videos:** `PHAssetMediaType.video`, sort by resource file size. Many cleaner apps also detect screen recordings (`videoScreenRecording`), but the subtype is inconsistent across iOS versions; v1 keeps the reliable large-video filter.
+- **Large files:** every photo or video whose resource size is at least 25 MB, or any video at least 60 seconds. Sorted by size; the user confirms each deletion.
+- **Files:** the document picker grants per-file access; Sift can only see and remove what the user selects. iCloud deletion semantics depend on the provider.
 - **Duplicate contacts:** normalize phone to digits and compare the last 8; lowercase emails; union-find. Merge only on shared handles, never name alone.
 
 ## 4. Storage accounting
@@ -53,7 +56,7 @@ Copy must say "estimated" where appropriate. Never claim the device gained exact
 
 ## 5. Privacy and review risks
 
-- Photo library access is sensitive. Usage strings must name the benefit: "Sift reads your photo library on this iPhone to find screenshots, duplicates and large videos."
+- Photo library access is sensitive. Usage strings must name the benefit: "Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large files."
 - Apple requires a privacy manifest (`PrivacyInfo.xcprivacy`) and justified required-reason APIs. We use UserDefaults (onboarding flag, settings) → reason `CA92.1`.
 - No tracking, no collected data, no third-party SDKs — the manifest says so.
 - Cleaner apps are scrutinised for misleading claims. Our copy avoids cache/RAM/battery promises entirely.

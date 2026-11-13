@@ -2,6 +2,22 @@
 
 All notable changes to Sift are documented here. The format follows Keep a Changelog; versions use semantic versioning.
 
+## [1.1.0] — 2026-11-13
+
+### Added
+
+- Large files category for photos and videos over 25 MB.
+- Files & documents picker: choose files from iCloud Drive or On My iPhone, review sizes, delete after confirmation.
+- Sift cache section in Settings with size and clear action.
+- System data guide explaining which storage iOS does not expose to third-party apps and what the user can do.
+- Disk-space required-reason API declaration in the privacy manifest.
+- Screenshot fixtures and UI coverage for Files and System data.
+
+### Changed
+
+- "Large videos" became "Large files" and now includes photos.
+- Thumbnail rendering uses an explicit geometry frame, preventing overflow.
+
 ## [1.0.0] — 2026-11-13
 
 ### Added
@@ -23,6 +39,7 @@ All notable changes to Sift are documented here. The format follows Keep a Chang
 ### Known limitations
 
 - English-only.
-- Cannot clean other apps' caches, system data, RAM or battery (iOS restriction; not claimed).
+- Cannot clean other apps' caches or system data (iOS restriction; the in-app guide explains what users can do).
+- Files cleanup only covers files the user explicitly picks.
 - Vision feature prints return nil in some Simulator runtimes; the color-mosaic fallback is used there.
 - Physical-device testing is still recommended before an App Store release.

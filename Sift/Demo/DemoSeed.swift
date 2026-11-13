@@ -33,10 +33,12 @@ enum DemoSeed {
         let store = CNContactStore()
         guard CNContactStore.authorizationStatus(for: .contacts) == .authorized else { return }
         let keys = [CNContactIdentifierKey as CNKeyDescriptor]
-        let predicate = CNContact.predicateForContacts(matchingName: "Lovelace")
-        let hopper = CNContact.predicateForContacts(matchingName: "Hopper")
-        let demo = ((try? store.unifiedContacts(matching: predicate, keysToFetch: keys)) ?? [])
-            + ((try? store.unifiedContacts(matching: hopper, keysToFetch: keys)) ?? [])
+        let predicates = ["Lovelace", "Hopper", "Johnson"].map {
+            CNContact.predicateForContacts(matchingName: $0)
+        }
+        let demo = predicates.flatMap {
+            (try? store.unifiedContacts(matching: $0, keysToFetch: keys)) ?? []
+        }
         guard !demo.isEmpty else { return }
         let save = CNSaveRequest()
         for contact in demo {

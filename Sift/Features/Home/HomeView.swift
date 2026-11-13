@@ -4,13 +4,13 @@ import SwiftUI
 enum ReviewCategory: String, Hashable {
     case screenshots
     case blurry
-    case videos
+    case largeFiles
 
     var title: String {
         switch self {
         case .screenshots: return "Screenshots"
         case .blurry: return "Blurry photos"
-        case .videos: return "Large videos"
+        case .largeFiles: return "Large files"
         }
     }
 
@@ -18,7 +18,7 @@ enum ReviewCategory: String, Hashable {
         switch self {
         case .screenshots: return "Old tickets, chats and receipts."
         case .blurry: return "Soft shots that rarely get a second look."
-        case .videos: return "Clips over 50 MB or one minute."
+        case .largeFiles: return "Photos and videos over 25 MB."
         }
     }
 }
@@ -27,6 +27,8 @@ enum Route: Hashable {
     case review(ReviewCategory)
     case similar(DuplicateKind)
     case contacts
+    case files
+    case systemData
     case swipe
 }
 
@@ -87,6 +89,10 @@ struct HomeView: View {
                     SimilarView(mode: kind)
                 case .contacts:
                     ContactsView()
+                case .files:
+                    FilesView()
+                case .systemData:
+                    SystemDataView()
                 case .swipe:
                     SwipeView()
                 }
@@ -258,11 +264,11 @@ struct HomeView: View {
                     )
                     rowDivider
                     row(
-                        route: .review(.videos),
-                        symbol: "video",
-                        title: "Large videos",
-                        detail: Format.count(report.largeVideos.count, "video"),
-                        value: Format.bytes(report.largeVideos.reduce(0) { $0 + $1.sizeBytes })
+                        route: .review(.largeFiles),
+                        symbol: "tray.full",
+                        title: "Large files",
+                        detail: Format.count(report.largeFiles.count, "item") + " over 25 MB",
+                        value: Format.bytes(report.largeFiles.reduce(0) { $0 + $1.sizeBytes })
                     )
                 }
             }
@@ -289,12 +295,28 @@ struct HomeView: View {
                     )
                     rowDivider
                     row(
+                        route: .files,
+                        symbol: "folder",
+                        title: "Files & documents",
+                        detail: "Pick big files from On My iPhone or iCloud Drive",
+                        value: nil
+                    )
+                    rowDivider
+                    row(
                         route: .contacts,
                         symbol: "person.2",
                         title: "Duplicate contacts",
                         detail: engine.contactsLoaded
                             ? Format.count(engine.contactGroups.count, "group")
                             : "Find and merge repeated cards",
+                        value: nil
+                    )
+                    rowDivider
+                    row(
+                        route: .systemData,
+                        symbol: "internaldrive",
+                        title: "System data",
+                        detail: "What iOS lets you do — and what it doesn't",
                         value: nil
                     )
                 }

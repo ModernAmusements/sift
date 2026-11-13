@@ -6,8 +6,21 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage("similarityThreshold") private var similarity: Double = 0.15
-    @State private var showClearConfirm = false
     @State private var contactStatus = CNContactStore.authorizationStatus(for: .contacts)
+    @State private var cacheBytes: Int64 = 0
+    @State private var activeAlert: LocalAlert?
+
+    private enum LocalAlert: Identifiable {
+        case clearResults
+        case cacheError(String)
+
+        var id: String {
+            switch self {
+            case .clearResults: return "clearResults"
+            case .cacheError: return "cacheError"
+            }
+        }
+    }
 
     private let repository = "https://github.com/ModernAmusements/sift"
 
@@ -15,6 +28,7 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 scanningSection
+                cacheSection
                 permissionsSection
                 privacySection
                 aboutSection
@@ -31,18 +45,53 @@ struct SettingsView: View {
                         .fontWeight(.semibold)
                 }
             }
-            .alert("Clear scan results?", isPresented: $showClearConfirm) {
-                Button("Cancel", role: .cancel) {}
-                Button("Clear", role: .destructive) {
-                    engine.clearResults()
-                    Haptics.warning()
+            .alert(item: $activeAlert) { alert in
+                switch alert {
+                case .clearResults:
+                    return Alert(
+                        title: Text("Clear scan results?"),
+                        message: Text("This only removes Sift's results. No photo or contact is touched."),
+                        primaryButton: .destructive(Text("Clear")) {
+                            engine.clearResults()
+                            Haptics.warning()
+                        },
+                        secondaryButton: .cancel()
+                    )
+                case .cacheError(let message):
+                    return Alert(
+                        title: Text("Could not clear cache"),
+                        message: Text(message),
+                        dismissButton: .default(Text("OK"))
+                    )
                 }
-            } message: {
-                Text("This only removes Sift's results. No photo or contact is touched.")
             }
             .onAppear {
                 contactStatus = CNContactStore.authorizationStatus(for: .contacts)
+                cacheBytes = CacheService.bytes()
             }
+        }
+    }
+
+    private var cacheSection: some View {
+        Section {
+            LabeledContent("Sift cache") {
+                Text(cacheBytes > 0 ? Format.bytes(cacheBytes) : "0 B")
+                    .foregroundStyle(Theme.secondaryInk)
+            }
+            Button("Clear cache") {
+                do {
+                    try CacheService.clear()
+                    cacheBytes = CacheService.bytes()
+                    Haptics.success()
+                } catch {
+                    activeAlert = .cacheError(error.localizedDescription)
+                }
+            }
+            .disabled(cacheBytes == 0)
+        } header: {
+            Text("Local cache")
+        } footer: {
+            Text("Temporary thumbnails and scratch files created by Sift. Clearing this never touches your photos, contacts or scan results.")
         }
     }
 
@@ -169,7 +218,7 @@ struct SettingsView: View {
     private var resetSection: some View {
         Section {
             Button("Clear scan results", role: .destructive) {
-                showClearConfirm = true
+                activeAlert = .clearResults
             }
             .disabled(engine.report == nil && engine.contactGroups.isEmpty)
         }

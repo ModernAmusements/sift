@@ -1,4 +1,4 @@
-# QA — Sift 1.0.0
+# QA — Sift 1.1.0
 
 Verified 2026-11-13 on macOS 26 with Xcode 26.0 (17A324), iPhone 12 simulator (iOS 18.4).
 
@@ -6,7 +6,7 @@ Verified 2026-11-13 on macOS 26 with Xcode 26.0 (17A324), iPhone 12 simulator (i
 
 | Suite | Tests | Result |
 | --- | --- | --- |
-| `SiftTests` (unit) | 15 | Passed |
+| `SiftTests` (unit) | 16 | Passed |
 | `SiftUITests/testOnboarding` | 1 | Passed |
 | `SiftUITests/testScanAndBrowse` | 1 | Passed |
 | `SiftUITests/testContactMerge` | 1 | Passed |
@@ -38,13 +38,16 @@ xcodebuild ... test-without-building
 2. **Scan** — 18 seeded items; progress, cancellation path available, results published in under ~5 s on the simulator.
 3. **Screenshots** — 3 fixtures, select all, PhotoKit system confirmation, deletion.
 4. **Duplicates** — one byte-identical pair grouped; five similar scene variants correctly *not* treated as exact duplicates after calibration.
-5. **Similar photos** — feature-print clustering; two groups (landscape variants and the three screenshot fixtures before they were excluded by the fixture subtype).
+5. **Similar photos** — same-day clustering found one landscape group; screenshots are excluded from similarity by subtype.
 6. **Blurry photos** — both seeded blurred images found; sharp images excluded.
-7. **Large videos** — the 65 s / 97.5 MB clip found.
+7. **Large files** — the 65 s / 97.5 MB clip found in the combined photo/video list.
 8. **Swipe review** — deck layout, keep/delete controls, progress, undo state.
-9. **Contacts** — 3 duplicate groups found from seeded cards; Ada Lovelace merged from 3 cards into 1; list dropped to 2 groups.
+9. **Contacts** — 2 duplicate groups found from cleaned seeded cards; Ada Lovelace merged from 3 cards into 1; list dropped to 1 group.
 10. **Settings** — sensitivity, last scan, permission statuses, privacy links, version.
 11. **Deletion refresh** — library went 18 → 15 after deleting 3 screenshots; the home screen updated without a rescan; `0 screenshots`.
+12. **Files & documents** — empty state rendered; the picker itself was not UI-automated; the file model was unit-tested with real temporary files (2 KB + 4 KB), deleted one and kept the other.
+13. **System data** — guide renders the sandbox explanation and the eight user steps.
+14. **Cache** — Settings shows Sift's temporary bytes and a clear action; clearing never touches photos or contacts.
 
 ## Evidence
 
@@ -75,6 +78,8 @@ plutil -p build/Build/Products/Debug-iphonesimulator/Sift.app/PrivacyInfo.xcpriv
 - No physical-device run in this environment. Deletion, permissions and Vision can differ subtly from the simulator. Do one device pass before an App Store submission.
 - Vision feature prints return nil in the iOS 18.4 Simulator; the color-mosaic fallback was exercised. Real devices use the Vision path. The fallback is deliberately conservative (threshold 0.66 × the slider value).
 - PhotoKit gives imported simulator images no screenshot subtype. UI tests use the DEBUG-only `-uiFixtures` dimension check; Release builds use only `PHAssetMediaSubtype.photoScreenshot`.
-- Denied and limited photo permission screens were implemented and code-reviewed but not part of the automated screenshot set.
+- Denied photo permission was verified manually (`docs/qa/photos-denied.png`); limited access was code-reviewed but not automated.
+- The Files picker itself uses Apple's document browser and is not automated; the deletion model is unit-tested.
+- Cache clearing is a small synchronous directory cleanup and was not part of the screenshot suite.
 - Contacts merging was verified locally in the simulator. iCloud sync of the deletion was not tested.
 - Dark mode was implemented and spot-checked; the committed screenshots are light mode.

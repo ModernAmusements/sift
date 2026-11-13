@@ -102,6 +102,12 @@ final class ScanEngine: ObservableObject {
             $0.mediaType == .image && !PhotoLibraryService.isScreenshot($0)
         }
         analysisTotal = analyzable.count
+        let largeFiles = scanned
+            .filter {
+                $0.sizeBytes >= 25_000_000 || ($0.isVideo && $0.duration >= 60)
+            }
+            .sorted { $0.sizeBytes > $1.sizeBytes }
+
         stage = .analyzing
         progress = 0.15
         var signatures: [String: ImageSignature] = [:]
@@ -161,6 +167,7 @@ final class ScanEngine: ObservableObject {
             totalLibraryBytes: totalBytes,
             screenshots: screenshots,
             videos: videos,
+            largeFiles: largeFiles,
             blurry: Array(blurry),
             duplicateGroups: duplicates,
             similarGroups: similar

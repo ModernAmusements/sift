@@ -75,10 +75,10 @@ final class SiftUITests: XCTestCase {
         capture("06-blurry")
         back()
 
-        // Large videos
-        openRow(containing: "Large videos")
-        XCTAssertTrue(app.navigationBars["Large videos"].waitForExistence(timeout: 8))
-        capture("07-videos")
+        // Large files
+        openRow(containing: "Large files")
+        XCTAssertTrue(app.navigationBars["Large files"].waitForExistence(timeout: 8))
+        capture("07-large-files")
         back()
 
         // Contacts
@@ -86,6 +86,18 @@ final class SiftUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Duplicate contacts"].waitForExistence(timeout: 8))
         sleep(2)
         capture("08-contacts")
+        back()
+
+        // Files
+        openRow(containing: "Files & documents")
+        XCTAssertTrue(app.navigationBars["Files & documents"].waitForExistence(timeout: 8))
+        capture("11-files")
+        back()
+
+        // System data guide
+        openRow(containing: "System data")
+        XCTAssertTrue(app.navigationBars["System data"].waitForExistence(timeout: 8))
+        capture("12-system-data")
         back()
 
         // Swipe review
@@ -116,7 +128,7 @@ final class SiftUITests: XCTestCase {
 
     func testContactMerge() throws {
         openRow(containing: "Duplicate contacts")
-        let groups = app.staticTexts["3 groups"]
+        let groups = app.staticTexts["2 groups"]
         guard groups.waitForExistence(timeout: 20) else {
             throw XCTSkip("Contacts permission was not granted or fixtures were not seeded")
         }
@@ -141,7 +153,7 @@ final class SiftUITests: XCTestCase {
         XCTAssertTrue(alert.waitForExistence(timeout: 5))
         alert.buttons["Merge"].tap()
 
-        XCTAssertTrue(app.staticTexts["2 groups"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["1 group"].waitForExistence(timeout: 10))
         capture("13-contacts-after-merge")
     }
 

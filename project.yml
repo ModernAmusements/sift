@@ -8,8 +8,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.1.0"
+    CURRENT_PROJECT_VERSION: "2"
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
@@ -31,7 +31,7 @@ targets:
           - UIInterfaceOrientationPortrait
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
-        NSPhotoLibraryUsageDescription: Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large videos. Nothing is uploaded.
+        NSPhotoLibraryUsageDescription: Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large files. Nothing is uploaded.
         NSPhotoLibraryAddUsageDescription: Sift needs access to your photo library to move the items you select into Recently Deleted.
         NSContactsUsageDescription: Sift finds duplicate contact cards on this iPhone when you ask it to. Your contacts never leave the device.
         ITSAppUsesNonExemptEncryption: false
