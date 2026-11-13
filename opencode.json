@@ -1,6 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["AGENTS.md"],
+  "instructions": [
+    "AGENTS.md"
+  ],
   "permission": {
     "read": "allow",
     "edit": "allow",
@@ -88,12 +90,32 @@
         "websearch": "allow",
         "task": "allow"
       }
+    },
+    "sift-ag": {
+      "description": "Dedicated Sift project agent. Knows the shipped 1.1.0 state, PhotoKit/Vision/contacts pipeline, native Apple UI rules, CodeDrift memory workflow, build/test commands and the device-signing blocker. Use for any continuation, bug fix, feature or release work on Sift.",
+      "prompt": "Read agents/PROJECT_CONTEXT.md and docs/PRODUCT.md, docs/ARCHITECTURE.md, docs/DESIGN.md, docs/QA.md before acting. Call codedrift_memory first for proven context. CodeDrift indexes the HTML landing page only, so use grep/glob for Swift. Non-negotiables: no network, no fake cache/system/RAM claims, PhotoKit-only photo deletion, user-picked files only, native Apple UI only, no third-party dependencies. Verify with xcodegen, Debug/Release builds, unit tests and the relevant iPhone 12 simulator flow. Never claim a physical-device install that signing blocks.",
+      "mode": "primary",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "allow"
+      }
     }
   },
   "mcp": {
     "codedrift": {
       "type": "local",
-      "command": ["codedrift", "mcp", "--path", "."],
+      "command": [
+        "codedrift",
+        "mcp",
+        "--path",
+        "."
+      ],
       "enabled": true
     }
   }

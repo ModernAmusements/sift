@@ -131,7 +131,7 @@ grep -rnE "URLSession|URLRequest|NWConnection|WKWebView|Analytics|Firebase|Sentr
 
 Bug reports, design polish and localisation are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DESIGN.md`](docs/DESIGN.md).
 
-The agent harness used to build this repo lives in `opencode.json` and `.opencode/agents/`. It is optional for contributors.
+The agent harness used to build this repo lives in `opencode.json` and `.opencode/agents/`. Use `sift-ag` to continue the project with full context from `agents/PROJECT_CONTEXT.md` and CodeDrift memory. It is optional for contributors.
 
 ## License
 

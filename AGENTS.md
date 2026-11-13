@@ -18,8 +18,9 @@
 ## Harness
 
 - Agent specs live in `.opencode/agents/`. Shared protocols live in `agents/`.
-- Use the `sift-lead` agent for planning, `photo-engine-ag` for scan/delete work, `ui-ag` for views, `qa-ag` for verification, `release-ag` before publishing.
-- Context first: `docs/PRODUCT.md` → `docs/ARCHITECTURE.md` → `docs/DESIGN.md` → relevant source.
+- Use `sift-ag` for continuing the project with full context; `sift-lead` for planning, `photo-engine-ag` for scan/delete work, `ui-ag` for views, `qa-ag` for verification, `release-ag` before publishing.
+- Context first: `codedrift_memory` → `agents/PROJECT_CONTEXT.md` → `docs/PRODUCT.md` → `docs/ARCHITECTURE.md` → `docs/DESIGN.md` → relevant source.
+- CodeDrift indexes only the HTML landing page in this repo (its indexer has no Swift parser). Use `grep`/`glob` for Swift source; CodeDrift memory and `agents/PROJECT_CONTEXT.md` carry the project state.
 - Work by trial and error, not reasoning loops. Small change → build → observe → next.
 
 ## Commands

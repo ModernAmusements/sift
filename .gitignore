@@ -22,3 +22,6 @@ build/testmedia/
 build-device/
 *.mobileprovision
 *.ipa
+
+# CodeDrift local index
+.codecodedrift/
