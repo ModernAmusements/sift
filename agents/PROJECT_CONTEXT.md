@@ -1,6 +1,6 @@
 # Sift — project context
 
-**Status:** 1.2.0 implemented, UI-polished and green in the simulator, not yet released. Open source, MIT. Sift 1.2.0 (build 3) is installed on the physical iPhone 12 (iOS 26.6.2), signed with the free Personal Team `QG32S7GZ56` — profile expires 2026-11-23 — and launches with a stable trust record. The design pass (native navigation, Liquid Glass on iOS 26, scan-start feedback, adaptive layouts) is installed and the owner called it “much better”. Pending: a final owner pass on hardware, VoiceOver pass, and one reported horizontal-overflow issue that could not be reproduced without a screenshot. The paid team `U75G5FCH98` is not visible to the signed-in Xcode account, so it is not used yet.
+**Status:** 1.2.0 implemented, UI-polished and green in the simulator, not yet released. Open source, MIT. Sift 1.2.0 (build 3) is installed on the physical iPhone 12 (iOS 26.6.2), signed with the free Personal Team `QG32S7GZ56` — profile expires 2026-11-23 — and launches with a stable trust record. The design pass (native navigation, Liquid Glass on iOS 26, scan-start feedback, adaptive layouts) is installed and the owner called it “much better”. The reported “horizontal overflow” was the landing page, not the app: `docs/index.html` overflowed at 320–360 px because the header/nav could not wrap; it is fixed and live. Pending: a final owner pass on hardware, VoiceOver pass. The paid team `U75G5FCH98` is not visible to the signed-in Xcode account, so it is not used yet.
 
 ## Links
 
@@ -54,7 +54,7 @@ Native Apple UI only: SwiftUI, SF Symbols, system controls. Monochrome, one gree
 - Motion: numeric-text transitions on measurements, `.symbolEffect(.bounce)` on the proof seal, `sensoryFeedback(.impact)` on button press, `.snappy` overlay entrance. Reduce Motion keeps opacity only.
 - Scrolling: `.scrollBounceBehavior(.basedOnSize)` on every custom `ScrollView`; indicators hidden on Home/Health/Proof.
 - Adaptive layout: storage card uses `ViewThatFits` with `minWidth: 140` on the details column; health rows stack title/value at accessibility sizes; onboarding hero uses `@ScaledMetric(relativeTo: .largeTitle)`.
-- Open report: owner saw horizontal overflow "to left and right" on hardware; not reproducible in the simulator at default or accessibility XXXL, and no screenshot arrived. Treat as unresolved until a screenshot identifies the screen/Display Zoom state.
+- Resolved 2026-11-16: the owner’s “horizontal overflow” was the **landing page**, not the app. `docs/index.html` had a 368 px full-page width at 320/360 px viewports because the header/nav could not wrap and a long inline `code` command could not break. Fixed with `header/nav { flex-wrap: wrap }`, `img { max-width: 100% }`, `min-width: 0` on grid items, `code { overflow-wrap: anywhere }` and `overflow-x: clip`; verified with Playwright full-page widths at 320/360/390/768/1024/1280 and on the live Pages URL.
 
 
 ## Commands

@@ -51,7 +51,7 @@ xcrun simctl io booted screenshot docs/screenshots/home.png
 
 1. **Update the agents and the record.** `agents/PROJECT_CONTEXT.md`, `agents/DECISIONS.md`, `agents/LEARNING_LEDGER.md`; `docs/QA.md` and `docs/DESIGN.md` when behaviour or visuals changed. Update `.opencode/agents/*.md` when state, commands or rules changed.
 2. **Verify.** `xcodegen generate` → full `xcodebuild test` → Release build. Report exact counts.
-3. **Deploy.** `./scripts/deploy-device.sh` installs the current Debug build on `Shadys iPhone`. If iOS asks for trust, open Sift from the Home Screen → **Einstellungen** → **Vertrauen** (`devicectl` cannot show that prompt).
+3. **Deploy.** `./scripts/deploy-device.sh` installs the current Debug build on `Shadys iPhone`. If iOS asks for trust, open Sift from the Home Screen → **Einstellungen** → **Vertrauen** (`devicectl` cannot show that prompt). For landing-page changes, commit and push `main` (Pages builds `/docs`), then verify the live layout with a cache-busted URL (`?v=…`) and Playwright full-page widths at 320/360/390.
 4. **Housekeeping.** `./scripts/housekeeping.sh` stops log relays/stray Sift processes, resets the Sift simulator appearance/text size, shuts it down, quits Simulator.app and clears temporary diagnostics. Add `--quit-xcode` to quit Xcode too.
 5. **Report** in the project answer format and leave the tree honest: uncommitted work is listed, open risks are named, nothing is called done that was not exercised.
 
