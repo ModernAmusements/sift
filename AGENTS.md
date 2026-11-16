@@ -31,11 +31,11 @@ xcodegen generate
 
 # Build for simulator
 xcodebuild -project Sift.xcodeproj -scheme Sift \
-  -destination 'platform=iOS Simulator,name=iPhone 12' build
+  -destination 'platform=iOS Simulator,id=59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59' build
 
 # Unit tests
 xcodebuild -project Sift.xcodeproj -scheme Sift \
-  -destination 'platform=iOS Simulator,name=iPhone 12' test
+  -destination 'platform=iOS Simulator,id=59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59' test
 
 # Simulator run
 xcrun simctl boot "iPhone 12"
@@ -46,6 +46,14 @@ xcrun simctl launch booted dev.modernamusement.sift
 # Screenshot
 xcrun simctl io booted screenshot docs/screenshots/home.png
 ```
+
+## Session end (every session)
+
+1. **Update the agents and the record.** `agents/PROJECT_CONTEXT.md`, `agents/DECISIONS.md`, `agents/LEARNING_LEDGER.md`; `docs/QA.md` and `docs/DESIGN.md` when behaviour or visuals changed. Update `.opencode/agents/*.md` when state, commands or rules changed.
+2. **Verify.** `xcodegen generate` → full `xcodebuild test` → Release build. Report exact counts.
+3. **Deploy.** `./scripts/deploy-device.sh` installs the current Debug build on `Shadys iPhone`. If iOS asks for trust, open Sift from the Home Screen → **Einstellungen** → **Vertrauen** (`devicectl` cannot show that prompt).
+4. **Housekeeping.** `./scripts/housekeeping.sh` stops log relays/stray Sift processes, resets the Sift simulator appearance/text size, shuts it down, quits Simulator.app and clears temporary diagnostics. Add `--quit-xcode` to quit Xcode too.
+5. **Report** in the project answer format and leave the tree honest: uncommitted work is listed, open risks are named, nothing is called done that was not exercised.
 
 ## Layout
 
@@ -61,6 +69,7 @@ Sift/
 Tests/SiftTests/            pure algorithm and normalization tests
 docs/                       product, architecture, design, research, privacy
 agents/                     shared protocols and ledgers
+scripts/                    seed, deploy-device, housekeeping, diagnostics
 ```
 
 ## Definition of done

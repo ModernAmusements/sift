@@ -22,6 +22,32 @@ enum Format {
         "\(value) \(value == 1 ? singular : (plural ?? singular + "s"))"
     }
 
+    /// Size for anything the user compares against reality. Rounds **down**, never up:
+    /// 3.24 GB reads as "3.2 GB", 999.9 MB as "999 MB", 14.9 GB as "14 GB".
+    static func floorBytes(_ value: Int64) -> String {
+        guard value > 0 else { return "0 bytes" }
+        if value < 1_000 { return "\(value) B" }
+        if value < 1_000_000 { return "\(value / 1000) KB" }
+        if value < 1_000_000_000 { return "\(value / 1_000_000) MB" }
+        if value < 10_000_000_000 {
+            let tenths = value / 100_000_000
+            return String(format: "%.1f GB", Double(tenths) / 10)
+        }
+        return "\(value / 1_000_000_000) GB"
+    }
+
+    /// "Tue 11 Nov" — stable English formatting so copy and tests never drift with locale.
+    static func shortDay(_ date: Date) -> String {
+        shortDayFormatter.string(from: date)
+    }
+
+    private static let shortDayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE d MMM"
+        return formatter
+    }()
+
     static func duration(_ seconds: TimeInterval) -> String {
         guard seconds.isFinite, seconds > 0 else { return "—" }
         let total = Int(seconds.rounded())

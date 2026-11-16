@@ -17,7 +17,10 @@ Captured on an iPhone 12 simulator (1170×2532) with the system status bar pinne
 | `10-settings.png` | Settings |
 | `11-files.png` | Files & documents |
 | `12-system-data.png` | System data guide |
+| `17-checkin-baseline.png` | Check-in: first measurement, no invented number |
+| `18-checkin-delta.png` | Check-in: measured gain, no credit taken for space Sift did not move |
+| `19-phone-health.png` | Phone health: only what iOS reports |
 
 The screenshots use generated test media and seeded demo contacts (Ada Lovelace, Grace Hopper, Katherine Johnson). No personal data is shown.
 
-Dark-mode captures live in `dark/`. Regenerate with the UI suite if the design changes.
+Dark-mode captures live in `dark/`; `17`–`19` there were taken at accessibility XXXL to check the check-in and health copy at the largest text size.

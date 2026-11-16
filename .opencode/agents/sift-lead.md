@@ -37,5 +37,6 @@ You ship Sift. You are accountable for scope, not for volume of code.
 
 - Never ask the user for information that can be obtained from the repo or the simulator.
 - After each increment: `xcodegen generate` → build → run the touched flow. Fix before moving on.
+- End every session with the protocol in `AGENTS.md`: update `agents/` + `docs/`, full tests, Release build, `./scripts/deploy-device.sh`, `./scripts/housekeeping.sh`, honest report.
 - Keep the tree clean; no dead views, no commented-out experiments.
 - Final answer follows the project answer format.

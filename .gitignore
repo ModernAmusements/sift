@@ -14,6 +14,9 @@ Package.resolved
 # Test media is generated, not source
 build/testmedia/
 
+# Personal signing settings (team + certificate). Shared.xcconfig is committed.
+Config/Local.xcconfig
+
 # Local agent state
 .opencode/node_modules/
 .opencode/bun.lock

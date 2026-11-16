@@ -12,11 +12,11 @@ enum DemoSeed {
     /// PhotoKit has no public API for marking an imported image as a screenshot.
     /// The simulator fixture treats the 1170×2532 test PNGs as screenshots so the
     /// review and deletion flows can be exercised without a physical device.
+    /// Accepts the @2x render too, because `sips` and the test generator differ by scale.
     static func isFixtureScreenshot(_ asset: PHAsset) -> Bool {
-        isUITesting
-            && asset.mediaType == .image
-            && asset.pixelWidth == 1170
-            && asset.pixelHeight == 2532
+        guard isUITesting, asset.mediaType == .image else { return false }
+        return (asset.pixelWidth == 1170 && asset.pixelHeight == 2532)
+            || (asset.pixelWidth == 2340 && asset.pixelHeight == 5064)
     }
 
     static func runIfRequested() {
@@ -27,6 +27,34 @@ enum DemoSeed {
         if arguments.contains("-seedContacts") || arguments.contains("-reseedContacts") {
             seedContacts()
         }
+    }
+
+    /// UI-test seam for the check-in card. Debug builds only; a Release build has no such arguments.
+    private static var didPrepareLedger = false
+
+    @MainActor
+    static func prepareLedgerIfRequested(_ store: SpaceLedgerStore, snapshot: StorageSnapshot) {
+        guard !didPrepareLedger else { return }
+        didPrepareLedger = true
+
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-resetLedger") {
+            store.reset()
+            return
+        }
+        guard
+            let flag = arguments.firstIndex(of: "-seedLedgerBackGB"),
+            flag + 1 < arguments.count,
+            let gigabytes = Int64(arguments[flag + 1]),
+            gigabytes > 0
+        else { return }
+
+        let before = SpaceCheckIn(
+            date: Date().addingTimeInterval(-3 * 86_400),
+            totalBytes: snapshot.totalBytes,
+            freeBytes: max(snapshot.freeBytes - gigabytes * 1_000_000_000, 0)
+        )
+        store.seedHistory([before])
     }
 
     private static func removeDemoContacts() {

@@ -21,14 +21,15 @@ A green compiler is not a working app. You test behaviour.
 ## Checklist
 
 1. `xcodegen generate` — project regenerates cleanly from `project.yml`.
-2. Debug build for iPhone 12 simulator without new warnings.
-3. `xcodebuild test` — all unit tests pass.
-4. Install on a booted iPhone 12, seed media with `scripts/seed-simulator.sh`.
-5. Exercise: onboarding → photo permission → scan → each category → selection → delete → confirm → count/size updated → contacts → merge → settings.
-6. Capture light and dark screenshots into `docs/screenshots/`.
+2. Debug build for the `Sift iPhone 12` simulator by id `59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59` (name lookup fails) without new warnings.
+3. `xcodebuild test` — all unit and UI tests pass (current baseline: 40 unit + 7 UI).
+4. Install on a booted iPhone 12 simulator, seed media with `scripts/seed-simulator.sh`.
+5. Exercise: onboarding → photo permission → check-in baseline/delta → scan (no fake 0%, indeterminate spinner first) → each category → selection → delete → proof sheet (`Freed so far: 0 bytes.`) → contacts → settings → phone health.
+6. Capture light and dark screenshots into `docs/screenshots/`; verify the iOS 26 glass controls and the flat fallback on older simulators.
 7. `xcrun simctl spawn booted log show --last 3m --predicate 'process == "Sift"'` — no crashes, no `PHImageManager` errors.
 8. Check permissions: deny photos, limited photos, deny contacts. The UI must explain, not dead-end.
 9. Grep for forbidden APIs: `URLSession`, `NSAllowsArbitraryLoads`, analytics SDKs.
+10. Deploy with `./scripts/deploy-device.sh`; then `./scripts/housekeeping.sh` at session end.
 
 ## Verdict
 

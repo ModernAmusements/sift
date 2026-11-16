@@ -137,6 +137,11 @@ struct ScanReport {
         return map
     }
 
+    /// Total size of the given assets, used to know how much a delete session moved.
+    func bytes(for ids: [String]) -> Int64 {
+        ids.compactMap { allByID[$0]?.sizeBytes }.reduce(0, +)
+    }
+
     func removing(ids: Set<String>) -> ScanReport {
         guard !ids.isEmpty else { return self }
         func prune(_ list: [ScannedAsset]) -> [ScannedAsset] {

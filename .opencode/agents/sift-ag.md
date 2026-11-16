@@ -1,5 +1,5 @@
 ---
-description: Dedicated Sift project agent. Knows the shipped 1.1.0 state, PhotoKit/Vision/contacts pipeline, native Apple UI rules, CodeDrift memory workflow, build/test commands and the device-signing blocker. Use for any continuation, bug fix, feature or release work on Sift.
+description: Dedicated Sift project agent. Knows the current 1.2.0 state, PhotoKit/Vision/contacts pipeline, space ledger/proof flow, native Apple UI rules, CodeDrift memory workflow, build/test/deploy commands and the signing/trust setup. Use for any continuation, bug fix, feature or release work on Sift.
 mode: primary
 permission:
   read: allow
@@ -29,24 +29,27 @@ You continue **Sift**, the open-source iPhone cleaner in this repository.
 
 - No network code, analytics, ads, accounts, third-party dependencies or subscriptions.
 - No fake capabilities: iOS forbids third-party apps from clearing other apps' caches, system caches, RAM or battery. The System data screen explains the manual steps. Never claim otherwise.
+- Space honesty: bytes moved to Recently Deleted are **moved**, not freed. `Freed so far: 0 bytes.` until a later measurement proves the gain; only `verifiedFreed` may be called reclaimed.
 - Photo deletions only through `PHPhotoLibrary.performChanges`; files only through user-picked security-scoped URLs; contacts only after preview.
-- Native Apple UI only: SwiftUI, SF Symbols, system controls. Monochrome, one green accent, SF Pro, 20 pt margins, 26 pt cards.
+- Native Apple UI only, HIG 1:1: SwiftUI, SF Symbols, system controls, SF Pro, native navigation, Liquid Glass on iOS 26 with a flat fallback. Monochrome, one green accent, 20 pt margins, 26 pt cards.
 - Privacy manifest and Info.plist usage strings must stay accurate.
 
-## Current state (1.1.0)
+## Current state (1.2.0, unreleased)
 
-- Features: screenshots, duplicates, similar, blurry, large files ≥ 25 MB, duplicate contacts, Files & documents picker, Sift cache, System data guide, swipe review.
-- Verified: 16 unit + 4 UI tests, Debug + Release builds, deletion 18→15, contacts merge 3→1.
-- Repo: https://github.com/ModernAmusements/sift · Release v1.1.0 · Pages live.
-- Device install blocked by Xcode Apple ID session rejection (`s.tawfik@outlook.de`), no provisioning profile. Do not fake a device run. Team ID: `U75G5FCH98`.
+- Features: 1.2 check-in (free-space delta, 45-day attribution, cumulative verified `Reclaimed`), Phone health diagnosis, proof-through-Recently-Deleted sheet, plus screenshots, duplicates, similar, blurry, large files ≥ 25 MB, duplicate contacts, Files & documents, Sift cache, System data guide, swipe review.
+- Verified: **40 unit + 7 UI tests**, Debug + Release builds, full suite green on 2026-11-16.
+- Design pass: native large title/toolbar, Liquid Glass on iOS 26 with flat fallback, indeterminate scan start, numeric-text motion, adaptive storage card. Owner called it “much better”.
+- Repo: https://github.com/ModernAmusements/sift · Release v1.1.0 · 1.2.0 pending.
+- Device: 1.2.0 (build 3) installed on `Shadys iPhone` (iPhone 12, iOS 26.6.2), free Personal Team `QG32S7GZ56`, profile expires 2026-11-23. One Apple Development identity; trust stable.
 
 ## Workflow
 
 - Source of truth is `project.yml`; run `xcodegen generate` after target/source changes.
-- Build on the `Sift iPhone 12` simulator. After code changes: build → unit tests → relevant UI flow → screenshots light/dark.
+- Use the `Sift iPhone 12` simulator by id `59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59`; name lookups fail.
+- After code changes: build → unit tests → relevant UI flow → screenshots light/dark.
 - UI tests need Photos/Contacts granted and simulator fixtures seeded (`scripts/seed-simulator.sh`).
-- Keep `docs/QA.md`, `CHANGELOG.md`, `docs/screenshots/` and version numbers current.
-- Commit and push to `main`; tag releases (`vX.Y.Z`) and update the GitHub release.
+- Deploy with `./scripts/deploy-device.sh`; trust once by tapping the app icon if asked.
+- End every session with the housekeeping + agent-update protocol in `AGENTS.md`.
 
 ## Answer format
 

@@ -31,6 +31,8 @@ struct ContactsView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 32)
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.hidden)
         }
         .navigationTitle("Duplicate contacts")
         .navigationBarTitleDisplayMode(.inline)
@@ -284,6 +286,7 @@ struct ContactMergeSheet: View {
                 }
                 .padding(Theme.margin)
             }
+            .scrollBounceBehavior(.basedOnSize)
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Merge contact")
             .navigationBarTitleDisplayMode(.inline)

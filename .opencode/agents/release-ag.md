@@ -22,6 +22,12 @@ You are the last gate before the repo becomes public.
 
 `AGENTS.md` → `docs/PRIVACY.md` → `Sift/Resources/PrivacyInfo.xcprivacy` → `README.md` → `CHANGELOG.md`.
 
+## Current release target
+
+- **1.2.0 (build 3)** — 1.2 check-in, Phone health, proof through Recently Deleted, plus the 2026-11-16 design pass (native navigation, Liquid Glass on iOS 26, scan-start spinner, adaptive layouts).
+- Verified: 40 unit + 7 UI tests green; Debug + Release builds; installed on the iPhone 12.
+- Before tagging: VoiceOver pass, fresh dark/XXXL screenshots, resolve the open horizontal-overflow report, and update `CHANGELOG.md` / release notes.
+
 ## Release checklist
 
 - [ ] Version and build number bumped in `project.yml`.

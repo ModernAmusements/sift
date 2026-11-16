@@ -37,22 +37,26 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       line-height: 1.45;
+      overflow-x: clip;
     }
     a { color: inherit; }
+    img { max-width: 100%; height: auto; }
     .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
     header {
       display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px 20px;
       padding: 22px 0;
     }
     .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.02em; font-size: 20px; text-decoration: none; }
     .wordmark img { width: 30px; height: 30px; border-radius: 8px; }
-    nav { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+    nav { display: flex; flex-wrap: wrap; gap: 22px; font-size: 14px; color: var(--muted); }
     nav a { text-decoration: none; }
     nav a:hover { color: var(--ink); }
     .hero {
       display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px;
       align-items: center; padding: 72px 0 40px;
     }
+    .hero > *, .grid > *, .honest > * { min-width: 0; }
     .kicker { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 18px; }
     h1 {
       font-size: clamp(48px, 7vw, 88px); line-height: 0.98; letter-spacing: -0.045em;
@@ -90,7 +94,7 @@
     .card h3 { font-size: 17px; margin: 0 0 6px; letter-spacing: -0.01em; }
     .card p { font-size: 14px; color: var(--muted); margin: 0; }
     .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .strip figure { margin: 0; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: var(--card); }
+    .strip figure { margin: 0; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: var(--card); min-width: 0; }
     .strip img { display: block; width: 100%; height: auto; }
     .strip figcaption { font-size: 13px; color: var(--muted); padding: 12px 16px; }
     .honest { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -103,11 +107,12 @@
     .no { color: var(--tertiary); font-weight: 700; }
     .privacy {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 36px; display: flex; gap: 22px; align-items: flex-start;
+      padding: 36px; display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start;
     }
+    .privacy > div:last-child { min-width: 0; }
     .privacy .symbol { background: var(--bg); flex: 0 0 auto; margin: 0; }
     .privacy p { color: var(--muted); margin: 8px 0 0; max-width: 70ch; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; overflow-wrap: anywhere; }
     footer { padding: 46px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
     .footer-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; }
     @media (max-width: 860px) {
@@ -123,6 +128,7 @@
       .hero { padding-top: 28px; }
       section { padding: 52px 0; }
       nav a:first-child { display: none; }
+      .privacy { padding: 24px; }
     }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>

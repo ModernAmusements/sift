@@ -8,7 +8,9 @@ Sift is quiet. The content is the interface.
 2. **Numbers are the hero.** Storage and reclaimed space get large, monospaced-digit type.
 3. **Monochrome, one accent.** Ink on paper; green only for reclaimed space and success.
 4. **Space is a feature.** 20 pt margins, 24–32 pt between sections, no crowding.
-5. **No decoration for its own sake.** No gradients, glassmorphism, emoji, illustrations or progress confetti.
+5. **No decoration for its own sake.** No gradients, emoji, illustrations or progress confetti. On iOS 26, Apple's Liquid Glass is the system material, so controls and floating surfaces use it per the HIG; on iOS 17–25 the same surfaces stay flat. Glass is never applied to content cards.
+
+Apple is the reference: [Human Interface Guidelines](https://developer.apple.com/design/), [Design resources](https://developer.apple.com/design/resources/). Use SF Pro through system text styles and SF Symbols only; no bundled fonts, no custom icon sets.
 6. **Destructive actions are explicit.** Ink outline, then the system confirmation. Never red unless something is irreversible.
 
 ## Color
@@ -23,7 +25,7 @@ Sift is quiet. The content is the interface.
 | `Theme.reclaim` | systemGreen | systemGreen | reclaimed bytes, success |
 | `Theme.fill` | tertiarySystemFill | tertiarySystemFill | unselected chip, track |
 
-Primary button: ink background, background-colored label. In dark mode this inverts naturally via semantic colors.
+Primary button: ink background, background-colored label on iOS 17–25. On iOS 26 it is a light-tinted Liquid Glass capsule with an ink label, still the single strongest action on the screen. In dark mode this inverts naturally via semantic colors.
 
 ## Type
 
@@ -38,6 +40,13 @@ Primary button: ink background, background-colored label. In dark mode this inve
 | Button | `.headline` |
 
 No custom fonts. No all-caps labels. No letter-spacing games.
+
+## Navigation
+
+- The root screen uses a native large navigation title (`Sift`) and a system toolbar; there is no custom header.
+- Push destinations use standard navigation bars and the system back button.
+- Settings is a sheet with a standard `List` and a Done toolbar item.
+- No custom tab bar; the home screen is the single entry point.
 
 ## Spacing
 
@@ -54,24 +63,35 @@ No custom fonts. No all-caps labels. No letter-spacing games.
 
 | Event | Animation |
 | --- | --- |
-| Storage ring | `.easeOut(duration: 0.8)` trim |
+| Storage ring | `.easeOut(duration: 0.8)` trim; numeric text for the byte label |
 | Screen content | `.snappy` opacity + 8 pt rise |
 | Selection | `.snappy(duration: 0.22)` scale 0.97 → 1 |
-| Scanning stage text | `.contentTransition(.opacity)` |
+| Scanning stage text | `.contentTransition(.opacity)`, `.snappy` |
+| Scan overlay | `.snappy` opacity + 0.97 scale in; glass panel on iOS 26 |
+| Scan progress | numeric-text percent; indeterminate spinner until the first measurement (never a fake 0%) |
+| Check-in copy | numeric-text delta and opacity detail when the measurement changes |
+| Proof seal | `.symbolEffect(.bounce)` on verification; green ring appears only after proof |
 | Swipe card | interactive spring, threshold 34% width |
 
-Reduce Motion: disable the rise and ring animation; keep opacity.
+Reduce Motion: disable the rise, scale, bounce and ring trim; keep opacity and numeric text.
+
+## Scrolling
+
+- A screen scrolls only when its content exceeds the viewport: `.scrollBounceBehavior(.basedOnSize)`.
+- Hide scroll indicators on editorial screens (home, health, proof); leave system lists as Apple ships them.
+- Never nest a vertical scroll inside another vertical scroll.
 
 ## Haptics
 
 - Selection: `UISelectionFeedbackGenerator`.
+- Button press: light impact via `.sensoryFeedback`, on press only.
 - Successful cleanup: `UINotificationFeedbackGenerator.success`.
 - Destructive confirmation: `.warning`.
 - Never on scroll or launch.
 
-## Components (`Sift/Design/Components.swift`)
+## Components (`Sift/Design/Theme.swift`)
 
-`Card`, `SectionHeader`, `StorageRing`, `PrimaryButton`, `SecondaryButton`, `CategoryRow`, `MediaThumbnail`, `SelectionBadge`, `EmptyState`, `PermissionState`, `StatPill`, `ScreenTitle`.
+`Card`, `SectionHeader`, `StorageRing`, `PrimaryButton`, `SecondaryButton`, `CategoryRow`, `MediaThumbnail`, `SelectionBadge`, `EmptyState`, `PermissionState`, `StatPill`.
 
 ## Accessibility
 

@@ -26,6 +26,8 @@ Prefer Apple documentation over blog posts for API behaviour.
 ## Invariants
 
 - All library mutation runs in `PHPhotoLibrary.performChanges`; items land in Recently Deleted.
+- A delete session records the moved bytes through `SpaceLedgerStore.recordSession`; those bytes are **moved**, never “freed”, until a later measurement calls `confirmVerified`. The proof sheet must say `Freed so far: 0 bytes.` until then.
+- Scan progress is measured, never invented: `progress = 0` + `.preparing` shows an indeterminate spinner in the UI; the first real percentage is set only after the library fetch succeeds.
 - Contacts are only merged, never silently overwritten: show what changes, save keeper + delete duplicates in one `CNSaveRequest`.
 - Analysis is local. No network, ever.
 - Scanning is cooperative: check `Task.isCancelled` between assets; freeze the UI thread only for small state updates.

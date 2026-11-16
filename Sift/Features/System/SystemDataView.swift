@@ -94,6 +94,8 @@ struct SystemDataView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 30)
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.hidden)
         }
         .navigationTitle("System data")
         .navigationBarTitleDisplayMode(.inline)

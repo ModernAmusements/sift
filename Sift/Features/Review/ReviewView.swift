@@ -26,50 +26,61 @@ struct ReviewView: View {
         Array(repeating: GridItem(.flexible(), spacing: 6), count: 3)
     }
 
+    @ViewBuilder
+    private var emptyState: some View {
+        EmptyState(
+            symbol: category == .largeFiles ? "tray.full" : "checkmark.circle",
+            title: "Nothing here",
+            message: category == .screenshots
+                ? "No screenshots in the photos Sift can see."
+                : category == .blurry
+                ? "No soft shots worth another look."
+                : "No photos or videos over 25 MB."
+        )
+        .padding(.horizontal, Theme.margin)
+    }
+
+    private var content: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(category.subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.secondaryInk)
+                    .padding(.horizontal, Theme.margin)
+
+                summary
+                    .padding(.horizontal, Theme.margin)
+
+                LazyVGrid(columns: columns, spacing: 6) {
+                    ForEach(assets) { asset in
+                        Button {
+                            toggle(asset.id)
+                        } label: {
+                            MediaThumbnail(
+                                asset: asset,
+                                isSelected: selected.contains(asset.id)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, Theme.margin)
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollIndicators(.hidden)
+    }
+
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
 
             if assets.isEmpty {
-                EmptyState(
-                    symbol: category == .largeFiles ? "tray.full" : "checkmark.circle",
-                    title: "Nothing here",
-                    message: category == .screenshots
-                        ? "No screenshots in the photos Sift can see."
-                        : category == .blurry
-                        ? "No soft shots worth another look."
-                        : "No photos or videos over 25 MB."
-                )
-                .padding(.horizontal, Theme.margin)
+                emptyState
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(category.subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(Theme.secondaryInk)
-                            .padding(.horizontal, Theme.margin)
-
-                        summary
-                            .padding(.horizontal, Theme.margin)
-
-                        LazyVGrid(columns: columns, spacing: 6) {
-                            ForEach(assets) { asset in
-                                Button {
-                                    toggle(asset.id)
-                                } label: {
-                                    MediaThumbnail(
-                                        asset: asset,
-                                        isSelected: selected.contains(asset.id)
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.horizontal, Theme.margin)
-                    }
-                    .padding(.top, 8)
-                    .padding(.bottom, 24)
-                }
+                content
             }
         }
         .navigationTitle(category.title)

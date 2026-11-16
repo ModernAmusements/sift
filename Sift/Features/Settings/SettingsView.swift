@@ -23,11 +23,13 @@ struct SettingsView: View {
     }
 
     private let repository = "https://github.com/ModernAmusements/sift"
+    private let ledger = SpaceLedgerStore()
 
     var body: some View {
         NavigationStack {
             List {
                 scanningSection
+                reclaimedSection
                 cacheSection
                 permissionsSection
                 privacySection
@@ -70,6 +72,28 @@ struct SettingsView: View {
                 cacheBytes = CacheService.bytes()
             }
         }
+    }
+
+    private var reclaimedSection: some View {
+        Section {
+            LabeledContent("Reclaimed") {
+                Text(reclaimedText)
+                    .foregroundStyle(Theme.secondaryInk)
+                    .monospacedDigit()
+                    .multilineTextAlignment(.trailing)
+            }
+        } header: {
+            Text("Reclaimed")
+        } footer: {
+            Text("Only space iOS actually gave back counts. Moving photos to Recently Deleted is not freeing — emptying it is.")
+        }
+    }
+
+    private var reclaimedText: String {
+        guard ledger.verifiedTotal > 0, let since = ledger.verifiedSince else {
+            return "Nothing verified yet"
+        }
+        return "\(Format.floorBytes(ledger.verifiedTotal)) verified since \(Format.shortDay(since))"
     }
 
     private var cacheSection: some View {

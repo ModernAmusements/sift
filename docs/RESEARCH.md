@@ -62,7 +62,57 @@ Copy must say "estimated" where appropriate. Never claim the device gained exact
 - Cleaner apps are scrutinised for misleading claims. Our copy avoids cache/RAM/battery promises entirely.
 - Deletion must remain user-initiated. Scan results are suggestions; nothing is selected for deletion by default except duplicate groups where the keeper is clear, and even then the user confirms.
 
-## 6. References
+## 6. Niche analysis — 2026-11-16
+
+Question: hundreds of thousands of cleaners exist; what do all of them miss?
+
+### Honesty is no longer a differentiator
+
+Newer entrants (DustFox, FreeMemory, Swype Photo Cleaner, CleanX, Live Photo Cleaner 2.0) all claim on-device processing, no tracking, no network. "Free, honest, private" is now **table stakes**, not a position. Meanwhile the old grievance stands: a CleanX review sort (Oct 2026) of 4,036 reviews across five big cleaners found 1,456 one-to-two-star reviews, roughly **three in five about billing**, one in seven about ads.
+
+### Every obvious sub-niche is already occupied
+
+| Wedge | Who already owns it | Verdict |
+| --- | --- | --- |
+| Offload originals to Mac/external drive, verify, then delete | Offload (open source, iOS 18+), iMole (CLI), Photo Sentinel, FreeMemory | taken |
+| Live Photo → still | CleanMyPhone, LiveConvert, DustFox, Live Photo Cleaner 2.0 | taken, commoditised |
+| Duplicates / similar / blurry / screenshots / large video | Apple Photos' own Duplicates + Utilities, plus every cleaner | taken, and Apple is free |
+| "Tell me how much you want to save" | Live Photo Cleaner 2.0 ("choose how much space you want to save") | claimed |
+| Swipe review UI | Swype, Cleanup, dozens | taken |
+
+So the answer cannot be a feature list. It has to be a job nobody finishes.
+
+### What they all structurally miss
+
+1. **The last mile.** PhotoKit deletions go to Recently Deleted, where **zero bytes are freed**. Every app stops there and calls it cleaned. Only DustFox even mentions the 30-day trap; nobody guides the user through emptying it, which is where 5–20 GB usually hides.
+2. **Proof.** Numbers are forecasts ("will free 12.4 GB"), never a measured before/after read from the volume. This is exactly the gap that produced the category's fake-numbers reputation.
+3. **The "why".** Lists show items and sizes. Nothing explains *why this one is safe* ("already stored at full resolution twice", "sharpness 12% of the keeper", "screenshot of a boarding pass from 2023").
+4. **Shared libraries.** iCloud Shared Photo Library and family libraries create duplicates across two owners. Apple's Duplicates album ignores this. No cleaner handles it.
+5. **Ongoing hygiene.** All one-shot manual runs. No App Intents/Shortcuts, no "review 3 minutes every Sunday".
+6. **Auditability.** Sift is still the only cleaner whose claims can be inspected, built and reproduced.
+
+### Recommendation: own the last mile, and prove it
+
+Position: **the only cleaner that finishes the job and shows the real number.**
+
+- Measure free space before (`StorageService` already reads `volumeAvailableCapacityForImportantUsage`).
+- After deletion, a guided last-mile screen: deep link into Photos → Recently Deleted, then poll the volume and show the **verified** delta.
+- A per-session receipt: bytes moved, bytes actually freed, date, and per-item reasons.
+- Reuse existing evidence for the "why" line: dHash distance, blur score, dimensions, same-day Vision distance.
+
+Why this wedge fits Sift: it is nearly free to build, it needs no network, it is testable in the simulator and on device, and **a subscription app cannot adopt it without admitting its earlier number was a guess**.
+
+Explicitly not chasing: offload/export (market taken, wants a Mac companion), Live→still (commoditised), ML screenshot triage (accuracy risk on a trust-first app), caretaker multi-account mode (needs a server or awkward handoff).
+
+### Sources
+- DB Labs, "Are iPhone Cleaner Apps Safe?" (Mar 2026)
+- Unstar, "5 Phone Cleaner Apps Ranked" (Jun 2026)
+- FreeMemory, "iPhone Cleaner Apps and the Weekly Subscription Trap" (Oct 2026)
+- CleanX review sort, 4,036 reviews (Oct 2026)
+- DustFox Live Photos page; LiveConvert App Store listing; Live Photo Cleaner 2.0 listing; Offload/iMole/Photo Sentinel repos
+
+## 7. References
+
 
 - Apple: PhotoKit, `PHAssetResource`, `PHPhotoLibrary.performChanges`, Vision feature prints, Contacts, `URLResourceValues`.
 - DB Labs (2026): photo cleaner pipelines and Recently Deleted behaviour.

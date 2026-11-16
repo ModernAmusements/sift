@@ -35,25 +35,6 @@ struct Card<Content: View>: View {
     }
 }
 
-struct ScreenTitle: View {
-    let title: String
-    var subtitle: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.largeTitle.weight(.semibold))
-                .foregroundStyle(Theme.ink)
-            if let subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryInk)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
 struct SectionHeader: View {
     let title: String
     var detail: String?
@@ -76,18 +57,37 @@ struct SectionHeader: View {
 struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
+    private var labelColor: Color {
+        if #available(iOS 26.0, *) { Theme.ink } else { Theme.background }
+    }
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
-            .foregroundStyle(Theme.background)
+            .foregroundStyle(labelColor)
             .frame(maxWidth: .infinity)
             .frame(height: 54)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(Theme.ink.opacity(isEnabled ? 1 : 0.25))
-            )
+            .background {
+                if #available(iOS 26.0, *) {
+                    // Apple's Liquid Glass; a light ink tint keeps it the primary action.
+                    Capsule(style: .continuous)
+                        .fill(.clear)
+                        .glassEffect(
+                            .regular
+                                .tint(Theme.ink.opacity(isEnabled ? 0.18 : 0.06))
+                                .interactive(),
+                            in: .capsule
+                        )
+                } else {
+                    Capsule(style: .continuous)
+                        .fill(Theme.ink.opacity(isEnabled ? 1 : 0.25))
+                }
+            }
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.snappy(duration: 0.2), value: configuration.isPressed)
+            .sensoryFeedback(.impact(weight: .light), trigger: configuration.isPressed) { _, pressed in
+                pressed
+            }
     }
 }
 
@@ -100,12 +100,21 @@ struct SecondaryButtonStyle: ButtonStyle {
             .foregroundStyle(Theme.ink.opacity(isEnabled ? 1 : 0.3))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(
-                Capsule(style: .continuous)
-                    .stroke(Theme.separator, lineWidth: 1)
-            )
+            .background {
+                if #available(iOS 26.0, *) {
+                    Capsule(style: .continuous)
+                        .fill(.clear)
+                        .glassEffect(.regular.interactive(), in: .capsule)
+                } else {
+                    Capsule(style: .continuous)
+                        .stroke(Theme.separator, lineWidth: 1)
+                }
+            }
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.snappy(duration: 0.2), value: configuration.isPressed)
+            .sensoryFeedback(.impact(weight: .light), trigger: configuration.isPressed) { _, pressed in
+                pressed
+            }
     }
 }
 
@@ -137,6 +146,8 @@ struct StorageRing: View {
                     .foregroundStyle(Theme.ink)
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: usedText)
                 Text("used")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(Theme.secondaryInk)
@@ -171,6 +182,8 @@ struct StatPill: View {
                 .foregroundStyle(Theme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+                .contentTransition(.numericText())
+                .animation(.snappy, value: value)
             Text(label)
                 .font(.caption)
                 .foregroundStyle(Theme.secondaryInk)

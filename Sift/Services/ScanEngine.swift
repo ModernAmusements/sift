@@ -47,6 +47,19 @@ final class ScanEngine: ObservableObject {
     @Published private(set) var contactsLoaded = false
     @Published private(set) var contactsDenied = false
     @Published var errorMessage: String?
+    /// Set after a delete session so the proof screen can show what was moved and what came back.
+    @Published private(set) var proof: ProofSession?
+
+    struct ProofSession: Identifiable, Equatable {
+        let id = UUID()
+        let movedBytes: Int64
+    }
+
+    private let ledger = SpaceLedgerStore()
+
+    func dismissProof() {
+        proof = nil
+    }
 
     var lastScanDate: Date? {
         UserDefaults.standard.object(forKey: "lastScanDate") as? Date
@@ -244,10 +257,15 @@ final class ScanEngine: ObservableObject {
     @discardableResult
     func delete(ids: [String]) async -> Bool {
         guard !ids.isEmpty else { return false }
+        let movedBytes = report?.bytes(for: ids) ?? 0
         do {
             try await PhotoLibraryService.delete(ids: ids)
             if let report {
                 self.report = report.removing(ids: Set(ids))
+            }
+            if movedBytes > 0, let snapshot = StorageService.snapshot() {
+                ledger.recordSession(moved: movedBytes, snapshot: snapshot)
+                proof = ProofSession(movedBytes: movedBytes)
             }
             Haptics.success()
             return true

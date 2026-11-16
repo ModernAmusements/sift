@@ -30,6 +30,7 @@ enum Route: Hashable {
     case files
     case systemData
     case swipe
+    case health
 }
 
 struct HomeView: View {
@@ -41,6 +42,9 @@ struct HomeView: View {
     @State private var showSettings = false
     @State private var scanTask: Task<Void, Never>?
     @State private var photoStatus = PhotoLibraryService.status
+    @State private var checkIn: (delta: Int64, since: Date)?
+
+    private let ledger = SpaceLedgerStore()
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -49,7 +53,10 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(spacing: 26) {
-                        header
+                        Text("Keep the moments. Lose the clutter.")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryInk)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         if photoStatus == .denied || photoStatus == .restricted {
                             photosOffCard
                         } else if photoStatus == .limited {
@@ -67,6 +74,8 @@ struct HomeView: View {
                     .padding(.top, 10)
                     .padding(.bottom, 44)
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollIndicators(.hidden)
 
                 if engine.isScanning {
                     ScanProgressView(
@@ -76,11 +85,23 @@ struct HomeView: View {
                         total: engine.analysisTotal,
                         onCancel: cancelScan
                     )
-                    .transition(.opacity)
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
                     .zIndex(2)
                 }
             }
-            .toolbar(.hidden, for: .navigationBar)
+            .navigationTitle("Sift")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Haptics.selection()
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .accessibilityLabel("Settings")
+                }
+            }
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .review(let category):
@@ -95,17 +116,29 @@ struct HomeView: View {
                     SystemDataView()
                 case .swipe:
                     SwipeView()
+                case .health:
+                    HealthView(
+                        storage: storage,
+                        report: engine.report,
+                        onScan: startScan
+                    )
                 }
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
             }
+            .sheet(item: proofBinding) { proof in
+                ProofView(movedBytes: proof.movedBytes, store: ledger)
+            }
             .onAppear(perform: refresh)
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { refreshAccess() }
+                if phase == .active {
+                    refreshAccess()
+                    measureStorage()
+                }
             }
             .onChange(of: engine.stage) { _, stage in
-                if stage == .finished { storage = StorageService.snapshot() }
+                if stage == .finished { measureStorage() }
             }
             .alert(
                 "Something went wrong",
@@ -120,27 +153,6 @@ struct HomeView: View {
             }
             .animation(.snappy(duration: 0.3), value: engine.isScanning)
             .animation(.snappy(duration: 0.3), value: engine.report?.scannedAt)
-        }
-    }
-
-    private var header: some View {
-        HStack(alignment: .top) {
-            ScreenTitle(
-                title: "Sift",
-                subtitle: "Keep the moments. Lose the clutter."
-            )
-            Button {
-                Haptics.selection()
-                showSettings = true
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Theme.ink)
-                    .frame(width: 42, height: 42)
-                    .background(Circle().fill(Theme.card))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Settings")
         }
     }
 
@@ -170,36 +182,66 @@ struct HomeView: View {
 
     private var storageCard: some View {
         Card {
-            HStack(alignment: .center, spacing: 22) {
-                StorageRing(
-                    fraction: storage?.usedFraction ?? 0,
-                    usedText: storage.map { Format.bytes($0.usedBytes) } ?? "—",
-                    freeText: storage.map { Format.bytes($0.freeBytes) } ?? "—"
-                )
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 22) {
+                    storageRing
+                    storageDetails
+                        .frame(minWidth: 140)
+                }
 
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("iPhone storage")
-                            .font(.headline)
-                            .foregroundStyle(Theme.ink)
-                        Text(storage.map { "\(Format.bytes($0.freeBytes)) free" } ?? "Storage unavailable")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.secondaryInk)
-                    }
-
-                    StatPill(
-                        value: engine.report.map { Format.bytes($0.totalLibraryBytes) } ?? "—",
-                        label: "Photos & videos"
-                    )
-                    StatPill(
-                        value: engine.report.map { Format.count($0.totalAssetCount, "item") } ?? "Not scanned",
-                        label: "Library"
-                    )
+                    storageRing
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    storageDetails
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .accessibilityElement(children: .contain)
         }
-        .accessibilityElement(children: .contain)
+    }
+
+    private var storageRing: some View {
+        StorageRing(
+            fraction: storage?.usedFraction ?? 0,
+            usedText: storage.map { Format.bytes($0.usedBytes) } ?? "—",
+            freeText: storage.map { Format.bytes($0.freeBytes) } ?? "—"
+        )
+    }
+
+    private var storageDetails: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(checkInHeadline)
+                    .font(.headline)
+                    .foregroundStyle(Theme.ink)
+                    .monospacedDigit()
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: checkInHeadline)
+                if let detail = checkInDetail {
+                    Text(detail)
+                        .font(.footnote)
+                        .foregroundStyle(Theme.secondaryInk)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                        .animation(.snappy, value: detail)
+                }
+                if let storage {
+                    Text("\(Format.bytes(storage.freeBytes)) free of \(Format.bytes(storage.totalBytes))")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(Theme.tertiaryInk)
+                }
+            }
+
+            StatPill(
+                value: engine.report.map { Format.bytes($0.totalLibraryBytes) } ?? "—",
+                label: "Photos & videos"
+            )
+            StatPill(
+                value: engine.report.map { Format.count($0.totalAssetCount, "item") } ?? "Not scanned",
+                label: "Library"
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var scanSection: some View {
@@ -287,6 +329,14 @@ struct HomeView: View {
             Card(padding: 0) {
                 VStack(spacing: 0) {
                     row(
+                        route: .health,
+                        symbol: "waveform.path.ecg",
+                        title: "Phone health",
+                        detail: "Free space, heat and battery — what iOS really reports",
+                        value: nil
+                    )
+                    rowDivider
+                    row(
                         route: .swipe,
                         symbol: "hand.draw",
                         title: "Swipe review",
@@ -369,8 +419,9 @@ struct HomeView: View {
         Haptics.selection()
         scanTask = Task {
             await engine.scan()
-            storage = StorageService.snapshot()
+            measureStorage()
             refreshAccess()
+            if engine.report != nil { Haptics.success() }
         }
     }
 
@@ -379,9 +430,51 @@ struct HomeView: View {
         Haptics.warning()
     }
 
+    private var proofBinding: Binding<ScanEngine.ProofSession?> {
+        Binding(
+            get: { engine.proof },
+            set: { if $0 == nil { engine.dismissProof() } }
+        )
+    }
+
+    private var checkInHeadline: String {
+        if let checkIn {
+            return SpaceLedger.headline(delta: checkIn.delta, since: checkIn.since)
+        }
+        return storage.map { "\(Format.bytes($0.freeBytes)) free" } ?? "Storage unavailable"
+    }
+
+    private var checkInDetail: String? {
+        guard let checkIn else {
+            return storage == nil ? nil : "Baseline saved. Sift shows the real change next time."
+        }
+        if checkIn.delta > 0 {
+            let moved = ledger.movedSince(checkIn.since)
+            return SpaceLedger.detail(delta: checkIn.delta, movedBytes: moved)
+                ?? "iOS returned space. Sift moved nothing this time."
+        }
+        if checkIn.delta < 0 {
+            return "New photos, downloads or app updates."
+        }
+        return nil
+    }
+
     private func refresh() {
         refreshAccess()
-        storage = StorageService.snapshot()
+        measureStorage()
+    }
+
+    private func measureStorage() {
+        guard let snapshot = StorageService.snapshot() else {
+            storage = nil
+            return
+        }
+        storage = snapshot
+        #if DEBUG
+        DemoSeed.prepareLedgerIfRequested(ledger, snapshot: snapshot)
+        #endif
+        ledger.recordLaunch(snapshot)
+        checkIn = ledger.changeSinceLastVisit()
     }
 
     private func refreshAccess() {
@@ -401,6 +494,13 @@ struct ScanProgressView: View {
     let total: Int
     let onCancel: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var appeared = false
+
+    /// Access checks and the library fetch can take a moment; a fake 0% is not a measurement.
+    private var isPreparing: Bool { stage == .preparing || progress < 0.01 }
+    private var percent: Int { min(100, max(0, Int((progress * 100).rounded()))) }
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -411,35 +511,52 @@ struct ScanProgressView: View {
                 ZStack {
                     Circle()
                         .stroke(Theme.fill, lineWidth: 10)
-                    Circle()
-                        .trim(from: 0, to: max(0.01, min(progress, 1)))
-                        .stroke(
-                            Theme.ink,
-                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(-90))
-                        .animation(.easeOut(duration: 0.35), value: progress)
-                    Text("\(Int(progress * 100))%")
-                        .font(.system(size: 30, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(Theme.ink)
+
+                    if isPreparing {
+                        ProgressView()
+                            .controlSize(.large)
+                            .tint(Theme.ink)
+                    } else {
+                        Circle()
+                            .trim(from: 0, to: max(0.01, min(progress, 1)))
+                            .stroke(
+                                Theme.ink,
+                                style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .animation(.easeOut(duration: 0.45), value: progress)
+
+                        Text("\(percent)%")
+                            .font(.system(size: 30, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(Theme.ink)
+                            .contentTransition(.numericText(value: Double(percent)))
+                            .animation(.snappy, value: percent)
+                    }
                 }
                 .frame(width: 132, height: 132)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(isPreparing ? "Preparing" : "\(percent) percent")
 
                 VStack(spacing: 6) {
                     Text(stage.title)
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(Theme.ink)
                         .contentTransition(.opacity)
+                        .animation(.snappy, value: stage)
                     Text(stage.detail)
                         .font(.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                         .multilineTextAlignment(.center)
+                        .contentTransition(.opacity)
+                        .animation(.snappy, value: stage)
                 }
 
                 if total > 0 && stage == .analyzing {
                     Text("\(processed) of \(total)")
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(Theme.tertiaryInk)
+                        .contentTransition(.numericText())
+                        .animation(.snappy, value: processed)
                 }
 
                 Button("Cancel", action: onCancel)
@@ -448,13 +565,31 @@ struct ScanProgressView: View {
             }
             .padding(28)
             .frame(maxWidth: 340)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.corner + 2, style: .continuous)
-                    .fill(Theme.card)
-                    .shadow(color: .black.opacity(0.12), radius: 30, y: 12)
-            )
+            .background {
+                if #available(iOS 26.0, *) {
+                    RoundedRectangle(cornerRadius: Theme.corner + 2, style: .continuous)
+                        .fill(.clear)
+                        .glassEffect(
+                            .regular,
+                            in: .rect(cornerRadius: Theme.corner + 2, style: .continuous)
+                        )
+                } else {
+                    RoundedRectangle(cornerRadius: Theme.corner + 2, style: .continuous)
+                        .fill(Theme.card)
+                        .shadow(color: .black.opacity(0.12), radius: 30, y: 12)
+                }
+            }
             .padding(.horizontal, 32)
+            .opacity(appeared ? 1 : 0)
+            .scaleEffect(appeared ? 1 : 0.97)
         }
         .accessibilityAddTraits(.isModal)
+        .onAppear {
+            if reduceMotion {
+                appeared = true
+            } else {
+                withAnimation(.snappy(duration: 0.28)) { appeared = true }
+            }
+        }
     }
 }

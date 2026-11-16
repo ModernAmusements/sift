@@ -114,16 +114,81 @@ final class SiftUITests: XCTestCase {
         capture("10-settings")
     }
 
+    func testCheckInBaselineOnFirstRun() {
+        app.terminate()
+        app.launchArguments = ["-hasOnboarded", "YES", "-resetLedger", "YES"]
+        app.launch()
+
+        XCTAssertTrue(
+            app.staticTexts["Baseline saved. Sift shows the real change next time."].waitForExistence(timeout: 15),
+            "First run should promise a measurement, not a result"
+        )
+        capture("17-checkin-baseline")
+    }
+
+    func testCheckInReportsMeasuredDeltaWithoutClaimingCredit() {
+        app.terminate()
+        app.launchArguments = ["-hasOnboarded", "YES", "-seedLedgerBackGB", "3"]
+        app.launch()
+
+        let headline = app.staticTexts.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "3.0 GB came back since")
+        ).firstMatch
+        XCTAssertTrue(headline.waitForExistence(timeout: 15), "A real measurement should be reported")
+
+        // Sift moved nothing in this session, so it may not take credit for the gain.
+        XCTAssertTrue(
+            app.staticTexts["iOS returned space. Sift moved nothing this time."].waitForExistence(timeout: 5)
+        )
+        capture("18-checkin-delta")
+    }
+
+    func testPhoneHealthOnlyClaimsWhatIOSExposes() {
+        openRow(containing: "Phone health")
+        XCTAssertTrue(app.navigationBars["Phone health"].waitForExistence(timeout: 8))
+
+        let battery = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS %@", "Battery health")
+        ).firstMatch
+        XCTAssertTrue(battery.waitForExistence(timeout: 5))
+        XCTAssertTrue(battery.label.contains("no public API"))
+
+        // The screen names the impossible things only to deny them.
+        let disclaimer = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS %@", "There is no speed, RAM or battery boost")
+        ).firstMatch
+        XCTAssertTrue(disclaimer.waitForExistence(timeout: 3))
+
+        for word in ["junk", "optimize", "cool the CPU", "speed up"] {
+            let claims = app.staticTexts.matching(
+                NSPredicate(format: "label CONTAINS[c] %@", word)
+            )
+            XCTAssertEqual(claims.count, 0, "Health screen must not claim \(word)")
+        }
+        capture("19-phone-health")
+    }
+
     private func openRow(containing label: String) {
         let predicate = NSPredicate(format: "label CONTAINS %@", label)
         let button = app.buttons.matching(predicate).firstMatch
         if button.waitForExistence(timeout: 5) {
+            scrollUntilHittable(button)
             button.tap()
             return
         }
         let text = app.staticTexts.matching(predicate).firstMatch
         XCTAssertTrue(text.waitForExistence(timeout: 5), "Row \(label) not found")
+        scrollUntilHittable(text)
         text.tap()
+    }
+
+    /// XL Dynamic Type pushes rows below the fold; a tap needs a hittable row.
+    private func scrollUntilHittable(_ element: XCUIElement) {
+        var attempts = 0
+        while !element.isHittable && attempts < 4 {
+            app.swipeUp()
+            attempts += 1
+        }
     }
 
     func testContactMerge() throws {
@@ -185,6 +250,20 @@ final class SiftUITests: XCTestCase {
             let springboardDelete = springboard.buttons["Delete"].firstMatch
             XCTAssertTrue(springboardDelete.waitForExistence(timeout: 10), "No system delete confirmation")
             springboardDelete.tap()
+        }
+
+        // The proof screen appears as soon as the session ends: bytes moved, nothing claimed yet.
+        let proofHeadline = app.staticTexts.matching(
+            NSPredicate(format: "label BEGINSWITH %@ AND label CONTAINS %@", "Moved ", "Freed so far: 0 bytes.")
+        ).firstMatch
+        if proofHeadline.waitForExistence(timeout: 10) {
+            capture("16a-proof-unverified")
+            XCTAssertTrue(
+                app.staticTexts.matching(
+                    NSPredicate(format: "label CONTAINS %@", "Nothing is freed until Recently Deleted is emptied.")
+                ).firstMatch.exists
+            )
+            app.buttons["Done"].tap()
         }
 
         XCTAssertTrue(app.buttons["Scan again"].waitForExistence(timeout: 20))

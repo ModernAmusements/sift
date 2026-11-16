@@ -6,6 +6,10 @@ struct SiftApp: App {
 
     init() {
         #if DEBUG
+        // Runs before any view is built, so the onboarding test always starts clean.
+        if ProcessInfo.processInfo.arguments.contains("-resetOnboarding") {
+            UserDefaults.standard.removeObject(forKey: "hasOnboarded")
+        }
         DemoSeed.runIfRequested()
         #endif
     }
@@ -22,14 +26,6 @@ struct SiftApp: App {
 
 struct RootView: View {
     @AppStorage("hasOnboarded") private var hasOnboarded = false
-
-    init() {
-        #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-resetOnboarding") {
-            UserDefaults.standard.removeObject(forKey: "hasOnboarded")
-        }
-        #endif
-    }
 
     var body: some View {
         if hasOnboarded {

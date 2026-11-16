@@ -3,6 +3,8 @@ import SwiftUI
 struct OnboardingView: View {
     let onContinue: () -> Void
 
+    @ScaledMetric(relativeTo: .largeTitle) private var heroSize: CGFloat = 50
+
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
@@ -16,9 +18,11 @@ struct OnboardingView: View {
 
                     VStack(alignment: .leading, spacing: 18) {
                         Text("A lighter\niPhone.")
-                            .font(.system(size: 50, weight: .semibold))
+                            .font(.system(size: heroSize, weight: .semibold))
                             .foregroundStyle(Theme.ink)
                             .lineSpacing(-4)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.7)
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text("Find the photos, videos and contacts you no longer need. Sift works on this iPhone and never sends anything anywhere.")
@@ -71,6 +75,8 @@ struct OnboardingView: View {
                 .padding(.horizontal, Theme.margin)
                 .padding(.bottom, 20)
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.hidden)
         }
         .safeAreaInset(edge: .bottom) {
             Button("Get started", action: onContinue)
