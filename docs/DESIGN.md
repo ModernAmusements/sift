@@ -1,77 +1,73 @@
 # Design system
 
-Sift is quiet. The content is the interface.
+Sift is quiet. The content is the interface. Black and white do the work; orange is the one highlight.
 
 ## Principles
 
 1. **One job per screen.** The home screen answers "how much space, what can go".
-2. **Numbers are the hero.** Storage and reclaimed space get large, monospaced-digit type.
-3. **Monochrome, one accent.** Ink on paper; green only for reclaimed space and success.
+2. **Numbers are the hero.** Storage and reclaimed space get large, tabular figures.
+3. **Black, white, one orange highlight.** No second brand colour, no gradients, no box shadows. Orange marks the primary action, the storage ring, selection and success.
 4. **Space is a feature.** 20 pt margins, 24–32 pt between sections, no crowding.
-5. **No decoration for its own sake.** No gradients, emoji, illustrations or progress confetti. On iOS 26, Apple's Liquid Glass is the system material, so controls and floating surfaces use it per the HIG; on iOS 17–25 the same surfaces stay flat. Glass is never applied to content cards.
-
-Apple is the reference: [Human Interface Guidelines](https://developer.apple.com/design/), [Design resources](https://developer.apple.com/design/resources/). Use SF Pro through system text styles and SF Symbols only; no bundled fonts, no custom icon sets.
+5. **Liquid Glass where iOS 26 allows it.** Buttons, the scan panel and the selection bar use Apple's `glassEffect`; content cards stay opaque. iOS 17–25 gets the same layout with flat fills. Glass is never used as a substitute for hierarchy.
 6. **Destructive actions are explicit.** Ink outline, then the system confirmation. Never red unless something is irreversible.
 
-## Color
+Apple is the reference: [Human Interface Guidelines](https://developer.apple.com/design/), [Design resources](https://developer.apple.com/design/resources/). SF Symbols only; no custom icon sets.
+
+## Colour
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `Theme.background` | systemGroupedBackground | systemGroupedBackground | screen |
-| `Theme.card` | secondarySystemGroupedBackground | secondarySystemGroupedBackground | cards, rows |
-| `Theme.ink` | label | label | primary text, primary button |
-| `Theme.secondaryInk` | secondaryLabel | secondaryLabel | captions |
-| `Theme.separator` | separator (0.6 opacity) | separator | dividers |
-| `Theme.reclaim` | systemGreen | systemGreen | reclaimed bytes, success |
-| `Theme.fill` | tertiarySystemFill | tertiarySystemFill | unselected chip, track |
+| `Theme.background` | `#F5F5F7` | `#000000` | screen |
+| `Theme.card` | `#FFFFFF` | `#1C1C1E` | cards, rows |
+| `Theme.cardRaised` | `#FFFFFF` | `#2C2C2E` | elevated card |
+| `Theme.ink` | `#0A0A0A` | `#FFFFFF` | primary text |
+| `Theme.secondaryInk` | `#6E6E73` | `#A1A1A6` | captions |
+| `Theme.tertiaryInk` | `#8E8E93` | `#8E8E93` | metadata |
+| `Theme.separator` | `#D9D9DE` | `#38383A` | dividers |
+| `Theme.accent` | `#FF6600` | `#FF6600` | primary action, selection, success |
 
-Primary button: ink background, background-colored label on iOS 17–25. On iOS 26 it is a light-tinted Liquid Glass capsule with an ink label, still the single strongest action on the screen. In dark mode this inverts naturally via semantic colors.
+Primary button: orange, with a near-black label (`#0A0A0A`, 6:1 contrast). On iOS 26 it is a light-tinted Liquid Glass capsule; on iOS 17–25 a solid orange capsule. Disabled controls use a neutral grey tint, never a washed-out orange. No shadows anywhere.
 
 ## Type
 
+The app uses **Neo Grotesque-P5M5** for every text style. One face, supplied by the owner; hierarchy comes from size, colour and tracking. No SF Pro text, no bundled second weight. Tabular figures (`tnum`) are present, so `.monospacedDigit()` lines stay aligned.
+
 | Role | Style |
 | --- | --- |
-| Screen title | `.largeTitle.weight(.semibold)` |
-| Storage number | `.system(size: 44, weight: .semibold, design: .default)` + `.monospacedDigit()` |
-| Section title | `.title3.weight(.semibold)` |
-| Card title | `.headline` |
-| Body | `.body` |
-| Caption | `.footnote` / `.caption` secondary |
-| Button | `.headline` |
+| Screen title | `Typo.largeTitle` (34 pt, P5M5) |
+| Storage number | `Typo.size(28, weight: .semibold)` + `.monospacedDigit()` |
+| Section title | `Typo.title3` / `.headline` |
+| Body | `Typo.body` (17 pt) |
+| Caption | `Typo.caption` / `Typo.caption2` |
+| Button | `Typo.headline` |
+| Mono labels | `Typo.label` + tracking |
 
-No custom fonts. No all-caps labels. No letter-spacing games.
+The website loads the same P5M5 cut from `docs/fonts/`. See [`FONT.md`](FONT.md).
 
 ## Navigation
 
-- The root screen uses a native large navigation title (`Sift`) and a system toolbar; there is no custom header.
+- Home uses an inline navigation bar with the **Sift lockup** as the principal item and a system glass gear on the trailing edge.
 - Push destinations use standard navigation bars and the system back button.
 - Settings is a sheet with a standard `List` and a Done toolbar item.
 - No custom tab bar; the home screen is the single entry point.
 
-## Spacing
+## Spacing and shape
 
-`4 · 8 · 12 · 16 · 20 · 24 · 32 · 48`. Screen margin 20. Card padding 20. Row height 64 minimum.
-
-## Shape
-
-- Screen cards: 26 pt continuous corner radius.
-- Thumbnails: 14 pt.
-- Buttons: capsule (height 54).
-- Selection: 2.5 pt ink ring + checkmark disc, not a color wash.
+`4 · 8 · 12 · 16 · 20 · 24 · 32 · 48`. Screen margin 20. Card padding 20. Row height 64 minimum. Screen cards: 26 pt continuous radius. Thumbnails: 14 pt. Buttons: capsule (height 54).
 
 ## Motion
 
 | Event | Animation |
 | --- | --- |
+| Onboarding arrival | opacity + 12 pt rise, staggered; Reduce Motion keeps opacity |
 | Storage ring | `.easeOut(duration: 0.8)` trim; numeric text for the byte label |
-| Screen content | `.snappy` opacity + 8 pt rise |
-| Selection | `.snappy(duration: 0.22)` scale 0.97 → 1 |
+| Selection | `.snappy(duration: 0.22)` scale 0.985 → 1; checkmark symbol bounce |
+| Button press | scale 0.975, light impact haptic on press |
 | Scanning stage text | `.contentTransition(.opacity)`, `.snappy` |
 | Scan overlay | `.snappy` opacity + 0.97 scale in; glass panel on iOS 26 |
-| Scan progress | numeric-text percent; indeterminate spinner until the first measurement (never a fake 0%) |
-| Check-in copy | numeric-text delta and opacity detail when the measurement changes |
-| Proof seal | `.symbolEffect(.bounce)` on verification; green ring appears only after proof |
-| Swipe card | interactive spring, threshold 34% width |
+| Scan progress | numeric-text percent; indeterminate until the first measurement |
+| Swipe card | interactive spring, threshold 34% width, light tick when crossing |
+| Proof seal | `.symbolEffect(.bounce)` on verification; orange ring appears only after proof |
 
 Reduce Motion: disable the rise, scale, bounce and ring trim; keep opacity and numeric text.
 
@@ -91,15 +87,17 @@ Reduce Motion: disable the rise, scale, bounce and ring trim; keep opacity and n
 
 ## Components (`Sift/Design/Theme.swift`)
 
-`Card`, `SectionHeader`, `StorageRing`, `PrimaryButton`, `SecondaryButton`, `CategoryRow`, `MediaThumbnail`, `SelectionBadge`, `EmptyState`, `PermissionState`, `StatPill`.
+`Card`, `SectionHeader`, `StorageRing`, `PrimaryButtonStyle`, `SecondaryButtonStyle`, `PressableStyle`, `CategoryRow`, `MediaThumbnail`, `SelectionBadge`, `EmptyState`, `PermissionState`, `StatPill`, `SiftLockup`, `MAByline`.
+
+The Sift lockup and app icon come from the owner's `sift-logo-pack`; the ModernAmusement mark and wordmark are the owner's artwork.
 
 ## Accessibility
 
 - Every icon button has a label.
-- Storage ring: label "Storage", value "62.4 gigabytes used of 128 gigabytes, 65.6 gigabytes free".
-- Thumbnails: label "Photo, 12 March 2025, 4.2 megabytes", value "Selected/Not selected".
+- The storage ring reads "Storage", value "62.4 gigabytes used of 128 gigabytes, 65.6 gigabytes free".
+- Thumbnails: "Photo, 12 March 2025, 4.2 megabytes", value "Selected/Not selected".
 - Dynamic Type up to AX3: cards grow vertically, grids stay 3 columns but labels truncate gracefully.
-- Contrast: secondary text ≥ 4.5:1 on card backgrounds.
+- Contrast: secondary text ≥ 4.5:1 on card backgrounds; the orange label is near-black at 6:1.
 - Swipe actions have visible buttons as alternatives.
 
 ## Copy

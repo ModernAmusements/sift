@@ -44,7 +44,7 @@ struct ReviewView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text(category.subtitle)
-                    .font(.subheadline)
+                    .font(Typo.subheadline)
                     .foregroundStyle(Theme.secondaryInk)
                     .padding(.horizontal, Theme.margin)
 
@@ -61,7 +61,7 @@ struct ReviewView: View {
                                 isSelected: selected.contains(asset.id)
                             )
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableStyle())
                     }
                 }
                 .padding(.horizontal, Theme.margin)
@@ -130,11 +130,15 @@ struct ReviewView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(Format.count(assets.count, "item"))
-                    .font(.headline)
+                    .font(Typo.headline)
                     .foregroundStyle(Theme.ink)
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: assets.count)
                 Text(Format.bytes(assets.reduce(0) { $0 + $1.sizeBytes }) + " in total")
-                    .font(.footnote)
+                    .font(Typo.footnote)
                     .foregroundStyle(Theme.secondaryInk)
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: assets.reduce(0) { $0 + $1.sizeBytes })
             }
             Spacer()
             Button(selected.isEmpty ? "Select all" : "Deselect all") {
@@ -145,7 +149,7 @@ struct ReviewView: View {
                 }
                 Haptics.selection()
             }
-            .font(.footnote.weight(.semibold))
+            .font(Typo.footnoteSemibold)
             .foregroundStyle(Theme.ink)
             .padding(.horizontal, 14)
             .frame(height: 36)

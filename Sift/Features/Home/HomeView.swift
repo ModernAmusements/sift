@@ -54,7 +54,7 @@ struct HomeView: View {
                 ScrollView {
                     VStack(spacing: 26) {
                         Text("Keep the moments. Lose the clutter.")
-                            .font(.subheadline)
+                            .font(Typo.subheadline)
                             .foregroundStyle(Theme.secondaryInk)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         if photoStatus == .denied || photoStatus == .restricted {
@@ -80,9 +80,7 @@ struct HomeView: View {
                 if engine.isScanning {
                     ScanProgressView(
                         stage: engine.stage,
-                        progress: engine.progress,
-                        processed: engine.processedCount,
-                        total: engine.analysisTotal,
+                        live: engine.live,
                         onCancel: cancelScan
                     )
                     .transition(.opacity.combined(with: .scale(scale: 0.98)))
@@ -90,8 +88,17 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("Sift")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Image("SiftLockup")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 18)
+                        .foregroundStyle(Theme.ink)
+                        .accessibilityLabel("Sift")
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Haptics.selection()
@@ -152,7 +159,6 @@ struct HomeView: View {
                 Text(engine.errorMessage ?? "")
             }
             .animation(.snappy(duration: 0.3), value: engine.isScanning)
-            .animation(.snappy(duration: 0.3), value: engine.report?.scannedAt)
         }
     }
 
@@ -211,7 +217,7 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(checkInHeadline)
-                    .font(.headline)
+                    .font(Typo.headline)
                     .foregroundStyle(Theme.ink)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)
@@ -219,7 +225,7 @@ struct HomeView: View {
                     .animation(.snappy, value: checkInHeadline)
                 if let detail = checkInDetail {
                     Text(detail)
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                         .fixedSize(horizontal: false, vertical: true)
                         .contentTransition(.opacity)
@@ -227,7 +233,7 @@ struct HomeView: View {
                 }
                 if let storage {
                     Text("\(Format.bytes(storage.freeBytes)) free of \(Format.bytes(storage.totalBytes))")
-                        .font(.caption.monospacedDigit())
+                        .font(Typo.caption).monospacedDigit()
                         .foregroundStyle(Theme.tertiaryInk)
                 }
             }
@@ -251,7 +257,7 @@ struct HomeView: View {
             } label: {
                 HStack(spacing: 9) {
                     Image(systemName: "magnifyingglass")
-                        .font(.body.weight(.semibold))
+                        .font(Typo.bodySemibold)
                     Text(engine.report == nil ? "Scan my iPhone" : "Scan again")
                 }
             }
@@ -259,7 +265,7 @@ struct HomeView: View {
             .disabled(engine.isScanning)
 
             Text("On-device. No uploads. No account.")
-                .font(.caption)
+                .font(Typo.caption)
                 .foregroundStyle(Theme.secondaryInk)
         }
     }
@@ -316,7 +322,7 @@ struct HomeView: View {
             }
 
             Text("Suggestions only. You choose what moves to Recently Deleted.")
-                .font(.caption)
+                .font(Typo.caption)
                 .foregroundStyle(Theme.secondaryInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 4)
@@ -376,16 +382,33 @@ struct HomeView: View {
 
     private var footer: some View {
         VStack(spacing: 8) {
-            Label("Everything stays on this iPhone.", systemImage: "lock.shield")
-                .font(.footnote.weight(.medium))
+            Image("SiftLockup")
+                .resizable()
+                .renderingMode(.template)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 20)
                 .foregroundStyle(Theme.secondaryInk)
-            Text("Sift is free and open source.")
-                .font(.caption)
+                .accessibilityLabel("Sift")
+            Label("Everything stays on this iPhone.", systemImage: "lock.shield")
+                .font(Typo.footnoteMedium)
+                .foregroundStyle(Theme.secondaryInk)
+            Text("FREE · OPEN SOURCE · MADE IN BIELEFELD")
+                .font(Typo.label)
+                .tracking(0.8)
                 .foregroundStyle(Theme.tertiaryInk)
+                .multilineTextAlignment(.center)
             if let url = URL(string: "https://github.com/ModernAmusements/sift") {
                 Link("View source", destination: url)
-                    .font(.caption.weight(.medium))
+                    .font(Typo.captionMedium)
                     .foregroundStyle(Theme.secondaryInk)
+            }
+            MAByline()
+                .padding(.top, 14)
+            if let url = URL(string: "https://modern-amusement.dev") {
+                Link("modern-amusement.dev", destination: url)
+                    .font(Typo.label)
+                    .tracking(0.5)
+                    .foregroundStyle(Theme.accent)
             }
         }
         .frame(maxWidth: .infinity)
@@ -421,7 +444,6 @@ struct HomeView: View {
             await engine.scan()
             measureStorage()
             refreshAccess()
-            if engine.report != nil { Haptics.success() }
         }
     }
 
@@ -489,17 +511,17 @@ struct HomeView: View {
 
 struct ScanProgressView: View {
     let stage: ScanEngine.Stage
-    let progress: Double
-    let processed: Int
-    let total: Int
+    @ObservedObject var live: ScanLiveState
     let onCancel: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
 
     /// Access checks and the library fetch can take a moment; a fake 0% is not a measurement.
-    private var isPreparing: Bool { stage == .preparing || progress < 0.01 }
-    private var percent: Int { min(100, max(0, Int((progress * 100).rounded()))) }
+    private var isPreparing: Bool {
+        stage == .preparing || stage == .library || live.progress < 0.01
+    }
+    private var percent: Int { min(100, max(0, Int((live.progress * 100).rounded()))) }
 
     var body: some View {
         ZStack {
@@ -515,19 +537,19 @@ struct ScanProgressView: View {
                     if isPreparing {
                         ProgressView()
                             .controlSize(.large)
-                            .tint(Theme.ink)
+                            .tint(Theme.accent)
                     } else {
                         Circle()
-                            .trim(from: 0, to: max(0.01, min(progress, 1)))
+                            .trim(from: 0, to: max(0.01, min(live.progress, 1)))
                             .stroke(
-                                Theme.ink,
+                                Theme.accent,
                                 style: StrokeStyle(lineWidth: 10, lineCap: .round)
                             )
                             .rotationEffect(.degrees(-90))
-                            .animation(.easeOut(duration: 0.45), value: progress)
+                            .animation(.easeOut(duration: 0.45), value: live.progress)
 
                         Text("\(percent)%")
-                            .font(.system(size: 30, weight: .semibold).monospacedDigit())
+                            .font(Typo.size(30, weight: .semibold)).monospacedDigit()
                             .foregroundStyle(Theme.ink)
                             .contentTransition(.numericText(value: Double(percent)))
                             .animation(.snappy, value: percent)
@@ -539,24 +561,28 @@ struct ScanProgressView: View {
 
                 VStack(spacing: 6) {
                     Text(stage.title)
-                        .font(.title3.weight(.semibold))
+                        .font(Typo.title3Semibold)
                         .foregroundStyle(Theme.ink)
                         .contentTransition(.opacity)
                         .animation(.snappy, value: stage)
                     Text(stage.detail)
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                         .multilineTextAlignment(.center)
                         .contentTransition(.opacity)
                         .animation(.snappy, value: stage)
                 }
 
-                if total > 0 && stage == .analyzing {
-                    Text("\(processed) of \(total)")
-                        .font(.caption.monospacedDigit())
+                if live.analysisTotal > 0 && stage == .analyzing {
+                    Text("\(live.processed) of \(live.analysisTotal)")
+                        .font(Typo.caption).monospacedDigit()
                         .foregroundStyle(Theme.tertiaryInk)
                         .contentTransition(.numericText())
-                        .animation(.snappy, value: processed)
+                        .animation(.snappy, value: live.processed)
+                } else if stage == .library && live.libraryTotal > 0 {
+                    Text("\(live.libraryProcessed) of \(live.libraryTotal) items")
+                        .font(Typo.caption).monospacedDigit()
+                        .foregroundStyle(Theme.tertiaryInk)
                 }
 
                 Button("Cancel", action: onCancel)
@@ -576,7 +602,10 @@ struct ScanProgressView: View {
                 } else {
                     RoundedRectangle(cornerRadius: Theme.corner + 2, style: .continuous)
                         .fill(Theme.card)
-                        .shadow(color: .black.opacity(0.12), radius: 30, y: 12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.corner + 2, style: .continuous)
+                                .stroke(Theme.separator, lineWidth: 1)
+                        )
                 }
             }
             .padding(.horizontal, 32)

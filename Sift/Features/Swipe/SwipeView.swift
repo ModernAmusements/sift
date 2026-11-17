@@ -3,6 +3,7 @@ import SwiftUI
 private struct SwipeAction {
     let id: String
     let deleted: Bool
+    let bytes: Int64
 }
 
 struct SwipeView: View {
@@ -12,6 +13,7 @@ struct SwipeView: View {
     @State private var assets: [ScannedAsset] = []
     @State private var index = 0
     @State private var toDelete: [String] = []
+    @State private var queuedBytes: Int64 = 0
     @State private var kept = 0
     @State private var undoStack: [SwipeAction] = []
     @State private var drag: CGSize = .zero
@@ -26,11 +28,6 @@ struct SwipeView: View {
     private var next: ScannedAsset? {
         guard index + 1 < assets.count else { return nil }
         return assets[index + 1]
-    }
-
-    private var queuedBytes: Int64 {
-        let ids = Set(toDelete)
-        return assets.filter { ids.contains($0.id) }.reduce(0) { $0 + $1.sizeBytes }
     }
 
     var body: some View {
@@ -100,7 +97,7 @@ struct SwipeView: View {
         VStack(spacing: 10) {
             HStack {
                 Text("\(min(index + 1, assets.count)) of \(assets.count)")
-                    .font(.footnote.monospacedDigit())
+                    .font(Typo.footnote).monospacedDigit()
                     .foregroundStyle(Theme.secondaryInk)
                 Spacer()
                 if !undoStack.isEmpty {
@@ -108,14 +105,14 @@ struct SwipeView: View {
                         undo()
                     } label: {
                         Label("Undo", systemImage: "arrow.uturn.backward")
-                            .font(.footnote.weight(.medium))
+                            .font(Typo.footnoteMedium)
                             .foregroundStyle(Theme.ink)
                     }
                     .buttonStyle(.plain)
                 }
             }
             ProgressView(value: Double(index), total: Double(max(assets.count, 1)))
-                .tint(Theme.ink)
+                .tint(Theme.accent)
         }
     }
 
@@ -172,7 +169,7 @@ struct SwipeView: View {
                 }
             }
             Text("Swipe left to delete · right to keep")
-                .font(.caption)
+                .font(Typo.caption)
                 .foregroundStyle(Theme.tertiaryInk)
         }
         .padding(.bottom, 4)
@@ -186,7 +183,7 @@ struct SwipeView: View {
     ) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
-                .font(.system(size: 24, weight: .medium))
+                .font(Typo.size(24, weight: .medium))
                 .foregroundStyle(filled ? Theme.background : Theme.ink)
                 .frame(width: 64, height: 64)
                 .background(
@@ -253,10 +250,11 @@ struct SwipeView: View {
         guard let current else { return }
         if delete {
             toDelete.append(current.id)
+            queuedBytes += current.sizeBytes
         } else {
             kept += 1
         }
-        undoStack.append(SwipeAction(id: current.id, deleted: delete))
+        undoStack.append(SwipeAction(id: current.id, deleted: delete, bytes: current.sizeBytes))
         Haptics.selection()
         withAnimation(.snappy(duration: 0.28)) {
             drag = .zero
@@ -268,6 +266,7 @@ struct SwipeView: View {
         guard let last = undoStack.popLast() else { return }
         if last.deleted {
             toDelete.removeAll { $0 == last.id }
+            queuedBytes = max(queuedBytes - last.bytes, 0)
         } else {
             kept = max(kept - 1, 0)
         }
@@ -287,6 +286,7 @@ struct SwipeView: View {
             isDeleting = false
             if succeeded {
                 toDelete.removeAll()
+                queuedBytes = 0
                 Haptics.success()
                 dismiss()
             }
@@ -323,7 +323,7 @@ private struct SwipeCard: View {
                     HStack {
                         if showsDelete {
                             Label("Delete", systemImage: "xmark")
-                                .font(.subheadline.weight(.semibold))
+                                .font(Typo.subheadlineSemibold)
                                 .foregroundStyle(Theme.background)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
@@ -333,7 +333,7 @@ private struct SwipeCard: View {
                         Spacer()
                         if showsKeep {
                             Label("Keep", systemImage: "checkmark")
-                                .font(.subheadline.weight(.semibold))
+                                .font(Typo.subheadlineSemibold)
                                 .foregroundStyle(Theme.background)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
@@ -347,23 +347,18 @@ private struct SwipeCard: View {
 
                 VStack {
                     Spacer()
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(asset.isScreenshot ? "Screenshot" : asset.isVideo ? "Video" : "Photo")
-                            .font(.subheadline.weight(.semibold))
-                        Text("\(Format.date(asset.creationDate)) · \(asset.sizeText)")
-                            .font(.caption.monospacedDigit())
-                            .opacity(0.85)
+                    HStack {
+                        Text("\(asset.isScreenshot ? "Screenshot" : asset.isVideo ? "Video" : "Photo") · \(Format.date(asset.creationDate)) · \(asset.sizeText)")
+                            .font(Typo.caption).monospacedDigit()
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Capsule().fill(.black.opacity(0.58)))
+                        Spacer(minLength: 0)
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(18)
-                    .background(
-                        LinearGradient(
-                            colors: [.clear, .black.opacity(0.55)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .padding(14)
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)

@@ -11,14 +11,18 @@ struct OnboardingView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
-                    Text("Sift")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.secondaryInk)
+                    Image("SiftLockup")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 22)
+                        .foregroundStyle(Theme.ink)
+                        .accessibilityLabel("Sift")
                         .padding(.top, 12)
 
                     VStack(alignment: .leading, spacing: 18) {
                         Text("A lighter\niPhone.")
-                            .font(.system(size: heroSize, weight: .semibold))
+                            .font(Typo.displayFixed(heroSize))
                             .foregroundStyle(Theme.ink)
                             .lineSpacing(-4)
                             .lineLimit(2)
@@ -26,7 +30,7 @@ struct OnboardingView: View {
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text("Find the photos, videos and contacts you no longer need. Sift works on this iPhone and never sends anything anywhere.")
-                            .font(.body)
+                            .font(Typo.body)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                             .lineSpacing(3)
@@ -64,13 +68,15 @@ struct OnboardingView: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         Label("No account. No ads. No tracking.", systemImage: "lock.shield")
-                            .font(.footnote.weight(.medium))
+                            .font(Typo.footnoteMedium)
                             .foregroundStyle(Theme.ink)
                         Text("Sift is free and open source. Removals go through Apple's Recently Deleted, so you have 30 days to change your mind.")
-                            .font(.footnote)
+                            .font(Typo.footnote)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                     }
+
+                    MAByline(compact: true)
                 }
                 .padding(.horizontal, Theme.margin)
                 .padding(.bottom, 20)
@@ -91,16 +97,16 @@ struct OnboardingView: View {
     private func feature(symbol: String, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: symbol)
-                .font(.system(size: 17, weight: .medium))
+                .font(Typo.size(17, weight: .medium))
                 .foregroundStyle(Theme.ink)
                 .frame(width: 38, height: 38)
                 .background(Circle().fill(Theme.fill))
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.body.weight(.medium))
+                    .font(Typo.bodyMedium)
                     .foregroundStyle(Theme.ink)
                 Text(detail)
-                    .font(.footnote)
+                    .font(Typo.footnote)
                     .foregroundStyle(Theme.secondaryInk)
                     .fixedSize(horizontal: false, vertical: true)
             }

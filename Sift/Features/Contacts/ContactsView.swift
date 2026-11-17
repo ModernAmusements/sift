@@ -10,6 +10,7 @@ struct ContactsView: View {
     @State private var pendingGroup: ContactGroup?
     @State private var showMergeAll = false
     @State private var mergeNote: String?
+    @State private var appeared = false
 
     var body: some View {
         ZStack {
@@ -41,7 +42,7 @@ struct ContactsView: View {
             if !engine.contactGroups.isEmpty {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Merge all") { showMergeAll = true }
-                        .font(.footnote.weight(.semibold))
+                        .font(Typo.footnoteSemibold)
                         .foregroundStyle(Theme.ink)
                 }
             }
@@ -75,7 +76,7 @@ struct ContactsView: View {
         .overlay(alignment: .bottom) {
             if let mergeNote {
                 Text(mergeNote)
-                    .font(.footnote.weight(.medium))
+                    .font(Typo.footnoteMedium)
                     .foregroundStyle(Theme.background)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
@@ -89,11 +90,13 @@ struct ContactsView: View {
             }
         }
         .onAppear {
+            appeared = true
             status = ContactService.status
             if status == .authorized && !engine.contactsLoaded {
                 load(requestAccess: false)
             }
         }
+        .animation(.snappy(duration: 0.3), value: engine.contactGroups.count)
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             status = ContactService.status
@@ -105,10 +108,10 @@ struct ContactsView: View {
             VStack(spacing: 14) {
                 ProgressView()
                 Text("Looking through your contacts")
-                    .font(.headline)
+                    .font(Typo.headline)
                     .foregroundStyle(Theme.ink)
                 Text("Only shared phone numbers and emails are compared.")
-                    .font(.footnote)
+                    .font(Typo.footnote)
                     .foregroundStyle(Theme.secondaryInk)
                     .multilineTextAlignment(.center)
             }
@@ -147,17 +150,18 @@ struct ContactsView: View {
             )
         } else {
             summary
-            ForEach(engine.contactGroups) { group in
+            ForEach(Array(engine.contactGroups.enumerated()), id: \.element.id) { index, group in
                 Button {
                     Haptics.selection()
                     pendingGroup = group
                 } label: {
                     groupCard(group)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
+                .riseIn(appeared, index: index + 1)
             }
             Text("Merging deletes the extra cards from Contacts. There is no Recently Deleted for contacts.")
-                .font(.caption)
+                .font(Typo.caption)
                 .foregroundStyle(Theme.secondaryInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 4)
@@ -168,10 +172,10 @@ struct ContactsView: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(Format.count(engine.contactGroups.count, "group"))
-                    .font(.headline)
+                    .font(Typo.headline)
                     .foregroundStyle(Theme.ink)
                 Text("\(Format.count(engine.contactGroups.reduce(0) { $0 + $1.removableCount }, "extra card")) to merge")
-                    .font(.footnote)
+                    .font(Typo.footnote)
                     .foregroundStyle(Theme.secondaryInk)
             }
             Spacer()
@@ -185,22 +189,22 @@ struct ContactsView: View {
                 avatar(group.keeper)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(group.title)
-                        .font(.body.weight(.medium))
+                        .font(Typo.bodyMedium)
                         .foregroundStyle(Theme.ink)
                     Text("\(Format.count(group.contacts.count, "card")) · \(group.keeper?.subtitle ?? "")")
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 8)
                 Text("Merge")
-                    .font(.footnote.weight(.semibold))
+                    .font(Typo.footnoteSemibold)
                     .foregroundStyle(Theme.ink)
                     .padding(.horizontal, 12)
                     .frame(height: 32)
                     .background(Capsule().fill(Theme.fill))
                 Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
+                    .font(Typo.captionSemibold)
                     .foregroundStyle(Theme.tertiaryInk)
             }
         }
@@ -216,7 +220,7 @@ struct ContactsView: View {
                 .clipShape(Circle())
         } else {
             Text(record?.initials ?? "?")
-                .font(.subheadline.weight(.semibold))
+                .font(Typo.subheadlineSemibold)
                 .foregroundStyle(Theme.ink)
                 .frame(width: 44, height: 44)
                 .background(Circle().fill(Theme.fill))
@@ -255,10 +259,10 @@ struct ContactMergeSheet: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(group.title)
-                            .font(.title2.weight(.semibold))
+                            .font(Typo.title2Semibold)
                             .foregroundStyle(Theme.ink)
                         Text("One card is kept. Missing numbers, emails and the photo are copied into it.")
-                            .font(.subheadline)
+                            .font(Typo.subheadline)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -280,7 +284,7 @@ struct ContactMergeSheet: View {
                     )
 
                     Text("The other cards are deleted from Contacts. If Contacts syncs to iCloud, the deletion syncs too. This cannot be undone inside Sift.")
-                        .font(.caption)
+                        .font(Typo.caption)
                         .foregroundStyle(Theme.secondaryInk)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -323,24 +327,24 @@ struct ContactMergeSheet: View {
             avatar(contact)
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.name)
-                    .font(.body.weight(.medium))
+                    .font(Typo.bodyMedium)
                     .foregroundStyle(Theme.ink)
                 Text(contact.subtitle)
-                    .font(.footnote)
+                    .font(Typo.footnote)
                     .foregroundStyle(Theme.secondaryInk)
                     .lineLimit(1)
             }
             Spacer(minLength: 8)
             if contact.id == keeper?.id {
                 Text("Kept")
-                    .font(.caption.weight(.semibold))
+                    .font(Typo.captionSemibold)
                     .foregroundStyle(Theme.reclaim)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 4)
                     .background(Capsule().fill(Theme.reclaim.opacity(0.12)))
             } else {
                 Text("Merged")
-                    .font(.caption)
+                    .font(Typo.caption)
                     .foregroundStyle(Theme.tertiaryInk)
             }
         }
@@ -358,7 +362,7 @@ struct ContactMergeSheet: View {
                 .clipShape(Circle())
         } else {
             Text(contact.initials)
-                .font(.caption.weight(.semibold))
+                .font(Typo.captionSemibold)
                 .foregroundStyle(Theme.ink)
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(Theme.fill))

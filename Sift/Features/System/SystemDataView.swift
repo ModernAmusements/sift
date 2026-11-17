@@ -21,10 +21,10 @@ struct SystemDataView: View {
                     Card {
                         VStack(alignment: .leading, spacing: 12) {
                             Label("Why Sift can't clear it for you", systemImage: "lock.shield")
-                                .font(.headline)
+                                .font(Typo.headline)
                                 .foregroundStyle(Theme.ink)
                             Text("iOS sandboxes every app. No third-party app can read or delete another app's cache, system caches or “other” storage. Apps that claim to do it are guessing or misleading you. Sift will not.")
-                                .font(.subheadline)
+                                .font(Typo.subheadline)
                                 .foregroundStyle(Theme.secondaryInk)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -37,16 +37,16 @@ struct SystemDataView: View {
                             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
                                 HStack(alignment: .top, spacing: 14) {
                                     Text("\(index + 1)")
-                                        .font(.caption.weight(.semibold).monospacedDigit())
+                                        .font(Typo.captionSemibold).monospacedDigit()
                                         .foregroundStyle(Theme.ink)
                                         .frame(width: 26, height: 26)
                                         .background(Circle().fill(Theme.fill))
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(step.0)
-                                            .font(.body.weight(.medium))
+                                            .font(Typo.bodyMedium)
                                             .foregroundStyle(Theme.ink)
                                         Text(step.1)
-                                            .font(.footnote)
+                                            .font(Typo.footnote)
                                             .foregroundStyle(Theme.secondaryInk)
                                             .fixedSize(horizontal: false, vertical: true)
                                     }
@@ -70,11 +70,11 @@ struct SystemDataView: View {
                             Image(systemName: "folder")
                                 .foregroundStyle(Theme.ink)
                             Text("Open Files & documents")
-                                .font(.body.weight(.medium))
+                                .font(Typo.bodyMedium)
                                 .foregroundStyle(Theme.ink)
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
+                                .font(Typo.captionSemibold)
                                 .foregroundStyle(Theme.tertiaryInk)
                         }
                         .padding(20)
@@ -86,7 +86,7 @@ struct SystemDataView: View {
                     .buttonStyle(.plain)
 
                     Text("Sift removes only what iOS lets it touch: your photos, videos, chosen files and duplicate contacts.")
-                        .font(.caption)
+                        .font(Typo.caption)
                         .foregroundStyle(Theme.secondaryInk)
                         .padding(.horizontal, 4)
                 }

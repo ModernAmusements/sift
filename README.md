@@ -10,6 +10,14 @@ Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, ne
 
 **Website:** [modernamusements.github.io/sift](https://modernamusements.github.io/sift)
 
+## Download
+
+**Sift 1.3.0** ships as a source project and an unsigned iPhone build. The unsigned IPA is re-signed with your own Apple ID by AltStore Classic, SideStore or Xcode — no App Store and no paid developer account required. EU-friendly, and documented step by step.
+
+- **[Download the IPA](https://github.com/ModernAmusements/sift/releases/download/v1.3.0/Sift-1.3.0-unsigned.ipa)** (844 KB)
+- **[Install guide](docs/INSTALL.md)** — Xcode, AltStore/SideStore, and the honest EU distribution answer
+- SHA-256: `a8da08a90873e82260d21576fca0aa9893c4d44a0292af3e15c097421e202cb0`
+
 <img src="docs/screenshots/01-home.png" width="240" alt="Sift home"> <img src="docs/screenshots/02-results.png" width="240" alt="Sift scan results"> <img src="docs/screenshots/05-similar.png" width="240" alt="Sift similar photos">
 
 ## Why another cleaner?
@@ -35,6 +43,10 @@ Commercial cleaners charge a subscription for a scan, gate the useful part, and 
 | **Sift cache** | Clear Sift's own temporary files from Settings |
 
 Plus a fast **swipe review** deck, a live storage dashboard, a Files picker, a System data guide, and settings for scan sensitivity.
+
+## Design
+
+Black and white, one orange highlight (`#FF6600`), no box shadows. **Neo Grotesque-P5M5** is the single typeface across the app and the site. On iOS 26 the buttons, scan panel and selection bar use Apple's Liquid Glass; iOS 17–25 keeps the same layout with flat fills. The Sift lockup and app icon come from the owner's `sift-logo-pack`; the ModernAmusement credit is in the footer and Settings.
 
 ## Honest limits
 
@@ -109,9 +121,10 @@ Tests/          unit + UI tests
 docs/           product, design, architecture, research, privacy, QA
 ```
 
-- SwiftUI, Swift 5 language mode, iOS 17.
-- No third-party dependencies.
+- SwiftUI, Swift 5 language mode, iOS 17; one bundled typeface (Neo Grotesque-P5M5), no package dependencies.
 - `ScanEngine` runs a bounded analysis pipeline (4 thumbnails at a time) and is cancellable.
+- PhotoKit metadata and file sizes load off the main thread in three bounded workers; `AssetSizeCache` makes rescans fast. High-frequency progress lives in `ScanLiveState`, so the home screen does not redraw per batch.
+- Thumbnails use opportunistic delivery, cancellable PhotoKit requests and off-main bitmap preparation.
 - All mutations go through PhotoKit or Contacts; files are never touched by path.
 
 Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the algorithm thresholds and data flow.
@@ -137,4 +150,18 @@ The agent harness used to build this repo lives in `opencode.json` and `.opencod
 
 MIT — see [`LICENSE`](LICENSE).
 
+The bundled **Neo Grotesque** typeface is the owner's brand font and is excluded from the MIT grant; see [`docs/FONT.md`](docs/FONT.md). All application code remains MIT.
+
 Sift is not affiliated with Apple, CleanMyiPhone or any commercial cleaner. PhotoKit, Vision and Contacts are Apple frameworks.
+
+---
+
+<p align="center">
+  <img src="docs/ma-mark.svg" width="42" alt="ModernAmusement mark">
+  <br>
+  <strong>ModernAmusement</strong> · Shady Nathan Tawfik · Bielefeld, DE
+  <br>
+  <sub>Foundational software of tomorrow. Delivered today.™</sub>
+  <br>
+  <a href="https://modern-amusement.dev">modern-amusement.dev</a> · <a href="https://modern-amusement.dev/en/impressum">Impressum</a>
+</p>

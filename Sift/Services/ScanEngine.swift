@@ -37,12 +37,8 @@ final class ScanEngine: ObservableObject {
     }
 
     @Published private(set) var stage: Stage = .preparing
-    @Published private(set) var progress: Double = 0
     @Published private(set) var report: ScanReport?
     @Published private(set) var isScanning = false
-    @Published private(set) var processedCount = 0
-    @Published private(set) var totalCount = 0
-    @Published private(set) var analysisTotal = 0
     @Published private(set) var contactGroups: [ContactGroup] = []
     @Published private(set) var contactsLoaded = false
     @Published private(set) var contactsDenied = false
@@ -56,6 +52,11 @@ final class ScanEngine: ObservableObject {
     }
 
     private let ledger = SpaceLedgerStore()
+
+    /// High-frequency progress is deliberately not @Published on the engine:
+    /// Home owns this object but does not observe it, so a scan never redraws
+    /// the whole home screen on every batch.
+    let live = ScanLiveState()
 
     func dismissProof() {
         proof = nil
@@ -79,8 +80,7 @@ final class ScanEngine: ObservableObject {
         guard !isScanning else { return }
         isScanning = true
         errorMessage = nil
-        progress = 0
-        processedCount = 0
+        live.reset()
         stage = .preparing
         defer { isScanning = false }
 
@@ -95,12 +95,18 @@ final class ScanEngine: ObservableObject {
         }
         guard !Task.isCancelled else { return }
 
-        let assets = PhotoLibraryService.fetchAll()
-        ThumbnailCache.shared.register(assets)
-        let scanned = assets.map(PhotoLibraryService.scannedAsset(from:))
-        totalCount = scanned.count
+        // Fetching assets and reading every file size is the slow part of a scan.
+        // It runs off the main thread and reports its own progress.
         stage = .library
-        progress = 0.08
+        let loaded = await PhotoLibraryService.loadLibrary { [weak self] done, total in
+            guard let self else { return }
+            await self.live.updateLibrary(processed: done, total: total)
+        }
+        guard !Task.isCancelled else { return }
+
+        let assets = loaded.assets
+        let scanned = loaded.scanned
+        ThumbnailCache.shared.register(assets)
         guard !Task.isCancelled else { return }
 
         let screenshots = scanned
@@ -114,7 +120,7 @@ final class ScanEngine: ObservableObject {
         let analyzable = assets.filter {
             $0.mediaType == .image && !PhotoLibraryService.isScreenshot($0)
         }
-        analysisTotal = analyzable.count
+        live.updateAnalysis(processed: 0, total: analyzable.count, progress: 0.15)
         let largeFiles = scanned
             .filter {
                 $0.sizeBytes >= 25_000_000 || ($0.isVideo && $0.duration >= 60)
@@ -122,7 +128,6 @@ final class ScanEngine: ObservableObject {
             .sorted { $0.sizeBytes > $1.sizeBytes }
 
         stage = .analyzing
-        progress = 0.15
         var signatures: [String: ImageSignature] = [:]
         signatures.reserveCapacity(analyzable.count)
 
@@ -139,7 +144,10 @@ final class ScanEngine: ObservableObject {
                             for: asset,
                             size: CGSize(width: 320, height: 320)
                         ) else { return (asset.localIdentifier, nil) }
-                        return (asset.localIdentifier, ImageAnalyzer.signature(for: image))
+                        return (
+                            asset.localIdentifier,
+                            autoreleasepool { ImageAnalyzer.signature(for: image) }
+                        )
                     }
                 }
                 for await (id, signature) in group {
@@ -147,33 +155,51 @@ final class ScanEngine: ObservableObject {
                     processed += 1
                 }
             }
-            processedCount = processed
             let fraction = analyzable.isEmpty ? 1 : Double(processed) / Double(analyzable.count)
-            progress = 0.15 + fraction * 0.6
+            live.updateAnalysis(
+                processed: processed,
+                total: analyzable.count,
+                progress: 0.15 + fraction * 0.6
+            )
         }
         guard !Task.isCancelled else { return }
 
         stage = .grouping
-        progress = 0.8
-        let duplicates = SimilarityEngine.exactGroups(assets: scanned, signatures: signatures)
-        let exactIDs = Set(duplicates.flatMap { $0.assets.map(\.id) })
-        let similar = SimilarityEngine.similarGroups(
-            assets: scanned,
-            signatures: signatures,
-            threshold: similarityThreshold,
-            excluding: exactIDs
+        live.updateAnalysis(
+            processed: analyzable.count,
+            total: analyzable.count,
+            progress: 0.8
         )
-        let blurry = scanned
-            .filter { asset in
-                guard !asset.isVideo, !asset.isScreenshot,
-                      let signature = signatures[asset.id] else { return false }
-                return signature.sharpness < blurThreshold
-            }
-            .sorted { (signatures[$0.id]?.sharpness ?? 0) < (signatures[$1.id]?.sharpness ?? 0) }
-            .prefix(120)
-            .map { $0 }
+        let threshold = similarityThreshold
+        let blurCutoff = blurThreshold
+        // Pairwise grouping is pure work and can take a moment on a 10,000-asset
+        // library. Keep it off the main thread so the cancel button still responds.
+        let grouped = await Task.detached(priority: .userInitiated) {
+            () -> (duplicates: [DuplicateGroup], similar: [DuplicateGroup], blurry: [ScannedAsset]) in
+            let duplicates = SimilarityEngine.exactGroups(assets: scanned, signatures: signatures)
+            let exactIDs = Set(duplicates.flatMap { $0.assets.map(\.id) })
+            let similar = SimilarityEngine.similarGroups(
+                assets: scanned,
+                signatures: signatures,
+                threshold: threshold,
+                excluding: exactIDs
+            )
+            let blurry = scanned
+                .filter { asset in
+                    guard !asset.isVideo, !asset.isScreenshot,
+                          let signature = signatures[asset.id] else { return false }
+                    return signature.sharpness < blurCutoff
+                }
+                .sorted { (signatures[$0.id]?.sharpness ?? 0) < (signatures[$1.id]?.sharpness ?? 0) }
+                .prefix(120)
+                .map { $0 }
+            return (duplicates, similar, blurry)
+        }.value
 
         guard !Task.isCancelled else { return }
+        let duplicates = grouped.duplicates
+        let similar = grouped.similar
+        let blurry = grouped.blurry
         let newReport = ScanReport(
             scannedAt: Date(),
             totalAssetCount: scanned.count,
@@ -190,7 +216,11 @@ final class ScanEngine: ObservableObject {
 
         if ContactService.status == .authorized {
             stage = .contacts
-            progress = 0.9
+            live.updateAnalysis(
+                processed: analyzable.count,
+                total: analyzable.count,
+                progress: 0.9
+            )
             let groups = await ContactService.loadGroups()
             if !Task.isCancelled {
                 contactGroups = groups
@@ -199,7 +229,7 @@ final class ScanEngine: ObservableObject {
         }
 
         guard !Task.isCancelled else { return }
-        progress = 1
+        live.complete()
         stage = .finished
         Haptics.success()
     }
@@ -282,7 +312,7 @@ final class ScanEngine: ObservableObject {
         contactGroups = []
         contactsLoaded = false
         contactsDenied = false
-        progress = 0
+        live.reset()
         stage = .preparing
         UserDefaults.standard.removeObject(forKey: "lastScanDate")
     }

@@ -18,7 +18,7 @@ struct HealthView: View {
             ScrollView {
                 VStack(spacing: 22) {
                     Text("Sift can only see what iOS exposes. There is no speed, RAM or battery boost on this screen — those are not possible for any app.")
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -34,13 +34,13 @@ struct HealthView: View {
 
                     if let storage, Headroom.level(freeBytes: storage.freeBytes) != .comfortable {
                         Text("Freeing space is the one thing here that genuinely helps: iOS needs working room, and a full phone is slower.")
-                            .font(.footnote)
+                            .font(Typo.footnote)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     } else if report == nil {
                         Text("Scanning shows how much of your library is screenshots and repeat shots — usually the easiest space to get back.")
-                            .font(.footnote)
+                            .font(Typo.footnote)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,14 +53,14 @@ struct HealthView: View {
                         } label: {
                             HStack(spacing: 9) {
                                 Image(systemName: "magnifyingglass")
-                                    .font(.body.weight(.semibold))
+                                    .font(Typo.bodySemibold)
                                 Text("Find what is safe to remove")
                             }
                         }
                         .buttonStyle(PrimaryButtonStyle())
 
                         Text("Nothing is deleted without your confirmation.")
-                            .font(.caption)
+                            .font(Typo.caption)
                             .foregroundStyle(Theme.secondaryInk)
                     }
                     .padding(.top, 4)
@@ -87,7 +87,7 @@ struct HealthView: View {
     private func rowView(_ row: HealthRow) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: symbol(for: row.kind))
-                .font(.system(size: 15, weight: .semibold))
+                .font(Typo.size(15, weight: .semibold))
                 .foregroundStyle(row.isNotable ? Theme.reclaim : Theme.ink)
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(Theme.fill))
@@ -97,20 +97,20 @@ struct HealthView: View {
                     if dynamicTypeSize.isAccessibilitySize {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(row.title)
-                                .font(.body.weight(.medium))
+                                .font(Typo.bodyMedium)
                                 .foregroundStyle(Theme.ink)
                             Text(row.value)
-                                .font(.footnote.monospacedDigit())
+                                .font(Typo.footnote).monospacedDigit()
                                 .foregroundStyle(row.isNotable ? Theme.ink : Theme.secondaryInk)
                         }
                     } else {
                         HStack(alignment: .firstTextBaseline) {
                             Text(row.title)
-                                .font(.body.weight(.medium))
+                                .font(Typo.bodyMedium)
                                 .foregroundStyle(Theme.ink)
                             Spacer(minLength: 8)
                             Text(row.value)
-                                .font(.footnote.monospacedDigit())
+                                .font(Typo.footnote).monospacedDigit()
                                 .foregroundStyle(row.isNotable ? Theme.ink : Theme.secondaryInk)
                                 .multilineTextAlignment(.trailing)
                         }
@@ -118,7 +118,7 @@ struct HealthView: View {
                 }
                 if let note = row.note {
                     Text(note)
-                        .font(.caption)
+                        .font(Typo.caption)
                         .foregroundStyle(Theme.secondaryInk)
                         .fixedSize(horizontal: false, vertical: true)
                 }

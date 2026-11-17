@@ -4,230 +4,675 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sift — A lighter iPhone</title>
-  <meta name="description" content="Sift is a free, open-source iPhone cleaner. Find screenshots, duplicates, blurry photos, large files and duplicate contacts entirely on your iPhone.">
+  <meta name="description" content="Sift is a free, open-source iPhone cleaner. Find screenshots, duplicates, blurry photos, large files and duplicate contacts entirely on your iPhone. No account, no network, no subscription.">
+  <meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icon.png">
+  <link rel="preload" href="fonts/SiftNeo-P5M5.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add('js');</script>
   <style>
+    @font-face {
+      font-family: 'Neo Grotesque';
+      src: url('fonts/SiftNeo-P5M5.woff2') format('woff2'),
+        url('fonts/SiftNeo-P5M5.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
     :root {
       color-scheme: light dark;
-      --bg: #f5f5f7;
-      --card: #ffffff;
-      --ink: #1d1d1f;
-      --muted: #6e6e73;
-      --tertiary: #86868b;
-      --line: rgba(0, 0, 0, 0.08);
-      --green: #34c759;
-      --radius: 28px;
+      --bg: #F5F5F7;
+      --ink: #0A0A0A;
+      --muted: #6E6E73;
+      --tertiary: #8E8E93;
+      --accent: #FF6600;
+      --on-accent: #0A0A0A;
+      --card: #FFFFFF;
+      --card-strong: #FFFFFF;
+      --line: #D9D9DE;
+      --line-strong: #FF6600;
+      --sans: "Neo Grotesque", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      --mono: "Neo Grotesque", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      --code: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      --wrap: 1080px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #000000;
-        --card: #1c1c1e;
-        --ink: #f5f5f7;
-        --muted: #a1a1a6;
-        --tertiary: #86868b;
-        --line: rgba(255, 255, 255, 0.12);
+        --ink: #FFFFFF;
+        --muted: #A1A1A6;
+        --tertiary: #8E8E93;
+        --accent: #FF6600;
+        --card: #1C1C1E;
+        --card-strong: #2C2C2E;
+        --line: #38383A;
       }
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+    html, body { max-width: 100vw; overflow-x: clip; }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      font-family: var(--sans);
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      line-height: 1.45;
-      overflow-x: clip;
+      text-rendering: optimizeLegibility;
     }
     a { color: inherit; }
     img { max-width: 100%; height: auto; }
-    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 10px 20px;
-      padding: 22px 0;
+    code { font-family: var(--code); overflow-wrap: anywhere; }
+    ::selection { background: var(--accent); color: var(--on-accent); }
+    .wrap { width: min(var(--wrap), calc(100% - 40px)); margin: 0 auto; }
+    .mono { font-family: var(--mono); }
+    .skip {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--accent); color: var(--on-accent);
+      padding: 10px 14px; z-index: 100;
     }
-    .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.02em; font-size: 20px; text-decoration: none; }
-    .wordmark img { width: 30px; height: 30px; border-radius: 8px; }
-    nav { display: flex; flex-wrap: wrap; gap: 22px; font-size: 14px; color: var(--muted); }
-    nav a { text-decoration: none; }
-    nav a:hover { color: var(--ink); }
+    .skip:focus { left: 12px; top: 12px; }
+
+    /* ---------- glass header ---------- */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in srgb, var(--bg) 62%, transparent);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      backdrop-filter: blur(22px) saturate(160%);
+      border-bottom: 1px solid var(--line);
+    }
+    .header-inner {
+      display: flex; align-items: center; gap: 16px 22px;
+      flex-wrap: wrap; padding: 14px 0;
+    }
+    .wordmark {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: var(--mono); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.18em; text-decoration: none; min-width: 0;
+    }
+    .wordmark .sift-lockup { width: auto; height: 22px; display: block; }
+    @media (prefers-color-scheme: dark) {
+      .wordmark .sift-lockup { filter: invert(1); }
+    }
+    nav.chapters { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-left: auto; }
+    nav.chapters a {
+      font-family: var(--mono); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 4px 0; transition: color .18s;
+    }
+    nav.chapters a b { color: var(--accent); font-weight: 500; margin-right: 4px; }
+    nav.chapters a:hover { color: var(--ink); }
+    .header-cta {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; color: var(--ink);
+      border: 1px solid var(--line-strong); border-radius: 999px;
+      padding: 9px 14px; white-space: nowrap;
+      transition: background .18s, color .18s, transform .18s;
+    }
+    .header-cta:hover { background: var(--accent); color: var(--on-accent); transform: translateY(-1px); }
+
+    /* ---------- hero ---------- */
     .hero {
-      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px;
-      align-items: center; padding: 72px 0 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      gap: 46px; align-items: center;
+      padding: 68px 0 42px;
     }
-    .hero > *, .grid > *, .honest > * { min-width: 0; }
-    .kicker { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 18px; }
+    .hero-copy, .hero-stage { min-width: 0; }
+    .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+    .mark {
+      margin: 0; font-family: var(--mono); font-size: 12px;
+      color: var(--accent); letter-spacing: 0.05em;
+      animation: bob 3.6s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(-2px); }
+      50% { transform: translateY(3px); }
+    }
+    .kicker {
+      margin: 0; font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+    }
     h1 {
-      font-size: clamp(48px, 7vw, 88px); line-height: 0.98; letter-spacing: -0.045em;
-      font-weight: 700; margin: 0 0 24px;
+      margin: 0; font-size: clamp(48px, 7.8vw, 92px);
+      line-height: 0.92; letter-spacing: -0.05em; font-weight: 700;
     }
-    .lede { font-size: 20px; color: var(--muted); max-width: 46ch; margin: 0 0 30px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .meta {
+      margin: 0; font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+    .meta span { color: var(--tertiary); padding: 0 4px; }
+    .lede { margin: 0; max-width: 49ch; font-size: 17px; color: var(--muted); line-height: 1.62; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px; }
     .button {
       display: inline-flex; align-items: center; justify-content: center;
-      min-height: 50px; padding: 0 24px; border-radius: 999px;
-      font-size: 15px; font-weight: 600; text-decoration: none;
-      background: var(--ink); color: var(--bg);
+      min-height: 50px; padding: 0 22px; border-radius: 999px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      background: var(--accent); color: var(--on-accent);
+      border: 1px solid transparent;
+      transition: transform .18s, background .18s, border-color .18s;
     }
-    .button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    .button:hover { transform: translateY(-1px); }
+    .button.ghost {
+      background: color-mix(in srgb, var(--card) 55%, transparent);
+      color: var(--ink); border-color: var(--line);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .note { margin: 0; font-family: var(--mono); font-size: 10px; letter-spacing: .04em; color: var(--tertiary); }
+    .hero-stage { position: relative; justify-self: end; width: 100%; max-width: 330px; }
     .phone {
-      border-radius: 42px; overflow: hidden; background: var(--card);
-      border: 1px solid var(--line); box-shadow: 0 40px 80px rgba(0,0,0,0.14);
-      max-width: 340px; margin-left: auto;
+      margin: 0; border: 1px solid var(--line);
+      border-radius: 30px; overflow: hidden; background: var(--card);
     }
     .phone img { display: block; width: 100%; height: auto; }
-    .note { font-size: 13px; color: var(--tertiary); margin-top: 16px; }
-    section { padding: 72px 0; }
-    h2 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.035em; line-height: 1.05; margin: 0 0 14px; }
-    .sub { font-size: 17px; color: var(--muted); max-width: 60ch; margin: 0 0 34px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .card {
-      background: var(--card); border-radius: var(--radius); padding: 26px;
+    .phone-note {
+      margin: 10px 0 0;
+      font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--tertiary);
+    }
+    .phone-note b { color: var(--accent); font-weight: 500; }
+
+    /* ---------- baseline + toc ---------- */
+    .baseline {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      padding: 11px 0; gap: 12px;
+      font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .baseline::-webkit-scrollbar { display: none; }
+    .baseline span { white-space: nowrap; }
+    .baseline b { color: var(--ink); font-weight: 500; }
+    .toc {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin: 0; padding: 0; list-style: none;
+      border-bottom: 1px solid var(--line);
+    }
+    .toc li { border-left: 1px solid var(--line); min-width: 0; }
+    .toc li:first-child { border-left: 0; }
+    .toc a {
+      display: flex; align-items: baseline; gap: 8px;
+      padding: 13px 14px; text-decoration: none;
+      font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--ink);
+      transition: color .18s;
+    }
+    .toc a span { color: var(--accent); }
+    .toc a::after { content: "↓"; margin-left: auto; color: var(--tertiary); }
+    .toc a:hover { color: var(--accent); }
+
+    /* ---------- sections ---------- */
+    section { padding: 70px 0; scroll-margin-top: 86px; }
+    .section-head {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+      padding-bottom: 12px; border-bottom: 1px solid var(--line);
+      margin-bottom: 26px;
+    }
+    .section-index {
+      margin: 0 0 10px; font-family: var(--mono); font-size: 10px;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--accent);
+    }
+    h2 {
+      margin: 0; font-size: clamp(30px, 4.4vw, 48px);
+      line-height: 1.02; letter-spacing: -0.035em; font-weight: 650;
+      max-width: 18ch;
+    }
+    .sub { margin: 0; max-width: 52ch; color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .section-head .sub { max-width: 38ch; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .card { background: var(--card); padding: 24px; min-width: 0; display: flex; flex-direction: column; gap: 9px; }
+    .card .no { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--accent); }
+    .card h3 { margin: 0; font-size: 16px; letter-spacing: -0.01em; font-weight: 600; }
+    .card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .card .sym { font-size: 18px; color: var(--accent); margin-bottom: 2px; }
+
+    .strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .strip figure { margin: 0; border: 1px solid var(--line); background: var(--card); min-width: 0; }
+    .strip img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--line); }
+    .strip figcaption {
+      padding: 11px 13px; font-family: var(--mono); font-size: 9px;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    }
+    .strip figcaption b { color: var(--accent); font-weight: 500; margin-right: 5px; }
+
+    .statement { background: var(--accent); color: var(--on-accent); padding: 64px 0; }
+    .statement .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 30px; align-items: end; }
+    .statement h2 { color: var(--on-accent); max-width: 16ch; }
+    .statement p { margin: 0; color: color-mix(in srgb, var(--on-accent) 86%, transparent); font-size: 15px; line-height: 1.6; max-width: 42ch; }
+    .statement .mono { color: color-mix(in srgb, var(--on-accent) 78%, transparent); letter-spacing: .1em; font-size: 10px; text-transform: uppercase; }
+
+    .honest { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .honest .card { padding: 26px; }
+    .honest h3 { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .honest ul { margin: 0; padding: 0; list-style: none; }
+    .honest li { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+    .honest li:first-child { border-top: 0; }
+    .honest li b { font-family: var(--mono); font-weight: 500; color: var(--accent); min-width: 14px; }
+    .honest .no b { color: var(--tertiary); }
+
+    .privacy {
+      border: 1px solid var(--line); background: var(--card);
+      padding: 32px; display: grid; grid-template-columns: auto minmax(0, 1fr);
+      gap: 22px; align-items: start;
+    }
+    .privacy .badge {
+      width: 44px; height: 44px; display: grid; place-items: center;
+      border: 1px solid var(--line-strong); border-radius: 50%;
+      color: var(--accent); font-size: 18px;
+    }
+    .privacy h2 { font-size: clamp(24px, 3vw, 34px); margin-bottom: 8px; }
+    .privacy p { margin: 0 0 10px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 66ch; }
+    .privacy code { font-size: 12px; background: var(--bg); padding: 2px 5px; border: 1px solid var(--line); }
+
+    .download {
+      display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+      gap: 30px; align-items: center;
+      border: 1px solid var(--line); background: var(--card); padding: 32px;
+    }
+    .download h2 { margin-bottom: 10px; }
+    .download p { margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 48ch; }
+    .download .actions { padding-top: 0; }
+    .build {
+      background: var(--ink); color: var(--bg);
+      padding: 18px; font-family: var(--code); font-size: 11px;
+      line-height: 1.75; overflow-x: auto;
       border: 1px solid var(--line);
     }
-    .symbol {
-      width: 42px; height: 42px; border-radius: 50%; background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; margin-bottom: 18px;
+    .build .dim { color: color-mix(in srgb, var(--bg) 55%, transparent); }
+    .build .accent { color: var(--accent); }
+    .build .prompt { color: var(--accent); }
+
+    footer { border-top: 1px solid var(--line); padding: 0 0 44px; }
+    .ma-credit {
+      display: grid; grid-template-columns: auto minmax(0, 1fr);
+      gap: 22px; align-items: center;
+      padding: 26px 0 24px; border-bottom: 1px solid var(--line);
+      margin-bottom: 22px;
     }
-    .card h3 { font-size: 17px; margin: 0 0 6px; letter-spacing: -0.01em; }
-    .card p { font-size: 14px; color: var(--muted); margin: 0; }
-    .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .strip figure { margin: 0; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: var(--card); min-width: 0; }
-    .strip img { display: block; width: 100%; height: auto; }
-    .strip figcaption { font-size: 13px; color: var(--muted); padding: 12px 16px; }
-    .honest { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .honest .card { padding: 30px; }
-    .honest h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 16px; }
-    .honest ul { margin: 0; padding: 0; list-style: none; }
-    .honest li { display: flex; gap: 10px; font-size: 15px; padding: 9px 0; border-top: 1px solid var(--line); }
-    .honest li:first-child { border-top: 0; }
-    .yes { color: var(--green); font-weight: 700; }
-    .no { color: var(--tertiary); font-weight: 700; }
-    .privacy {
-      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 36px; display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start;
+    .ma-lockup { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .ma-mark { display: block; width: 46px; height: auto; }
+    .ma-name {
+      margin: 0; font-family: var(--mono); font-size: 11px;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
     }
-    .privacy > div:last-child { min-width: 0; }
-    .privacy .symbol { background: var(--bg); flex: 0 0 auto; margin: 0; }
-    .privacy p { color: var(--muted); margin: 8px 0 0; max-width: 70ch; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; overflow-wrap: anywhere; }
-    footer { padding: 46px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
-    .footer-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; }
-    @media (max-width: 860px) {
-      .hero { grid-template-columns: 1fr; padding-top: 40px; gap: 36px; }
-      .phone { margin: 0 auto; max-width: 300px; }
-      .grid { grid-template-columns: 1fr 1fr; }
-      .strip { grid-template-columns: 1fr; }
-      .honest { grid-template-columns: 1fr; }
-      nav { gap: 14px; }
+    .ma-sub {
+      margin: 3px 0 0; font-family: var(--mono); font-size: 8px;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--tertiary);
     }
-    @media (max-width: 540px) {
-      .grid { grid-template-columns: 1fr; }
-      .hero { padding-top: 28px; }
+    .ma-meta { font-size: 12px; line-height: 1.65; color: var(--muted); }
+    .ma-meta p { margin: 0; }
+    .ma-meta .claim {
+      margin: 4px 0; font-family: var(--mono); font-size: 9px;
+      letter-spacing: .08em; color: var(--accent);
+    }
+    .ma-meta a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+    .ma-inline {
+      width: 26px; height: auto; vertical-align: middle;
+      margin-right: 7px; display: inline-block;
+    }
+    .qr-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 16px; min-width: 0;
+    }
+    .qr {
+      width: 96px; height: 96px; padding: 6px; flex: 0 0 auto;
+      background: #FFFFFF; border: 1px solid var(--line); display: block;
+    }
+    .qr-copy { min-width: 0; }
+    .qr-copy .label {
+      margin: 0 0 4px; font-family: var(--mono); font-size: 9px;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+    }
+    .qr-copy p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+    .footer-row {
+      display: flex; flex-wrap: wrap; gap: 12px 22px; justify-content: space-between;
+      font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--tertiary);
+    }
+    .footer-row a { text-decoration: none; }
+    .footer-row a:hover { color: var(--ink); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
+
+    /* ---------- reveal ---------- */
+    .reveal { opacity: 1; transform: none; }
+    .js .reveal {
+      opacity: 0; transform: translateY(14px);
+      transition: opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
+    }
+    .js .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .mark { animation: none; }
+      .js .reveal { opacity: 1; transform: none; transition: none; }
+      .button:hover, .header-cta:hover { transform: none; }
+    }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 34px; padding-top: 42px; }
+      .hero-stage { justify-self: start; max-width: 300px; }
+      .statement .wrap { grid-template-columns: 1fr; gap: 18px; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toc { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .toc li:nth-child(4) { border-left: 0; }
+      .download { grid-template-columns: 1fr; }
+      .privacy { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
       section { padding: 52px 0; }
-      nav a:first-child { display: none; }
-      .privacy { padding: 24px; }
+      .header-inner { padding: 12px 0; }
+      nav.chapters { order: 3; width: 100%; margin-left: 0; gap: 4px 14px; }
+      nav.chapters a { font-size: 9px; }
+      .header-cta { margin-left: auto; }
+      .baseline { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+      .baseline span { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+      .baseline span:nth-child(4), .baseline span:nth-child(5) { display: none; }
+      .toc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toc li:nth-child(4) { border-left: 1px solid var(--line); }
+      .toc li:nth-child(odd) { border-left: 0; }
+      .cards { grid-template-columns: 1fr; }
+      .strip {
+        display: flex; gap: 12px; overflow-x: auto;
+        scroll-snap-type: x mandatory; scrollbar-width: none;
+        -webkit-overflow-scrolling: touch; padding-bottom: 6px;
+      }
+      .strip::-webkit-scrollbar { display: none; }
+      .strip figure { flex: 0 0 84%; scroll-snap-align: start; }
+      .honest { grid-template-columns: 1fr; }
+      .statement { padding: 48px 0; }
+      .download, .privacy { padding: 24px; }
+      .ma-credit { grid-template-columns: 1fr; gap: 16px; }
+      .section-head { gap: 10px; }
+      .section-head .sub { max-width: 100%; }
+      h1 { font-size: clamp(44px, 12vw, 64px); }
+      .lede { font-size: 16px; }
+      footer { padding-bottom: 34px; }
     }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media (max-width: 380px) {
+      .wrap { width: calc(100% - 32px); }
+      nav.chapters a:nth-child(4), nav.chapters a:nth-child(5) { display: none; }
+      .header-cta { padding: 8px 11px; }
+      .wordmark { letter-spacing: .12em; }
+      .button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <a class="wordmark" href="#top"><img src="icon.png" alt="">Sift</a>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#honest">What it can't do</a>
-        <a href="#privacy">Privacy</a>
-        <a href="https://github.com/ModernAmusements/sift">GitHub</a>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="wordmark" href="#top" aria-label="Sift home">
+        <img class="sift-lockup" src="sift-lockup.svg" alt="Sift" width="1248" height="436">
+      </a>
+      <nav class="chapters" aria-label="Chapters">
+        <a href="#what"><b>01</b>What it finds</a>
+        <a href="#flow"><b>02</b>The flow</a>
+        <a href="#honest"><b>03</b>Honest limits</a>
+        <a href="#privacy"><b>04</b>Privacy</a>
+        <a href="#download"><b>05</b>Download</a>
       </nav>
-    </header>
+      <a class="header-cta" href="Sift-1.3.0-unsigned.ipa">Download</a>
+    </div>
+  </header>
 
-    <main id="top">
-      <section class="hero">
-        <div>
-          <p class="kicker">FREE · OPEN SOURCE · ON-DEVICE</p>
-          <h1>A lighter<br>iPhone.</h1>
-          <p class="lede">Sift finds the screenshots, duplicates, blurry photos, giant files and repeated contacts you no longer need — including big files you pick from iCloud Drive or On My iPhone. It works on your iPhone and never sends anything anywhere.</p>
-          <div class="actions">
-            <a class="button" href="https://github.com/ModernAmusements/sift/releases/latest">Get the source</a>
-            <a class="button secondary" href="https://github.com/ModernAmusements/sift">View on GitHub</a>
-          </div>
-          <p class="note">MIT licensed. No account, ads, analytics or subscription.</p>
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <div class="hero-copy">
+        <p class="mark" aria-hidden="true">[↓]</p>
+        <p class="kicker">Free · Open source · On-device</p>
+        <h1>A lighter<br>iPhone.</h1>
+        <p class="meta">iPhone 12 <span>·</span> iOS 17+ <span>·</span> No account <span>·</span> No upload</p>
+        <p class="lede">Sift finds the screenshots, duplicates, blurry photos, large files and repeated contacts you no longer need. It works on your iPhone and never sends anything anywhere.</p>
+        <div class="actions">
+          <a class="button" href="Sift-1.3.0-unsigned.ipa">Download IPA</a>
+          <a class="button ghost" href="#what">See what it does</a>
         </div>
-        <div class="phone">
-          <img src="screenshots/01-home.png" alt="Sift home screen with storage ring and scan button" width="1170" height="2532">
-        </div>
-      </section>
-
-      <section id="features">
-        <h2>Six quiet ways to make room.</h2>
-        <p class="sub">No fake gauges. No “boost” buttons. Sift only touches media, contacts and files you choose, through Apple's frameworks. It also explains what iOS will not let any app clean.</p>
-        <div class="grid">
-          <div class="card"><div class="symbol">▣</div><h3>Screenshots</h3><p>Tickets, chats and receipts you already used.</p></div>
-          <div class="card"><div class="symbol">▤</div><h3>Duplicates</h3><p>Perceptual hash plus Vision, so the same frame is caught once.</p></div>
-          <div class="card"><div class="symbol">▥</div><h3>Similar photos</h3><p>Same-day lookalikes grouped, with the sharpest shot kept.</p></div>
-          <div class="card"><div class="symbol">◌</div><h3>Blurry photos</h3><p>A conservative sharpness ranking, not a guess.</p></div>
-          <div class="card"><div class="symbol">▷</div><h3>Large files</h3><p>Photos, videos and picked files over 25 MB, sorted by size.</p></div>
-          <div class="card"><div class="symbol">○○</div><h3>Duplicate contacts</h3><p>Shared phone or email only. Preview before merging.</p></div>
-        </div>
-      </section>
-
-      <section>
-        <h2>The whole flow.</h2>
-        <p class="sub">Home, review, keep the best. Photo deletions go through Apple's Recently Deleted, so you have 30 days to change your mind. Files you pick are removed only after confirmation.</p>
-        <div class="strip">
-          <figure><img src="screenshots/02-results.png" alt="Scan results with storage dashboard" loading="lazy"><figcaption>One scan. Every category.</figcaption></figure>
-          <figure><img src="screenshots/05-similar.png" alt="Similar photos with a best-shot badge" loading="lazy"><figcaption>Best shot suggested. You decide.</figcaption></figure>
-          <figure><img src="screenshots/08-contacts.png" alt="Duplicate contacts" loading="lazy"><figcaption>Merge repeated contact cards.</figcaption></figure>
-        </div>
-      </section>
-
-      <section id="honest">
-        <h2>What it can't do.</h2>
-        <p class="sub">iOS does not let any third-party app clear another app's cache, free RAM or cool the CPU. Cleaner apps that claim otherwise are selling a feeling.</p>
-        <div class="honest">
-          <div class="card">
-            <h3>Sift does</h3>
-            <ul>
-              <li><span class="yes">✓</span><span>Find and remove media you own</span></li>
-              <li><span class="yes">✓</span><span>Group lookalikes and suggest the best shot</span></li>
-              <li><span class="yes">✓</span><span>Merge duplicate contacts with a preview</span></li>
-              <li><span class="yes">✓</span><span>Show honest device storage numbers</span></li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Sift does not</h3>
-            <ul>
-              <li><span class="no">—</span><span>Clean another app's cache or system “other” data</span></li>
-              <li><span class="no">—</span><span>Boost RAM, cool the phone or extend battery</span></li>
-              <li><span class="no">—</span><span>Upload your library or show ads</span></li>
-              <li><span class="no">—</span><span>Charge a subscription</span></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="privacy">
-        <div class="privacy">
-          <div class="symbol">⌂</div>
-          <div>
-            <h2 style="font-size:30px;margin-bottom:4px;">No network. No analytics.</h2>
-            <p>There is no networking code in Sift. No account, no crash reporter, no third-party SDK. Photos and contacts stay in the app sandbox and Apple's frameworks. The privacy manifest declares no tracking and no collected data.</p>
-            <p style="font-size:13px;">Verify it: <code>grep -rnE "URLSession|NWConnection|Analytics" Sift</code> returns nothing.</p>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="footer-row">
-        <span>Sift 1.1.0 · MIT License · Built with SwiftUI, PhotoKit, Vision and Contacts.</span>
-        <span><a href="https://github.com/ModernAmusements/sift">GitHub</a> · <a href="https://github.com/ModernAmusements/sift/blob/main/docs/PRIVACY.md">Privacy</a> · <a href="https://github.com/ModernAmusements/sift/blob/main/docs/QA.md">QA</a></span>
+        <p class="note">Unsigned IPA. Re-sign with AltStore, SideStore or Xcode — no App Store required.</p>
       </div>
-    </footer>
-  </div>
+      <div class="hero-stage">
+        <figure class="phone">
+          <img src="screenshots/01-home.png" alt="Sift home screen with an orange storage ring, check-in and Scan my iPhone button" width="1170" height="2532">
+        </figure>
+        <p class="phone-note"><b>Sift 1.3</b> · iPhone 12 · light</p>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="baseline" aria-label="Product facts">
+        <span><b>On-device</b> · no network</span>
+        <span><b>MIT</b> · free forever</span>
+        <span><b>iOS 17+</b> · iPhone 12</span>
+        <span><b>PhotoKit</b> · Recently Deleted</span>
+        <span><b>0</b> third-party dependencies</span>
+      </div>
+    </div>
+
+    <ol class="toc wrap" aria-label="Chapters">
+      <li><a href="#what"><span>01</span>What it finds</a></li>
+      <li><a href="#flow"><span>02</span>The flow</a></li>
+      <li><a href="#honest"><span>03</span>Honest limits</a></li>
+      <li><a href="#privacy"><span>04</span>Privacy</a></li>
+      <li><a href="#download"><span>05</span>Download</a></li>
+    </ol>
+
+    <section id="what" class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-index">01 / What it finds</p>
+          <h2>Six quiet ways to make room.</h2>
+        </div>
+        <p class="sub">No fake gauges. No “boost” buttons. Sift only touches media, contacts and files you choose, through Apple's frameworks.</p>
+      </div>
+      <div class="cards reveal">
+        <article class="card">
+          <span class="sym" aria-hidden="true">▣</span>
+          <span class="no">01</span>
+          <h3>Screenshots</h3>
+          <p>Tickets, chats and receipts you already used, sorted by size.</p>
+        </article>
+        <article class="card">
+          <span class="sym" aria-hidden="true">▤</span>
+          <span class="no">02</span>
+          <h3>Exact duplicates</h3>
+          <p>A 64-bit perceptual hash plus a Vision feature print. The same frame is caught once, not guessed.</p>
+        </article>
+        <article class="card">
+          <span class="sym" aria-hidden="true">▥</span>
+          <span class="no">03</span>
+          <h3>Similar photos</h3>
+          <p>Same-day lookalikes grouped together. Sift suggests the sharpest frame and shows the rest.</p>
+        </article>
+        <article class="card">
+          <span class="sym" aria-hidden="true">◌</span>
+          <span class="no">04</span>
+          <h3>Blurry photos</h3>
+          <p>A conservative variance-of-Laplacian ranking. Soft, not subjective.</p>
+        </article>
+        <article class="card">
+          <span class="sym" aria-hidden="true">▷</span>
+          <span class="no">05</span>
+          <h3>Large files</h3>
+          <p>Photos and videos over 25 MB. Every item with its real size.</p>
+        </article>
+        <article class="card">
+          <span class="sym" aria-hidden="true">◯</span>
+          <span class="no">06</span>
+          <h3>Duplicate contacts</h3>
+          <p>Shared phone or email only. Preview the merge before anything is deleted.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="flow" class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-index">02 / The flow</p>
+          <h2>Check in. Scan. Prove it.</h2>
+        </div>
+        <p class="sub">Sift measures free space at every visit. After a cleanup it waits until iOS actually returns the bytes before it says a number.</p>
+      </div>
+      <div class="strip reveal">
+        <figure>
+          <img src="screenshots/02-results.png" alt="Sift results screen with screenshots, duplicates and large files" width="1170" height="2532" loading="lazy">
+          <figcaption><b>01</b>One scan. Every category.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/05-similar.png" alt="Similar photos with a best-shot badge" width="1170" height="2532" loading="lazy">
+          <figcaption><b>02</b>Best shot suggested. You decide.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/08-contacts.png" alt="Duplicate contact groups ready to merge" width="1170" height="2532" loading="lazy">
+          <figcaption><b>03</b>Merge repeated cards.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="statement">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="mono">Keep the moments. Lose the clutter.</p>
+          <h2>Nothing is freed until Recently Deleted is emptied.</h2>
+        </div>
+        <p class="reveal">Every photo removal goes through Apple's PhotoKit and lands in Recently Deleted for 30 days. Sift measures the volume again afterwards and shows what actually came back — including zero.</p>
+      </div>
+    </section>
+
+    <section id="honest" class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-index">03 / Honest limits</p>
+          <h2>What it can't do.</h2>
+        </div>
+        <p class="sub">iOS does not let any third-party app clear another app's cache, free RAM or cool the CPU. Apps that claim otherwise are selling a feeling.</p>
+      </div>
+      <div class="honest reveal">
+        <div class="card">
+          <h3>Sift does</h3>
+          <ul>
+            <li><b>✓</b><span>Find and remove media you own</span></li>
+            <li><b>✓</b><span>Group lookalikes and suggest the best shot</span></li>
+            <li><b>✓</b><span>Merge duplicate contacts with a preview</span></li>
+            <li><b>✓</b><span>Measure free space before and after</span></li>
+            <li><b>✓</b><span>Explain what iOS will not let any app clean</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Sift does not</h3>
+          <ul class="no">
+            <li><b>—</b><span>Clean another app's cache or system data</span></li>
+            <li><b>—</b><span>Boost RAM, cool the phone or extend battery</span></li>
+            <li><b>—</b><span>Upload your library or show ads</span></li>
+            <li><b>—</b><span>Charge a subscription or require an account</span></li>
+            <li><b>—</b><span>Guess a number and call it cleaning</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" class="wrap">
+      <div class="privacy reveal">
+        <div class="badge" aria-hidden="true">⌂</div>
+        <div>
+          <p class="section-index">04 / Privacy</p>
+          <h2>No network. No analytics.</h2>
+          <p>There is no networking code in Sift. No account, no crash reporter, no third-party SDK. Photos and contacts stay in the app sandbox and Apple's frameworks. The privacy manifest declares no tracking and no collected data.</p>
+          <p>Verify it yourself: <code>grep -rnE "URLSession|NWConnection|Analytics" Sift</code> returns nothing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="download" class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-index">05 / Download</p>
+          <h2>Take it with you.</h2>
+        </div>
+        <p class="sub">Sift is a complete SwiftUI project with no packages to install. Build it in Xcode, sign it with your own team, keep it.</p>
+      </div>
+      <div class="download reveal">
+        <div>
+          <h2 style="font-size:26px;margin-bottom:8px;">Free. Open source. Yours.</h2>
+          <p>Requires Xcode 26, iOS 17+ and an iPhone 12 or newer. The repository includes the simulator fixtures, the test suite and the privacy manifest.</p>
+          <div class="actions">
+            <a class="button" href="Sift-1.3.0-unsigned.ipa">Download the IPA</a>
+            <a class="button ghost" href="https://github.com/ModernAmusements/sift/blob/main/docs/INSTALL.md">Install guide</a>
+          </div>
+          <p class="note" style="margin-top:14px;">MIT licensed. No account, ads, analytics or subscription.</p>
+          <p class="note" style="margin-top:8px;"><img class="ma-inline" src="ma-mark.svg" alt="" width="26">A ModernAmusement project · Bielefeld</p>
+          <div class="qr-row">
+            <img class="qr" src="qr-download.png" alt="QR code to download the Sift 1.3.0 IPA" width="256" height="256">
+            <div class="qr-copy">
+              <p class="label">Scan on iPhone</p>
+              <p>Downloads the unsigned IPA directly from this site. Install with AltStore, SideStore or Xcode — the guide above has the steps.</p>
+            </div>
+          </div>
+        </div>
+        <div class="build" aria-label="Build commands">
+          <div class="dim"># Xcode 26 · no dependencies</div>
+          <div><span class="prompt">$</span> git clone https://github.com/ModernAmusements/sift.git</div>
+          <div><span class="prompt">$</span> cd sift</div>
+          <div><span class="prompt">$</span> xcodegen generate</div>
+          <div><span class="prompt">$</span> open Sift.xcodeproj</div>
+          <div class="dim" style="margin-top:10px;"># choose the Sift scheme, then Run</div>
+          <div class="accent"># on-device. no network. no account.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap ma-credit">
+      <div class="ma-lockup">
+        <img class="ma-mark" src="ma-mark.svg" alt="ModernAmusement mark" width="46" height="30">
+        <div>
+          <p class="ma-name">Modern Amusement</p>
+          <p class="ma-sub">A Sift by Shady Nathan Tawfik</p>
+        </div>
+      </div>
+      <div class="ma-meta">
+        <p>Shady Nathan Tawfik · Lead / Staff Data Scientist — L3 (full-stack · data science · ML/AI · cybersecurity · design · open source) · Bielefeld, DE</p>
+        <p>Interdisciplinary software architect at the intersection of engineering precision and strategic design. 11+ years building scalable systems, data science pipelines, ML infrastructure and open-source platforms.</p>
+        <p class="claim">Foundational software of tomorrow. Delivered today.™</p>
+        <p>Penetration testing · Security audits · Fullstack development · VideoText Studio · Training · CVE Monitor</p>
+        <p><a href="https://modern-amusement.dev">modern-amusement.dev</a> · <a href="https://modern-amusement.dev/en/impressum">Impressum</a></p>
+      </div>
+    </div>
+    <div class="wrap footer-row">
+      <span>Sift 1.3.0 · MIT License · A ModernAmusement project</span>
+      <span class="footer-links">
+        <a href="https://github.com/ModernAmusements/sift">GitHub</a>
+        <a href="https://github.com/ModernAmusements/sift/blob/main/docs/PRIVACY.md">Privacy</a>
+        <a href="https://github.com/ModernAmusements/sift/blob/main/docs/QA.md">QA</a>
+        <a href="https://github.com/ModernAmusements/sift/releases/latest">Releases</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var items = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window) ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        items.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      items.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
 </body>
 </html>

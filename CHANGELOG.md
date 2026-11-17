@@ -2,6 +2,42 @@
 
 All notable changes to Sift are documented here. The format follows Keep a Changelog; versions use semantic versioning.
 
+## [1.3.0] — 2026-11-17
+
+### Added
+
+- Black-and-white design with orange as the single highlight, no box shadows.
+- **Neo Grotesque-P5M5** as the only app and web typeface, supplied by ModernAmusement.
+- The owner's Sift lockup in the app icon, onboarding header, home navigation and footer, and the site header.
+- ModernAmusement credit with name, title, claim, services and Impressum in the app footer/About and on the site.
+- iOS 26 Liquid Glass on primary/secondary buttons, the scan panel and the selection bar, with a flat iOS 17–25 fallback.
+- Unsigned 1.3.0 IPA and an EU-friendly install guide (Xcode, AltStore, SideStore).
+- Background metadata loading with a persistent asset-size cache, so opening a scan no longer blocks the main thread.
+- Split scan progress state: only the scan overlay redraws, not the home screen.
+- Cancellable PhotoKit thumbnail requests and off-main bitmap preparation.
+
+### Changed
+
+- The minimal Sift layouts are restored; only colour, type and branding changed.
+- Scan thumbnails load with opportunistic delivery; landscape photos no longer widen the review grid.
+- Disabled primary buttons use a neutral grey tint instead of washed-out orange.
+- Swipe metadata is a compact black capsule rather than a gradient over the photo.
+- Version 1.3.0 (build 4), 40 unit tests and 9 UI tests green on an iOS 26 iPhone 12 simulator.
+
+### Fixed
+
+- Long delay between tapping Scan and seeing a response when PhotoKit metadata was read on the main thread.
+- Blank grid thumbnails on the first delivery of an opportunistic image request.
+- Stale `SiftNeo-Regular.ttf` project reference after the P5M5 switch.
+- UI tests expecting the old all-caps "FOUND" label; the restored minimal screen says "Found".
+
+## [1.2.0] — 2026-11-16
+
+### Added
+
+- Check-in → Diagnose → Clean → Prove: launch-time free-space snapshots, honest deltas since the last visit, a Phone health screen and a proof screen that only claims space after Recently Deleted is emptied.
+- Space ledger with cumulative verified reclaimed bytes and a 45-day pending window.
+
 ## [1.1.0] — 2026-11-13
 
 ### Added

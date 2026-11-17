@@ -1,6 +1,6 @@
 # Sift — project context
 
-**Status:** 1.2.0 implemented, UI-polished and green in the simulator, not yet released. Open source, MIT. Sift 1.2.0 (build 3) is installed on the physical iPhone 12 (iOS 26.6.2), signed with the free Personal Team `QG32S7GZ56` — profile expires 2026-11-23 — and launches with a stable trust record. The design pass (native navigation, Liquid Glass on iOS 26, scan-start feedback, adaptive layouts) is installed and the owner called it “much better”. The reported “horizontal overflow” was the landing page, not the app: `docs/index.html` overflowed at 320–360 px because the header/nav could not wrap; it is fixed and live. Pending: a final owner pass on hardware, VoiceOver pass. The paid team `U75G5FCH98` is not visible to the signed-in Xcode account, so it is not used yet.
+**Status:** 1.3.0 (build 4) implemented, tested and packaged. Open source, MIT. The app now uses the owner's black/white palette with orange as the single highlight, **Neo Grotesque-P5M5** for every text style, the owner's Sift lockup (app icon, onboarding, home navigation, footer, Settings) and a ModernAmusement credit. The minimal layouts are restored; only colour, type, branding and the requested Liquid Glass are new. **40 unit tests + 9 UI tests pass on an iOS 26 iPhone 12 simulator** (including a real scan, review, delete-to-Recently-Deleted and proof flow). An unsigned 1.3.0 IPA and [`docs/INSTALL.md`](../docs/INSTALL.md) are prepared for a GitHub release; the release/Pages push is the remaining publish step. The physical iPhone 12 (iOS 26.6.2) runs the free Personal Team `QG32S7GZ56` profile expiring 2026-11-23.
 
 ## Links
 
@@ -42,9 +42,17 @@ Flow: **Check-in → Diagnose → Clean → Prove.**
 - `Format.floorBytes` rounds down so a size is never overstated; `Format.shortDay` is `en_US_POSIX`.
 - `ScanEngine.delete(ids:)` records the moved bytes from `report.bytes(for:)` and sets `proof`; Home presents the sheet.
 
+## v1.3 Check-in (implemented)
+
+- **Brand:** `Theme` is `#F5F5F7`/`#000000` background, white/`#1C1C1E` cards, `#0A0A0A`/white ink, `#FF6600` accent. `Typo` registers only `SiftNeo-P5M5.ttf`; every size/weight maps to it. The Sift lockup asset comes from `~/Desktop/sift-logo-pack`; the ModernAmusement mark comes from `~/Desktop/MA_WEBSITE/favicon.svg`.
+- **Minimal layout restored:** onboarding, home, scan overlay, selection bar, swipe card and settings were reverted to the original structures before applying colour/type. New additions are the MA byline, the lockup, and the iOS 26 glass surfaces.
+- **Performance:** `PhotoLibraryService.loadLibrary` reads metadata off-main with three bounded workers; `AssetSizeCache` persists file sizes in `Caches/sift-asset-sizes.json`; `ScanLiveState` isolates high-frequency progress from `ScanEngine`; thumbnails are opportunistic, cancellable and prepared off-main. `MediaThumbnail` keeps a `GeometryReader` so landscape photos cannot widen the grid. `SwipeView` caches queued bytes instead of filtering 300 assets every drag frame.
+- **Tests:** 40 unit + 9 UI on iOS 26 iPhone 12 (`337E7B81-…`), including `testDeleteScreenshots` and `testScanAndBrowse`. The UI test waits for the restored `Found` label, not `FOUND`.
+- **Release:** `docs/Sift-1.3.0-unsigned.ipa` served directly by the site (SHA-256 `a8da08a9…`), mirrored on the `v1.3.0` GitHub release, with `docs/INSTALL.md` and a QR code. AltStore/SideStore/Xcode re-sign; there is no notarised one-tap EU install without a paid Apple Developer account.
+
 ## UI rules
 
-Native Apple UI only: SwiftUI, SF Symbols, system controls. Monochrome, one green reclaim accent, SF Pro, 20 pt margins, 26 pt cards, 54 pt primary buttons. On iOS 26 the primary/secondary buttons, settings gear and scan panel use Liquid Glass (`glassEffect`, availability-gated) per the HIG; iOS 17–25 keep the flat fallback. Content cards stay opaque. Respect Reduce Motion, Dynamic Type and VoiceOver. No gradient decoration, no emoji, no subscriptions. Design reference: Apple HIG and `docs/DESIGN.md`.
+Native Apple UI only: SwiftUI, SF Symbols, system controls. Black and white with one orange highlight (`#FF6600`), **Neo Grotesque-P5M5** for every text style, 20 pt margins, 26 pt cards, 54 pt primary buttons. No box shadows, no gradients, no emoji, no subscriptions. On iOS 26 the primary/secondary buttons, the settings gear, the scan panel and the selection bar use Liquid Glass (`glassEffect`, availability-gated) per the HIG; iOS 17–25 keep flat fills. Content cards stay opaque. Respect Reduce Motion, Dynamic Type and VoiceOver. The Sift lockup and ModernAmusement mark are the owner's artwork. Design reference: Apple HIG and `docs/DESIGN.md`.
 
 ### Design pass (2026-11-16)
 

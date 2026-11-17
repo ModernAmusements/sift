@@ -9,6 +9,7 @@ struct SimilarView: View {
     @State private var selected: Set<String> = []
     @State private var didPreselect = false
     @State private var isDeleting = false
+    @State private var appeared = false
 
     private var groups: [DuplicateGroup] {
         guard let report = engine.report else { return [] }
@@ -39,14 +40,14 @@ struct SimilarView: View {
                         Text(mode == .exact
                              ? "The same frame saved more than once. Sift keeps the sharpest copy."
                              : "Shots from the same day that look alike. Keep the best, review the rest.")
-                            .font(.subheadline)
+                            .font(Typo.subheadline)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, Theme.margin)
 
                         HStack {
                             Text("\(Format.count(groups.count, "group")) · \(Format.bytes(groups.reduce(0) { $0 + $1.redundantBytes })) suggested")
-                                .font(.footnote.monospacedDigit())
+                                .font(Typo.footnote).monospacedDigit()
                                 .foregroundStyle(Theme.secondaryInk)
                             Spacer()
                             Menu {
@@ -61,8 +62,9 @@ struct SimilarView: View {
                         }
                         .padding(.horizontal, Theme.margin)
 
-                        ForEach(groups) { group in
+                        ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
                             groupCard(group)
+                                .riseIn(appeared, index: index + 1)
                         }
                         .padding(.horizontal, Theme.margin)
                     }
@@ -100,11 +102,13 @@ struct SimilarView: View {
             Text(engine.errorMessage ?? "")
         }
         .onAppear {
+            appeared = true
             if !didPreselect {
                 didPreselect = true
                 preselect(force: false)
             }
         }
+        .animation(.snappy(duration: 0.3), value: groups.count)
         .onChange(of: groups.map(\.id)) { _, _ in
             let valid = Set(groups.flatMap { $0.assets.map(\.id) })
             selected = selected.intersection(valid)
@@ -117,15 +121,15 @@ struct SimilarView: View {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(Format.count(group.assets.count, "photo"))
-                            .font(.headline)
+                            .font(Typo.headline)
                             .foregroundStyle(Theme.ink)
                         Text("\(Format.bytes(group.totalBytes)) · keep the best")
-                            .font(.footnote)
+                            .font(Typo.footnote)
                             .foregroundStyle(Theme.secondaryInk)
                     }
                     Spacer()
                     Text(mode == .exact ? "Duplicate" : "Similar")
-                        .font(.caption.weight(.semibold))
+                        .font(Typo.captionSemibold)
                         .foregroundStyle(Theme.secondaryInk)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
@@ -149,7 +153,7 @@ struct SimilarView: View {
 
                                     if asset.id == group.bestID {
                                         Text("Best")
-                                            .font(.caption2.weight(.bold))
+                                            .font(Typo.caption2Semibold)
                                             .foregroundStyle(Theme.background)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
@@ -158,7 +162,7 @@ struct SimilarView: View {
                                     }
                                 }
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(PressableStyle())
                         }
                     }
                     .padding(.vertical, 2)

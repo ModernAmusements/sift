@@ -39,6 +39,21 @@ final class SiftUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Scan my iPhone"].waitForExistence(timeout: 10))
     }
 
+    func testOnboardingBottom() {
+        app.terminate()
+        app.launchArguments = ["-resetOnboarding", "YES"]
+        app.launch()
+
+        XCTAssertTrue(
+            app.staticTexts.matching(
+                NSPredicate(format: "label CONTAINS %@", "A lighter")
+            ).firstMatch.waitForExistence(timeout: 10)
+        )
+        app.swipeUp()
+        app.swipeUp()
+        capture("00b-onboarding-bottom")
+    }
+
     func testScanAndBrowse() {
         XCTAssertTrue(app.buttons["Scan my iPhone"].waitForExistence(timeout: 15))
         capture("01-home")
@@ -54,30 +69,35 @@ final class SiftUITests: XCTestCase {
         // Screenshots
         openRow(containing: "Screenshots")
         XCTAssertTrue(app.navigationBars["Screenshots"].waitForExistence(timeout: 8))
+        sleep(1)
         capture("03-screenshots")
         back()
 
         // Duplicates
         openRow(containing: "Duplicates")
         XCTAssertTrue(app.navigationBars["Duplicates"].waitForExistence(timeout: 8))
+        sleep(1)
         capture("04-duplicates")
         back()
 
         // Similar
         openRow(containing: "Similar photos")
         XCTAssertTrue(app.navigationBars["Similar photos"].waitForExistence(timeout: 8))
+        sleep(1)
         capture("05-similar")
         back()
 
         // Blurry
         openRow(containing: "Blurry photos")
         XCTAssertTrue(app.navigationBars["Blurry photos"].waitForExistence(timeout: 8))
+        sleep(1)
         capture("06-blurry")
         back()
 
         // Large files
         openRow(containing: "Large files")
         XCTAssertTrue(app.navigationBars["Large files"].waitForExistence(timeout: 8))
+        sleep(1)
         capture("07-large-files")
         back()
 
@@ -141,6 +161,15 @@ final class SiftUITests: XCTestCase {
             app.staticTexts["iOS returned space. Sift moved nothing this time."].waitForExistence(timeout: 5)
         )
         capture("18-checkin-delta")
+    }
+
+    func testHomeFooterCreditsModernAmusement() {
+        for _ in 0..<4 { app.swipeUp() }
+        let credit = app.descendants(matching: .any).matching(
+            NSPredicate(format: "label CONTAINS %@", "ModernAmusement")
+        ).firstMatch
+        XCTAssertTrue(credit.waitForExistence(timeout: 8), "The ModernAmusement byline is missing from the home footer")
+        capture("20-home-footer")
     }
 
     func testPhoneHealthOnlyClaimsWhatIOSExposes() {
@@ -239,17 +268,31 @@ final class SiftUITests: XCTestCase {
         capture("14-screenshots-before-delete")
 
         app.buttons["Select all"].tap()
-        app.buttons["Move to Recently Deleted"].tap()
 
-        let confirm = app.buttons["Delete"].firstMatch
+        let move = app.buttons["Move to Recently Deleted"]
+        XCTAssertTrue(move.waitForExistence(timeout: 5))
+        let enabled = NSPredicate(format: "isEnabled == true")
+        expectation(for: enabled, evaluatedWith: move, handler: nil)
+        waitForExpectations(timeout: 5)
+        move.tap()
+
+        let deleteButton = NSPredicate(format: "label BEGINSWITH %@", "Delete")
+        let confirm = app.buttons.matching(deleteButton).firstMatch
         if confirm.waitForExistence(timeout: 10) {
             capture("15-delete-confirmation")
             confirm.tap()
         } else {
-            let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-            let springboardDelete = springboard.buttons["Delete"].firstMatch
-            XCTAssertTrue(springboardDelete.waitForExistence(timeout: 10), "No system delete confirmation")
-            springboardDelete.tap()
+            let photos = XCUIApplication(bundleIdentifier: "com.apple.mobileslideshow")
+            let photosDelete = photos.buttons.matching(deleteButton).firstMatch
+            if photosDelete.waitForExistence(timeout: 6) {
+                capture("15-delete-confirmation")
+                photosDelete.tap()
+            } else {
+                let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+                let springboardDelete = springboard.buttons.matching(deleteButton).firstMatch
+                XCTAssertTrue(springboardDelete.waitForExistence(timeout: 10), "No system delete confirmation")
+                springboardDelete.tap()
+            }
         }
 
         // The proof screen appears as soon as the session ends: bytes moved, nothing claimed yet.
@@ -285,18 +328,28 @@ final class SiftUITests: XCTestCase {
 
     private func allowSystemPrompt() {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        let labels = ["Allow Full Access", "Vollen Zugriff erlauben", "Allow", "Erlauben", "OK"]
-        for label in labels {
-            let springboardButton = springboard.buttons[label]
-            if springboardButton.waitForExistence(timeout: 2) {
-                springboardButton.tap()
-                return
+        let labels = [
+            "Allow Full Access", "Vollen Zugriff erlauben",
+            "Allow Access to All Photos", "Zugriff auf alle Fotos erlauben",
+            "Allow", "Erlauben", "OK"
+        ]
+        // The Photos prompt can arrive several seconds after the tap. Poll
+        // instead of spending a fixed wait on the first English label.
+        let deadline = Date().addingTimeInterval(25)
+        while Date() < deadline {
+            for label in labels {
+                let springboardButton = springboard.buttons[label]
+                if springboardButton.exists {
+                    springboardButton.tap()
+                    return
+                }
+                let appButton = app.buttons[label]
+                if appButton.exists {
+                    appButton.tap()
+                    return
+                }
             }
-            let appButton = app.buttons[label]
-            if appButton.exists {
-                appButton.tap()
-                return
-            }
+            usleep(300_000)
         }
     }
 }

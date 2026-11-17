@@ -13,7 +13,7 @@ struct FilesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     Text("Pick files from iCloud Drive or On My iPhone. Sift can only see the files you choose.")
-                        .font(.subheadline)
+                        .font(Typo.subheadline)
                         .foregroundStyle(Theme.secondaryInk)
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -34,15 +34,15 @@ struct FilesView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(Format.count(model.files.count, "file"))
-                                    .font(.headline)
+                                    .font(Typo.headline)
                                     .foregroundStyle(Theme.ink)
                                 Text(Format.bytes(model.files.reduce(0) { $0 + $1.bytes }) + " chosen")
-                                    .font(.footnote)
+                                    .font(Typo.footnote)
                                     .foregroundStyle(Theme.secondaryInk)
                             }
                             Spacer()
                             Button("Choose more") { showPicker = true }
-                                .font(.footnote.weight(.semibold))
+                                .font(Typo.footnoteSemibold)
                                 .foregroundStyle(Theme.ink)
                                 .padding(.horizontal, 14)
                                 .frame(height: 36)
@@ -64,7 +64,7 @@ struct FilesView: View {
                         }
 
                         Text("Deleting removes a file from its folder. iCloud Drive may keep a Recently Deleted copy; files stored locally do not.")
-                            .font(.caption)
+                            .font(Typo.caption)
                             .foregroundStyle(Theme.secondaryInk)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 4)
@@ -131,19 +131,19 @@ struct FilesView: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: icon(for: file))
-                        .font(.system(size: 17, weight: .medium))
+                        .font(Typo.size(17, weight: .medium))
                         .foregroundStyle(Theme.ink)
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(Theme.fill))
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(file.name)
-                            .font(.body.weight(.medium))
+                            .font(Typo.bodyMedium)
                             .foregroundStyle(Theme.ink)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
                         Text(file.bytes > 0 ? Format.bytes(file.bytes) : "Size unavailable")
-                            .font(.footnote.monospacedDigit())
+                            .font(Typo.footnote).monospacedDigit()
                             .foregroundStyle(Theme.secondaryInk)
                     }
 
@@ -154,7 +154,7 @@ struct FilesView: View {
                             .fill(model.selected.contains(file.id) ? Theme.ink : Theme.fill)
                         if model.selected.contains(file.id) {
                             Image(systemName: "checkmark")
-                                .font(.caption.weight(.bold))
+                                .font(Typo.captionSemibold)
                                 .foregroundStyle(Theme.background)
                         }
                     }
@@ -162,7 +162,7 @@ struct FilesView: View {
                 }
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
             .accessibilityLabel(file.name)
             .accessibilityValue(model.selected.contains(file.id) ? "Selected" : "Not selected")
 
@@ -170,7 +170,7 @@ struct FilesView: View {
                 model.remove(file)
             } label: {
                 Image(systemName: "xmark")
-                    .font(.caption.weight(.semibold))
+                    .font(Typo.captionSemibold)
                     .foregroundStyle(Theme.secondaryInk)
                     .frame(width: 30, height: 30)
             }

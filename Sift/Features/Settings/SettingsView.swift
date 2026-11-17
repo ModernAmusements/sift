@@ -127,11 +127,11 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.ink)
                     Spacer()
                     Text(similarityLabel)
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                 }
                 Slider(value: $similarity, in: 0.08...0.30, step: 0.01)
-                    .tint(Theme.ink)
+                    .tint(Theme.accent)
                     .accessibilityLabel("Similarity sensitivity")
                     .accessibilityValue(similarityLabel)
                 HStack {
@@ -139,7 +139,7 @@ struct SettingsView: View {
                     Spacer()
                     Text("Broader")
                 }
-                .font(.caption2)
+                .font(Typo.caption2)
                 .foregroundStyle(Theme.tertiaryInk)
             }
             .padding(.vertical, 4)
@@ -190,7 +190,7 @@ struct SettingsView: View {
                     Text("No network, no analytics")
                         .foregroundStyle(Theme.ink)
                     Text("There is no code in Sift that can send your data anywhere.")
-                        .font(.footnote)
+                        .font(Typo.footnote)
                         .foregroundStyle(Theme.secondaryInk)
                 }
             } icon: {
@@ -201,7 +201,7 @@ struct SettingsView: View {
                 Link(destination: url) {
                     LabeledContent("Privacy policy") {
                         Image(systemName: "arrow.up.right")
-                            .font(.caption.weight(.semibold))
+                            .font(Typo.captionSemibold)
                             .foregroundStyle(Theme.tertiaryInk)
                     }
                 }
@@ -213,6 +213,14 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section {
+            Image("SiftLockup")
+                .resizable()
+                .renderingMode(.template)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 22)
+                .foregroundStyle(Theme.ink)
+                .accessibilityLabel("Sift")
+                .padding(.vertical, 4)
             LabeledContent("Version") {
                 Text(versionText)
                     .foregroundStyle(Theme.secondaryInk)
@@ -221,7 +229,7 @@ struct SettingsView: View {
                 Link(destination: url) {
                     LabeledContent("Source code") {
                         Image(systemName: "arrow.up.right")
-                            .font(.caption.weight(.semibold))
+                            .font(Typo.captionSemibold)
                             .foregroundStyle(Theme.tertiaryInk)
                     }
                 }
@@ -231,8 +239,24 @@ struct SettingsView: View {
                     }
                 }
             }
+            MAByline()
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 6)
+            if let url = URL(string: "https://modern-amusement.dev/en/impressum") {
+                Link(destination: url) {
+                    LabeledContent("Impressum") {
+                        Image(systemName: "arrow.up.right")
+                            .font(Typo.captionSemibold)
+                            .foregroundStyle(Theme.tertiaryInk)
+                    }
+                }
+            }
+            Text("FOUNDATIONAL SOFTWARE OF TOMORROW. DELIVERED TODAY.™")
+                .font(Typo.caption2)
+                .tracking(0.5)
+                .foregroundStyle(Theme.tertiaryInk)
             Text("Made with restraint. Free because it should be.")
-                .font(.footnote)
+                .font(Typo.footnote)
                 .foregroundStyle(Theme.secondaryInk)
         } header: {
             Text("About")

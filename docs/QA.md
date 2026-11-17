@@ -1,6 +1,6 @@
-# QA — Sift 1.2.0
+# QA — Sift 1.3.0
 
-Verified 2026-11-16 on macOS 26 with Xcode 26.0 (17A324), `Sift iPhone 12` simulator (iOS 18.4).
+Verified 2026-11-17 on macOS 26 with Xcode 26.0 (17A324), `Sift iPhone 12 iOS 26` simulator (`337E7B81-10E0-4C43-BA55-90084C0345BC`, iOS 26.0) and the iOS 18.4 fallback device.
 
 ## Automated
 
@@ -8,25 +8,35 @@ Verified 2026-11-16 on macOS 26 with Xcode 26.0 (17A324), `Sift iPhone 12` simul
 | --- | --- | --- |
 | `SiftTests` (unit) | 40 | Passed |
 | `SiftUITests/testOnboarding` | 1 | Passed |
+| `SiftUITests/testOnboardingBottom` | 1 | Passed |
 | `SiftUITests/testScanAndBrowse` | 1 | Passed |
 | `SiftUITests/testContactMerge` | 1 | Passed |
 | `SiftUITests/testDeleteScreenshots` | 1 | Passed (incl. proof sheet) |
 | `SiftUITests/testCheckInBaselineOnFirstRun` | 1 | Passed |
 | `SiftUITests/testCheckInReportsMeasuredDeltaWithoutClaimingCredit` | 1 | Passed |
 | `SiftUITests/testPhoneHealthOnlyClaimsWhatIOSExposes` | 1 | Passed |
+| `SiftUITests/testHomeFooterCreditsModernAmusement` | 1 | Passed |
+
+Full iOS 26 run: **40 unit + 9 UI, 0 failures** (2026-11-17, `build/full-test-ios26.log`). `testDeleteScreenshots` exercised the real PhotoKit confirmation and proof sheet. `testScanAndBrowse` then exercised every results screen, the swipe deck and Settings. The scan-only rerun generated the 1.3 screenshots.
+
+## 1.3 design pass
+
+- Black/white background and cards, orange `#FF6600` for the primary action, storage ring, selection and success. No shadows.
+- Neo Grotesque-P5M5 only; `Sift.app` contains exactly `SiftNeo-P5M5.ttf` and `Info.plist` lists it.
+- Sift lockup in the app icon, onboarding header, home navigation, home footer and Settings About; ModernAmusement credit in the home footer, Settings About and the site footer.
+- iOS 26 Liquid Glass verified on the iOS 26 simulator: glass gear/back-button capsules, tinted primary/secondary buttons, scan panel and selection bar. iOS 18.4 shows the flat fallback, as designed.
+- Minimal layouts restored: the home still uses the large storage card (`ViewThatFits`), the original scan overlay, the full-width selection bar and the original swipe card.
 
 The three 1.2 UI tests were also run with dark appearance and accessibility XXXL text: 3/3 passed (before the navigation/glass pass).
-
-The final design pass (native navigation, Liquid Glass, scan-start spinner, adaptive storage card) rebuilt and reran the full suite: 40 unit + 7 UI, 0 failures. `01-home.png` and `10-settings.png` were recaptured from that run.
 
 Commands:
 
 ```bash
 xcodegen generate
 xcodebuild -project Sift.xcodeproj -scheme Sift \
-  -destination 'platform=iOS Simulator,id=59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59' build
+  -destination 'platform=iOS Simulator,id=337E7B81-10E0-4C43-BA55-90084C0345BC' build
 xcodebuild -project Sift.xcodeproj -scheme Sift \
-  -destination 'platform=iOS Simulator,id=59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59' test
+  -destination 'platform=iOS Simulator,id=337E7B81-10E0-4C43-BA55-90084C0345BC' test
 ./scripts/deploy-device.sh     # build + install on the iPhone
 ./scripts/housekeeping.sh      # session end: simulators, relays, temp files
 ```
@@ -62,7 +72,10 @@ xcodebuild ... test-without-building
 17. **Phone health** — free space (with Critical/Tight word), Low Power Mode, thermal state, library size and the battery-health explanation. The only mentions of boost/RAM are the sentence that denies them; no "junk"/"optimize" copy.
 18. **Proof after a delete session** — the proof sheet opens with `Moved <size>. Freed so far: 0 bytes.`, the Recently Deleted steps, `Check again`, and the manual fallback. Verified copy appears only after a later measurement proves a gain.
 19. **Reclaimed in Settings** — reads `Nothing verified yet` until a measured gain exists; footer states that moving to Recently Deleted is not freeing.
-20. **Design pass** — native large navigation title and toolbar on Home, Liquid Glass primary/secondary buttons and scan panel on iOS 26 (flat fallback on iOS 17–25), indeterminate spinner instead of a fake 0% while photos are fetched, numeric-text transitions on measurements, and an adaptive storage card (`ViewThatFits`) for narrow widths and large type.
+20. **Design pass** — inline Sift lockup in the navigation bar, system glass gear, Liquid Glass primary/secondary buttons, scan panel and selection bar on iOS 26 (flat fallback on iOS 17–25), indeterminate spinner instead of a fake 0% while photos are fetched, numeric-text transitions on measurements, and an adaptive storage card (`ViewThatFits`) for narrow widths and large type.
+21. **1.3 performance** — opening the scan no longer blocks the main thread; PhotoKit metadata and file sizes load on three background workers with a persistent size cache; the scan overlay owns the high-frequency progress state; thumbnails are opportunistic, cancellable and pre-decoded.
+22. **1.3 branding** — P5M5-only type, Sift lockup on every brand surface, ModernAmusement credit with name, title, claim, services and Impressum, and the unsigned IPA + EU install guide.
+23. **1.3 fallback** — the same build on the iOS 18.4 simulator renders flat buttons/bars without `glassEffect`; no layout or copy difference.
 
 ## Evidence
 

@@ -28,6 +28,10 @@
 	<string>Sift needs access to your photo library to move the items you select into Recently Deleted.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large files. Nothing is uploaded.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>SiftNeo-P5M5.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

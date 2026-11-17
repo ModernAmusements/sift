@@ -5,6 +5,7 @@ struct SiftApp: App {
     @StateObject private var engine = ScanEngine()
 
     init() {
+        Typo.registerNavigationAppearance()
         #if DEBUG
         // Runs before any view is built, so the onboarding test always starts clean.
         if ProcessInfo.processInfo.arguments.contains("-resetOnboarding") {
@@ -18,7 +19,8 @@ struct SiftApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(engine)
-                .tint(Theme.ink)
+                .font(Typo.body)
+                .tint(Theme.accent)
                 .preferredColorScheme(nil)
         }
     }

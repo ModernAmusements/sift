@@ -25,6 +25,9 @@ Config/Local.xcconfig
 build-device/
 *.mobileprovision
 *.ipa
+# The public unsigned build is intentionally served by GitHub Pages
+!docs/Sift-1.3.0-unsigned.ipa
+dist/
 
 # CodeDrift local index
 .codecodedrift/

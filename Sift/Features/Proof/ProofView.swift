@@ -23,7 +23,7 @@ struct ProofView: View {
 
                         VStack(spacing: 8) {
                             Text(SpaceLedger.proofHeadline(moved: movedBytes, verified: verifiedBytes))
-                                .font(.title3.weight(.semibold))
+                                .font(Typo.title3Semibold)
                                 .foregroundStyle(Theme.ink)
                                 .multilineTextAlignment(.center)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -31,7 +31,7 @@ struct ProofView: View {
                                 .animation(.snappy, value: verifiedBytes)
 
                             Text(explanation)
-                                .font(.subheadline)
+                                .font(Typo.subheadline)
                                 .foregroundStyle(Theme.secondaryInk)
                                 .multilineTextAlignment(.center)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -56,7 +56,7 @@ struct ProofView: View {
 
                             if didOpenPhotos == false {
                                 Text("If Photos did not open: Photos → Albums → Utilities → Recently Deleted → Select → Delete All.")
-                                    .font(.caption)
+                                    .font(Typo.caption)
                                     .foregroundStyle(Theme.secondaryInk)
                                     .multilineTextAlignment(.center)
                             }
@@ -67,7 +67,7 @@ struct ProofView: View {
                         .padding(.top, 2)
 
                         Button("Done") { dismiss() }
-                            .font(.subheadline.weight(.medium))
+                            .font(Typo.subheadlineMedium)
                             .foregroundStyle(Theme.secondaryInk)
                             .frame(minHeight: 44)
                     }
@@ -100,7 +100,7 @@ struct ProofView: View {
                 .frame(width: 112, height: 112)
                 .animation(.snappy, value: verifiedBytes)
             Image(systemName: verifiedBytes == nil ? "tray.and.arrow.down" : "checkmark.seal")
-                .font(.system(size: 38, weight: .light))
+                .font(Typo.size(38, weight: .light, relativeTo: .largeTitle))
                 .foregroundStyle(verifiedBytes == nil ? Theme.secondaryInk : Theme.reclaim)
                 .symbolEffect(.bounce, value: verifiedBytes)
                 .contentTransition(.symbolEffect(.replace))
@@ -118,16 +118,16 @@ struct ProofView: View {
     private func step(_ number: Int, _ title: String, _ detail: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(number)")
-                .font(.footnote.weight(.semibold).monospacedDigit())
+                .font(Typo.footnoteSemibold).monospacedDigit()
                 .foregroundStyle(Theme.ink)
                 .frame(width: 24, height: 24)
                 .background(Circle().fill(Theme.fill))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.subheadline.weight(.medium))
+                    .font(Typo.subheadlineMedium)
                     .foregroundStyle(Theme.ink)
                 Text(detail)
-                    .font(.caption)
+                    .font(Typo.caption)
                     .foregroundStyle(Theme.secondaryInk)
                     .fixedSize(horizontal: false, vertical: true)
             }

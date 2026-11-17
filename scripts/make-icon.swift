@@ -13,11 +13,12 @@ guard let ctx = CGContext(
     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
 ) else { fatalError("context") }
 
-// Warm paper background.
-ctx.setFillColor(CGColor(red: 0.969, green: 0.965, blue: 0.945, alpha: 1))
+// Brand orange field.
+ctx.setFillColor(CGColor(red: 1.0, green: 0.4, blue: 0.0, alpha: 1))
 ctx.fill(CGRect(x: 0, y: 0, width: size, height: size))
 
-let ink = CGColor(red: 0.055, green: 0.055, blue: 0.06, alpha: 1)
+// Peach linework, same ink as the app's on-orange label.
+let ink = CGColor(red: 1.0, green: 0.886, blue: 0.808, alpha: 1)
 ctx.setStrokeColor(ink)
 ctx.setFillColor(ink)
 ctx.setLineCap(.round)

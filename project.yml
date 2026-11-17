@@ -8,8 +8,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "1.2.0"
-    CURRENT_PROJECT_VERSION: "3"
+    MARKETING_VERSION: "1.3.0"
+    CURRENT_PROJECT_VERSION: "4"
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
@@ -32,6 +32,8 @@ targets:
           UIColorName: LaunchBackground
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        UIAppFonts:
+          - SiftNeo-P5M5.ttf
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         NSPhotoLibraryUsageDescription: Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large files. Nothing is uploaded.
