@@ -26,12 +26,12 @@ Reuse a component before creating one; components live in `Theme.swift` (there i
 ## Non-negotiable visual rules
 
 - Apple HIG 1:1 is the reference, not a custom brand skin. Native navigation, toolbars, lists and controls.
-- Monochrome surfaces. `systemGroupedBackground` / `secondarySystemGroupedBackground`.
-- One accent: `Theme.reclaim` (system green) for reclaimed space and success only. Primary action is ink (black/white).
-- SF Pro via system text styles, SF Symbols only — no bundled fonts or custom icon sets.
-- iOS 26: Liquid Glass (`glassEffect`, SwiftUICore, availability-gated) on buttons, toolbar controls and floating panels; content cards stay opaque. iOS 17–25 keep the flat fallback.
-- Content screens use a native large navigation title; no custom header.
-- Cards: 22–28pt radius, no strokes, no decorative gradients, soft shadow only in light mode.
+- Black-and-white surfaces (`#F5F5F7`/white light, black/`#1C1C1E` dark); no peach, no green.
+- One accent: orange `#FF6600` for the primary action, storage ring, selection and success. The primary button label is near-black `#0A0A0A` (6:1).
+- **Neo Grotesque-P5M5** for every text style — one bundled face. Hierarchy comes from size/colour/tracking. SF Symbols only for icons.
+- iOS 26: Liquid Glass (`glassEffect`, SwiftUICore, availability-gated) on primary/secondary buttons, toolbar controls, the scan panel and the selection bar; content cards stay opaque. iOS 17–25 keep flat fills.
+- Home uses an inline navigation bar with the **Sift lockup** as principal item and the system glass gear; pushed screens keep standard titles. No editorial index/chapter layout.
+- Cards: 22–28pt radius, flat fill, no strokes, no shadows, no decorative gradients.
 - Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48. Screen margin: 20pt.
 - Buttons: 54pt tall, pill radius, label weight 600.
 - Motion: one spring for state changes (`.snappy`), numeric-text transitions on measurements, proof symbol bounce, ring trim ≤ 0.8s. Respect Reduce Motion (no scale/bounce/rise).

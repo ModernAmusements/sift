@@ -21,7 +21,7 @@ A green compiler is not a working app. You test behaviour.
 ## Checklist
 
 1. `xcodegen generate` — project regenerates cleanly from `project.yml`.
-2. Debug build for the `Sift iPhone 12` simulator by id `59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59` (name lookup fails) without new warnings.
+2. Debug build for the `Sift iPhone 12` simulator by id `59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59` (18.4 suite) and `337E7B81-10E0-4C43-BA55-90084C0345BC` (`Sift iPhone 12 iOS 26`, glass) without new warnings.
 3. `xcodebuild test` — all unit and UI tests pass (current baseline: 40 unit + 7 UI).
 4. Install on a booted iPhone 12 simulator, seed media with `scripts/seed-simulator.sh`.
 5. Exercise: onboarding → photo permission → check-in baseline/delta → scan (no fake 0%, indeterminate spinner first) → each category → selection → delete → proof sheet (`Freed so far: 0 bytes.`) → contacts → settings → phone health.

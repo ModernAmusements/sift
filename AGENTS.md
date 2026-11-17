@@ -12,7 +12,7 @@
 2. **Honest features.** We never claim to clear other apps' caches, "boost RAM", cool the CPU, or extend battery. iOS does not permit it. We only surface and remove media and contacts the user owns.
 3. **Deletion through PhotoKit only.** `PHPhotoLibrary.performChanges` → Recently Deleted. Never touch files by path.
 4. **No dark patterns.** No fake urgency, no pre-selected destructive actions on first run, no paywall, no subscription.
-5. **Apple-minimal UI.** See `docs/DESIGN.md`. Monochrome, SF Pro, generous space, one green accent.
+5. **Apple-minimal UI.** See `docs/DESIGN.md`. Black and white, one orange `#FF6600` highlight, **Neo Grotesque-P5M5**, generous space, the owner's Sift lockup, Liquid Glass on iOS 26 with a flat fallback.
 6. **Accessibility is part of done.** VoiceOver labels, Dynamic Type, Reduce Motion, 44pt targets.
 
 ## Harness
@@ -36,6 +36,10 @@ xcodebuild -project Sift.xcodeproj -scheme Sift \
 # Unit tests
 xcodebuild -project Sift.xcodeproj -scheme Sift \
   -destination 'platform=iOS Simulator,id=59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59' test
+
+# iOS 26 design verification (glass; separate from the 18.4 test device)
+xcodebuild -project Sift.xcodeproj -scheme Sift \
+  -destination 'platform=iOS Simulator,id=337E7B81-10E0-4C43-BA55-90084C0345BC' build
 
 # Simulator run
 xcrun simctl boot "iPhone 12"
