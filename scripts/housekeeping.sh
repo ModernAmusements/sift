@@ -12,10 +12,14 @@ pkill -f "Sift.app/Sift" 2>/dev/null || true
 pkill -f "xcodebuild.*Sift.xcodeproj" 2>/dev/null || true
 
 SIFT_SIM="59D0DE9D-157A-4F7B-BEA3-2AD9E47D4D59"
-echo "Resetting Sift simulator UI and shutting it down…"
-xcrun simctl ui "$SIFT_SIM" appearance light 2>/dev/null || true
-xcrun simctl ui "$SIFT_SIM" content_size large 2>/dev/null || true
-xcrun simctl shutdown "$SIFT_SIM" 2>/dev/null || true
+SIFT_SIM_26="337E7B81-10E0-4C43-BA55-90084C0345BC"
+echo "Resetting Sift simulators and shutting them down…"
+for sim in "$SIFT_SIM" "$SIFT_SIM_26"; do
+  xcrun simctl ui "$sim" appearance light 2>/dev/null || true
+  xcrun simctl ui "$sim" content_size large 2>/dev/null || true
+  xcrun simctl shutdown "$sim" 2>/dev/null || true
+done
+pkill -f "http.server 8787" 2>/dev/null || true
 
 if [ "${1:-}" = "--quit-xcode" ]; then
   echo "Quitting Xcode…"
