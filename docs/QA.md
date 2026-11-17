@@ -103,14 +103,14 @@ plutil -p build/Build/Products/Debug-iphonesimulator/Sift.app/PrivacyInfo.xcpriv
 
 ## Device pass
 
-First install on real hardware: 2026-11-16.
+First install on real hardware: 2026-11-16. 1.3.0 installed 2026-11-17.
 
 - Device: `Shadys iPhone`, iPhone 12 (`iPhone13,2`), iOS 26.6.2, Developer Mode on.
 - Signed with the free **Personal Team** (`QG32S7GZ56`); provisioning profile expires **2026-11-23**, so the build needs re-signing weekly until a paid team is used.
 - Build + install path: `xcodebuild -destination 'generic/platform=iOS' -allowProvisioningUpdates build` (team comes from `Config/Local.xcconfig`), then `xcrun devicectl device install app`. `devicectl` enables the developer disk image services itself.
 - Trust: tap the Sift icon, choose **Einstellungen** in the alert, then **Vertrauen**. `devicectl process launch` cannot show the prompt. One certificate only (`9C705C81…`); duplicates caused repeated trust prompts and were removed.
-- Installed identity: `dev.modernamusement.sift` 1.2.0 (build 3), launched on the device on 2026-11-16, including the design pass.
-- Outcome: owner ran a first user test on 1.1.0 and reported the app working well; the 1.2.0 design pass was called “much better”. Flows were not individually logged, and no device screenshots were captured yet. A horizontal-overflow report is still open (see Known gaps).
+- Installed identity: `dev.modernamusement.sift` 1.3.0 (build 4), installed on the device on 2026-11-17. `devicectl install` succeeded on the second attempt; `devicectl process launch` timed out, so the first tap and trust prompt still need the owner.
+- Outcome: owner ran a first user test on 1.1.0 and reported the app working well; the 1.2.0 design pass was called “much better”. The 1.3.0 build is installed and ready for the owner pass: tap Sift, trust the developer if prompted, then check the Sift lockup, P5M5 type and iOS 26 glass on hardware.
 
 ## Known gaps
 
@@ -121,8 +121,8 @@ First install on real hardware: 2026-11-16.
 - The Files picker itself uses Apple's document browser and is not automated; the deletion model is unit-tested.
 - Cache clearing is a small synchronous directory cleanup and was not part of the screenshot suite.
 - Contacts merging was verified locally in the simulator. iCloud sync of the deletion was not tested.
-- Dark mode was implemented and spot-checked. 1.2 check-in, delta and phone-health screens were captured in light mode and in dark mode at accessibility XXXL (`docs/screenshots/17`–`19`, `docs/screenshots/dark/17`–`19`); the dark captures predate the navigation/glass pass and need recapturing before release. The rest of the committed screenshots are light mode at default text size.
-- 1.2 pending: a VoiceOver pass on Check-in → Diagnose → Clean → Prove.
+- Dark mode is black/white/orange. Onboarding and home were recaptured on iOS 26 in `docs/screenshots/dark/00-onboarding.png` and `01-home.png`; the light iOS 26 screenshots (`00-onboarding.png`, `01-home.png`, `02`–`12`) show the shipping design and glass. The 1.2 check-in/health dark captures were superseded.
+- Pending: a VoiceOver pass on Check-in → Diagnose → Clean → Prove, and the 1.3 owner pass on the physical device (trust prompt + unlock).
 - 1.2 pending: the proof **verification** branch (space actually returned) is unit-tested only — emptying Recently Deleted needs the Photos app, which UI tests do not drive. Check-in baseline/delta and the unverified proof state are UI-tested.
 - Resolved 2026-11-16: the reported “horizontal overflow to left and right” was the **landing page**, not the iOS app. `docs/index.html` measured a 368 px full-page width at 320/360 px viewports; header/nav wrapping, `min-width: 0` on grid items, `img { max-width: 100% }`, `code { overflow-wrap: anywhere }` and `overflow-x: clip` fixed it. Verified with Playwright at 320/360/390/768/1024/1280 and on the live Pages URL (cache-busted).
 - 1.2 UI-test seams are DEBUG-only: `-resetLedger` and `-seedLedgerBackGB N` (plus the existing `-uiFixtures`), handled in `Sift/Demo/DemoSeed.swift`.
