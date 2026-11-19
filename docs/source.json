@@ -1,0 +1,50 @@
+{
+  "name": "Sift",
+  "identifier": "dev.modernamusement.sift.source",
+  "subtitle": "A free, open-source iPhone cleaner.",
+  "description": "Sift finds screenshots, duplicates, blurry photos, large files and duplicate contacts entirely on your iPhone. No account, no network, no ads, no subscription.",
+  "iconURL": "https://modernamusements.github.io/sift/icon.png",
+  "headerURL": "https://modernamusements.github.io/sift/screenshots/01-home.png",
+  "website": "https://modernamusements.github.io/sift/",
+  "tintColor": "#FF6600",
+  "featuredApps": [
+    "dev.modernamusement.sift"
+  ],
+  "apps": [
+    {
+      "name": "Sift",
+      "bundleIdentifier": "dev.modernamusement.sift",
+      "developerName": "Shady Nathan Tawfik",
+      "subtitle": "Keep the moments. Lose the clutter.",
+      "localizedDescription": "Sift is a free, open-source iPhone cleaner. It finds screenshots, exact duplicates, similar and blurry photos, large videos and duplicate contacts on the device, then removes only what you choose through PhotoKit. Nothing is uploaded, there is no account, no analytics and no subscription.",
+      "iconURL": "https://modernamusements.github.io/sift/icon.png",
+      "tintColor": "#FF6600",
+      "category": "utilities",
+      "screenshots": [
+        "https://modernamusements.github.io/sift/screenshots/01-home.png",
+        "https://modernamusements.github.io/sift/screenshots/03-screenshots.png",
+        "https://modernamusements.github.io/sift/screenshots/04-duplicates.png",
+        "https://modernamusements.github.io/sift/screenshots/10-settings.png"
+      ],
+      "versions": [
+        {
+          "version": "1.3.0",
+          "buildVersion": "5",
+          "date": "2026-11-19",
+          "downloadURL": "https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa",
+          "size": 3553469,
+          "minOSVersion": "17.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {
+          "NSPhotoLibraryUsageDescription": "Sift reads your photo library on this iPhone to find screenshots, duplicates, blurry photos and large files. Nothing is uploaded.",
+          "NSPhotoLibraryAddUsageDescription": "Sift needs access to your photo library to move the items you select into Recently Deleted.",
+          "NSContactsUsageDescription": "Sift finds duplicate contact cards on this iPhone when you ask it to. Your contacts never leave the device."
+        }
+      }
+    }
+  ],
+  "news": []
+}

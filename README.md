@@ -14,9 +14,10 @@ Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, ne
 
 **Sift 1.3.0** ships as a source project and an unsigned iPhone build. The unsigned IPA is re-signed with your own Apple ID by AltStore Classic, SideStore or Xcode — no App Store and no paid developer account required. EU-friendly, and documented step by step.
 
-- **[Download the IPA](https://github.com/ModernAmusements/sift/releases/download/v1.3.0/Sift-1.3.0-unsigned.ipa)** (844 KB)
+- **[Download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa)** (3.4 MB, build 5)
+- **AltStore source:** `https://modernamusements.github.io/sift/source.json` — automatic update checks
 - **[Install guide](docs/INSTALL.md)** — Xcode, AltStore/SideStore, and the honest EU distribution answer
-- SHA-256: `a8da08a90873e82260d21576fca0aa9893c4d44a0292af3e15c097421e202cb0`
+- SHA-256: `ed0e00b789e14d3150b8aa0a9f9a79ed12d23ce21e16bb205b15c57555d82de8`
 
 <img src="docs/screenshots/01-home.png" width="240" alt="Sift home"> <img src="docs/screenshots/02-results.png" width="240" alt="Sift scan results"> <img src="docs/screenshots/05-similar.png" width="240" alt="Sift similar photos">
 
@@ -46,7 +47,7 @@ Plus a fast **swipe review** deck, a live storage dashboard, a Files picker, a S
 
 ## Design
 
-Black and white, one orange highlight (`#FF6600`), no box shadows. **Neo Grotesque-P5M5** is the single typeface across the app and the site. On iOS 26 the buttons, scan panel and selection bar use Apple's Liquid Glass; iOS 17–25 keeps the same layout with flat fills. The Sift lockup and app icon come from the owner's `sift-logo-pack`; the ModernAmusement credit is in the footer and Settings.
+Black and white, one orange highlight (`#FF6600`), no box shadows. **Neo Grotesque-P5M5** is the single typeface across the app and the site. On iOS 26 the buttons, scan panel and selection bar use Apple's Liquid Glass; iOS 17–25 keeps the same layout with flat fills. The Sift lockup comes from the owner's `sift-logo-pack` and is leading-aligned; the app icon is the owner's Apple Icon Composer "Default" export. The app footer/Settings credit uses the owner's landscape wordmark artwork, with a website link before Impressum — no typeset name or claim.
 
 ## Honest limits
 

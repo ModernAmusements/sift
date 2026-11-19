@@ -389,6 +389,7 @@ struct HomeView: View {
                 .frame(height: 20)
                 .foregroundStyle(Theme.secondaryInk)
                 .accessibilityLabel("Sift")
+                .frame(maxWidth: .infinity, alignment: .leading)
             Label("Everything stays on this iPhone.", systemImage: "lock.shield")
                 .font(Typo.footnoteMedium)
                 .foregroundStyle(Theme.secondaryInk)

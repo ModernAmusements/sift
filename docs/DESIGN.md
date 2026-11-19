@@ -89,7 +89,7 @@ Reduce Motion: disable the rise, scale, bounce and ring trim; keep opacity and n
 
 `Card`, `SectionHeader`, `StorageRing`, `PrimaryButtonStyle`, `SecondaryButtonStyle`, `PressableStyle`, `CategoryRow`, `MediaThumbnail`, `SelectionBadge`, `EmptyState`, `PermissionState`, `StatPill`, `SiftLockup`, `MAByline`.
 
-The Sift lockup and app icon come from the owner's `sift-logo-pack`; the ModernAmusement mark and wordmark are the owner's artwork.
+The Sift lockup comes from the owner's `sift-logo-pack`; the app icon is the owner's Apple Icon Composer "Default" iOS export. The credit footer uses the owner's landscape wordmark (`MAWordmark.svg`, from `moder-amusement-logo-pack`) as template-tinted artwork — never as typeset "Modern Amusement" text. The lockup is leading-aligned wherever it appears.
 
 ## Accessibility
 

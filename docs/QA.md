@@ -19,11 +19,13 @@ Verified 2026-11-17 on macOS 26 with Xcode 26.0 (17A324), `Sift iPhone 12 iOS 26
 
 Full iOS 26 run: **40 unit + 9 UI, 0 failures** (2026-11-17, `build/full-test-ios26.log`). `testDeleteScreenshots` exercised the real PhotoKit confirmation and proof sheet. `testScanAndBrowse` then exercised every results screen, the swipe deck and Settings. The scan-only rerun generated the 1.3 screenshots.
 
+Branding refresh rerun (2026-11-19): `xcodegen generate` → Debug build → `xcodebuild test` → **40 unit + 9 UI, 0 failures (1 conditional `XCTSkip` in `testContactMerge`)** → Release device build → iOS 26 build, all green. `testHomeFooterCreditsModernAmusement` first failed because `MAByline`'s accessibility label changed with the artwork; restoring `ModernAmusement. …` made the focused rerun pass (8.7 s).
+
 ## 1.3 design pass
 
 - Black/white background and cards, orange `#FF6600` for the primary action, storage ring, selection and success. No shadows.
 - Neo Grotesque-P5M5 only; `Sift.app` contains exactly `SiftNeo-P5M5.ttf` and `Info.plist` lists it.
-- Sift lockup in the app icon, onboarding header, home navigation, home footer and Settings About; ModernAmusement credit in the home footer, Settings About and the site footer.
+- Sift lockup in onboarding header, home navigation, home footer and Settings About, always leading-aligned; app icon is the owner's Apple Icon Composer "Default" export. The credit footer uses the owner's landscape wordmark artwork (no typeset name, no claim) in the home footer and Settings About; the site footer keeps its own credit. Settings About links to modern-amusement.dev before Impressum.
 - iOS 26 Liquid Glass verified on the iOS 26 simulator: glass gear/back-button capsules, tinted primary/secondary buttons, scan panel and selection bar. iOS 18.4 shows the flat fallback, as designed.
 - Minimal layouts restored: the home still uses the large storage card (`ViewThatFits`), the original scan overlay, the full-width selection bar and the original swipe card.
 
@@ -74,7 +76,7 @@ xcodebuild ... test-without-building
 19. **Reclaimed in Settings** — reads `Nothing verified yet` until a measured gain exists; footer states that moving to Recently Deleted is not freeing.
 20. **Design pass** — inline Sift lockup in the navigation bar, system glass gear, Liquid Glass primary/secondary buttons, scan panel and selection bar on iOS 26 (flat fallback on iOS 17–25), indeterminate spinner instead of a fake 0% while photos are fetched, numeric-text transitions on measurements, and an adaptive storage card (`ViewThatFits`) for narrow widths and large type.
 21. **1.3 performance** — opening the scan no longer blocks the main thread; PhotoKit metadata and file sizes load on three background workers with a persistent size cache; the scan overlay owns the high-frequency progress state; thumbnails are opportunistic, cancellable and pre-decoded.
-22. **1.3 branding** — P5M5-only type, Sift lockup on every brand surface, ModernAmusement credit with name, title, claim, services and Impressum, and the unsigned IPA + EU install guide.
+22. **1.3 branding** — P5M5-only type, leading-aligned Sift lockup on every brand surface, Apple Icon Composer app icon, credit footer with the owner's landscape wordmark artwork (no typeset name or claim), website link before Impressum, one sentence-cased closing line, and the unsigned IPA + EU install guide.
 23. **1.3 fallback** — the same build on the iOS 18.4 simulator renders flat buttons/bars without `glassEffect`; no layout or copy difference.
 
 ## Evidence
@@ -109,8 +111,10 @@ First install on real hardware: 2026-11-16. 1.3.0 installed 2026-11-17.
 - Signed with the free **Personal Team** (`QG32S7GZ56`); provisioning profile expires **2026-11-23**, so the build needs re-signing weekly until a paid team is used.
 - Build + install path: `xcodebuild -destination 'generic/platform=iOS' -allowProvisioningUpdates build` (team comes from `Config/Local.xcconfig`), then `xcrun devicectl device install app`. `devicectl` enables the developer disk image services itself.
 - Trust: tap the Sift icon, choose **Einstellungen** in the alert, then **Vertrauen**. `devicectl process launch` cannot show the prompt. One certificate only (`9C705C81…`); duplicates caused repeated trust prompts and were removed.
-- Installed identity: `dev.modernamusement.sift` 1.3.0 (build 4), installed on the device on 2026-11-17. `devicectl install` succeeded on the second attempt; `devicectl process launch` timed out, so the first tap and trust prompt still need the owner.
+- Installed identity: `dev.modernamusement.sift` **1.3.0 (build 5)**, installed on the device on 2026-11-19. Earlier build 4 was installed on 2026-11-17; `devicectl install` succeeded on the second attempt and `devicectl process launch` timed out, so the first tap and trust prompt still need the owner.
+- Owner visual check on hardware (2026-11-19): the refreshed icon, leading-aligned lockup and wordmark footer "looks good" on `Shadys iPhone`. This is a visual confirmation, not a full on-device flow run.
 - Outcome: owner ran a first user test on 1.1.0 and reported the app working well; the 1.2.0 design pass was called “much better”. The 1.3.0 build is installed and ready for the owner pass: tap Sift, trust the developer if prompted, then check the Sift lockup, P5M5 type and iOS 26 glass on hardware.
+- 2026-11-19 branding refresh + build 5: first `./scripts/deploy-device.sh` run built but hit **"The device is locked"** (`0xe80000e2`, DDI mount). After unlocking the phone, reruns returned `BUILD SUCCEEDED` + `Installed.` (exit 0). `devicectl device info apps` confirms `Sift  dev.modernamusement.sift  1.3.0  5`. The site IPA was rebuilt with `scripts/make-ipa.sh` (3,553,469 bytes, SHA-256 `ed0e00b7…`, verified unsigned: no `_CodeSignature`/profile).
 
 ## Known gaps
 

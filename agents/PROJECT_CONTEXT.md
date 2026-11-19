@@ -1,6 +1,6 @@
 # Sift — project context
 
-**Status:** 1.3.0 (build 4) implemented, tested, published and installed on the physical iPhone. Open source, MIT. The app now uses the owner's black/white palette with orange as the single highlight, **Neo Grotesque-P5M5** for every text style, the owner's Sift lockup (app icon, onboarding, home navigation, footer, Settings) and a ModernAmusement credit. The minimal layouts are restored; only colour, type, branding and the requested Liquid Glass are new. **40 unit tests + 9 UI tests pass on an iOS 26 iPhone 12 simulator** (including a real scan, review, delete-to-Recently-Deleted and proof flow). The unsigned 1.3.0 IPA is served directly by the live site and mirrored on [the v1.3.0 release](https://github.com/ModernAmusements/sift/releases/tag/v1.3.0); the site download was verified at 320/360/390 px and the live IPA checksum matches. The physical iPhone 12 (iOS 26.6.2) runs the free Personal Team `QG32S7GZ56` profile expiring 2026-11-23; the install succeeded on retry, first launch/trust still needs the owner.
+**Status:** 1.3.0 (build 5, unreleased branding + free-install update) implemented and tested. Open source, MIT. The app now uses the owner's black/white palette with orange as the single highlight, **Neo Grotesque-P5M5** for every text style, the owner's Sift lockup (app icon, onboarding, home navigation, footer, Settings) and a ModernAmusement credit as the landscape wordmark (no typeset name/claim). The minimal layouts are restored; only colour, type, branding and the requested Liquid Glass are new. **40 unit tests + 9 UI tests pass on an iOS 26 iPhone 12 simulator** (one conditional `XCTSkip`); full rerun green on 2026-11-19 after the build bump. The unsigned IPA is rebuilt as **build 5** (3.4 MB, SHA-256 `ed0e00b7…`) and served from the site with `docs/source.json` for AltStore; the GitHub `v1.3.0` release still mirrors the original build 4 IPA. The physical iPhone 12 (iOS 26.6.2) runs the free Personal Team `QG32S7GZ56` profile expiring 2026-11-23 and has build 5 installed.
 
 ## Links
 
@@ -48,7 +48,7 @@ Flow: **Check-in → Diagnose → Clean → Prove.**
 - **Minimal layout restored:** onboarding, home, scan overlay, selection bar, swipe card and settings were reverted to the original structures before applying colour/type. New additions are the MA byline, the lockup, and the iOS 26 glass surfaces.
 - **Performance:** `PhotoLibraryService.loadLibrary` reads metadata off-main with three bounded workers; `AssetSizeCache` persists file sizes in `Caches/sift-asset-sizes.json`; `ScanLiveState` isolates high-frequency progress from `ScanEngine`; thumbnails are opportunistic, cancellable and prepared off-main. `MediaThumbnail` keeps a `GeometryReader` so landscape photos cannot widen the grid. `SwipeView` caches queued bytes instead of filtering 300 assets every drag frame.
 - **Tests:** 40 unit + 9 UI on iOS 26 iPhone 12 (`337E7B81-…`), including `testDeleteScreenshots` and `testScanAndBrowse`. The UI test waits for the restored `Found` label, not `FOUND`.
-- **Release:** `https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa` (SHA-256 `a8da08a9…`), served directly by the site and mirrored on the `v1.3.0` GitHub release, with `docs/INSTALL.md` and a QR code. AltStore/SideStore/Xcode re-sign; there is no notarised one-tap EU install without a paid Apple Developer account.
+- **Release/site:** `https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa` rebuilt as build 5 (SHA-256 `ed0e00b7…`, 3.4 MB) plus `docs/source.json` for AltStore (`altstore://source?url=…`) and install deep links on the landing page. The GitHub `v1.3.0` release still carries the original build 4 IPA/checksum — update it if you want the release asset to match the site. AltStore/SideStore/Xcode re-sign; no App Store/TestFlight/notarisation without the €99/year Apple Developer Program.
 
 ## UI rules
 
@@ -109,3 +109,13 @@ Deterministic UI runs need `build-for-testing`, install, `simctl privacy grant p
 
 - Device compile is verified: `-destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build` → BUILD SUCCEEDED (arm64).
 - Debug-console noise on first launch, "Failed to send CA Event for app launch measurements", is CoreAnalytics from the simulator/debug launch. Not a Sift error, no fix needed, never add networking for it (Sift has 0 `URLSession`/`CFNetwork` references).
+
+## Branding refresh + free install (2026-11-19, unreleased, build 5)
+
+- App icon is now the owner's Apple Icon Composer `sift-icon-iOS-Default-1024x1024@1x.png`, copied over `AppIcon.appiconset/AppIcon.png`; other variants (`Dark`, `Tinted*`, `Clear*`) remain in `sift-icon Exports/` and are unused.
+- Sift lockup is leading-aligned in `HomeView.footer` and `SettingsView.aboutSection`; onboarding was already leading.
+- New `MAWordmark.imageset` holds `monder-amusement-word-mark-landscape.svg` from `~/Desktop/moder-amusement-logo-pack`. `MAByline` renders it with `.renderingMode(.template)` + `Theme.accent`; the `MAMark` image set is still in the catalog but no longer used by `MAByline`.
+- The claim "FOUNDATIONAL SOFTWARE OF TOMORROW. DELIVERED TODAY.™" was removed from both `MAByline` and Settings About (it had been duplicated). Only "Made with restraint. Free because it should be." remains, as one sentence-cased line with no divider.
+- Settings About links to `https://modern-amusement.dev/` immediately before Impressum.
+- `MAByline` keeps the accessibility label `ModernAmusement. Shady Nathan Tawfik, Bielefeld.` because `testHomeFooterCreditsModernAmusement` matches that string; changing it breaks the UI suite even though the visible name is now artwork only.
+- Device install retried successfully on 2026-11-19 once the phone was unlocked: `./scripts/deploy-device.sh` → BUILD SUCCEEDED + `Installed.`; the phone then received the rebuilt **build 5** as well, and `devicectl device info apps` shows `Sift  dev.modernamusement.sift  1.3.0  5`. Owner confirmed the refreshed branding "looks good" on hardware (visual check only, no full flow run).

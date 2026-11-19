@@ -24,8 +24,9 @@ You are the last gate before the repo becomes public.
 
 ## Current release target
 
-- **1.3.0 (build 4)** — black/white/orange, Neo Grotesque-P5M5, Sift lockup, iOS 26 Liquid Glass, background metadata loading, published unsigned IPA + EU install guide.
-- Verified: 40 unit + 9 UI tests green on iOS 26; Debug + Release builds; installed on the iPhone 12; live site + IPA checksum verified.
+- **1.3.0 (build 5, unreleased)** — black/white/orange, Neo Grotesque-P5M5, Apple Icon Composer icon, leading-aligned Sift lockup, `MAWordmark` credit artwork, website link before Impressum, iOS 26 Liquid Glass, background metadata loading.
+- Free distribution assets (2026-11-19): rebuilt unsigned IPA in `docs/` (3.4 MB, SHA-256 `ed0e00b7…`), `docs/source.json` AltStore source, `altstore://install` / `altstore://source` deep links, copy-link button and a 3-step install page. No App Store/TestFlight/notarisation — those require the €99/year Apple Developer Program; the GitHub `v1.3.0` release still mirrors the original build 4 IPA.
+- Verified: 40 unit + 9 UI tests green on iOS 26 (one conditional `XCTSkip`); Debug + Release builds; `make-ipa.sh` output verified unsigned; build 5 installed on the iPhone 12.
 - Before tagging: VoiceOver pass, fresh dark/XXXL screenshots, resolve the open horizontal-overflow report, and update `CHANGELOG.md` / release notes.
 
 ## Release checklist

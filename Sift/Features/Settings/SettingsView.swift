@@ -220,6 +220,7 @@ struct SettingsView: View {
                 .frame(height: 22)
                 .foregroundStyle(Theme.ink)
                 .accessibilityLabel("Sift")
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, 4)
             LabeledContent("Version") {
                 Text(versionText)
@@ -242,6 +243,15 @@ struct SettingsView: View {
             MAByline()
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 6)
+            if let url = URL(string: "https://modern-amusement.dev/") {
+                Link(destination: url) {
+                    LabeledContent("Website") {
+                        Image(systemName: "arrow.up.right")
+                            .font(Typo.captionSemibold)
+                            .foregroundStyle(Theme.tertiaryInk)
+                    }
+                }
+            }
             if let url = URL(string: "https://modern-amusement.dev/en/impressum") {
                 Link(destination: url) {
                     LabeledContent("Impressum") {
@@ -251,10 +261,6 @@ struct SettingsView: View {
                     }
                 }
             }
-            Text("FOUNDATIONAL SOFTWARE OF TOMORROW. DELIVERED TODAY.™")
-                .font(Typo.caption2)
-                .tracking(0.5)
-                .foregroundStyle(Theme.tertiaryInk)
             Text("Made with restraint. Free because it should be.")
                 .font(Typo.footnote)
                 .foregroundStyle(Theme.secondaryInk)

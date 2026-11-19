@@ -2,6 +2,22 @@
 
 All notable changes to Sift are documented here. The format follows Keep a Changelog; versions use semantic versioning.
 
+## [Unreleased]
+
+### Changed
+
+- App icon replaced with the owner's Apple Icon Composer "Default" iOS export.
+- Sift lockup is leading-aligned in the home footer and Settings About.
+- The ModernAmusement credit uses the owner's landscape wordmark artwork instead of the typeset name; the "Foundational software of tomorrow. Delivered today.™" claim was removed from the app footer.
+- Settings About now links to modern-amusement.dev before Impressum; the closing line is one sentence-cased line with no divider.
+- Build 5: the unsigned IPA on the site is rebuilt from current sources (new icon/footer included). App Store/TestFlight/notarisation remain unavailable without the paid Apple Developer Program.
+
+### Added
+
+- Free install flow on the site: three-step guide, `altstore://install` and `altstore://source` deep links, copy-IPA button and an honest "why no App Store" note.
+- `docs/source.json` AltStore Classic source with the current build, checksum, icon and screenshots for automatic update checks.
+- `scripts/make-ipa.sh` builds an unsigned Release IPA and refreshes its SHA-256.
+
 ## [1.3.0] — 2026-11-17
 
 ### Added

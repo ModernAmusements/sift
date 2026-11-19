@@ -278,6 +278,28 @@
     .download h2 { margin-bottom: 10px; }
     .download p { margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 48ch; }
     .download .actions { padding-top: 0; }
+    .steps { counter-reset: step; margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .steps li {
+      position: relative; padding-left: 34px; min-width: 0;
+      font-size: 13px; line-height: 1.55; color: var(--muted);
+    }
+    .steps li b { color: var(--ink); font-weight: 600; }
+    .steps li::before {
+      counter-increment: step; content: counter(step);
+      position: absolute; left: 0; top: -1px; width: 22px; height: 22px;
+      display: grid; place-items: center; border: 1px solid var(--line-strong);
+      border-radius: 50%; font-family: var(--mono); font-size: 10px; color: var(--accent);
+    }
+    .steps a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+    .steps em { font-style: normal; color: var(--ink); }
+    button.button { appearance: none; font-family: inherit; cursor: pointer; }
+    .why { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+    .why summary {
+      cursor: pointer; font-family: var(--mono); font-size: 10px;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--ink);
+    }
+    .why p { margin: 8px 0 0; font-size: 12px; line-height: 1.55; max-width: 60ch; }
+    .why a, .download .note a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
     .build {
       background: var(--ink); color: var(--bg);
       padding: 18px; font-family: var(--code); font-size: 11px;
@@ -598,21 +620,33 @@
       </div>
       <div class="download reveal">
         <div>
-          <h2 style="font-size:26px;margin-bottom:8px;">Free. Open source. Yours.</h2>
-          <p>Requires Xcode 26, iOS 17+ and an iPhone 12 or newer. The repository includes the simulator fixtures, the test suite and the privacy manifest.</p>
+          <h2 style="font-size:26px;margin-bottom:8px;">Install in three steps.</h2>
+          <p>Sift is free and open source. There is no App Store listing yet — that membership costs €99/year — so the free path signs the app with <em>your</em> Apple ID, not ours. No account with us, no ads, no analytics.</p>
+          <ol class="steps">
+            <li><b>Install AltStore Classic or SideStore.</b> One-time setup with your free Apple ID. <a href="https://altstore.io">AltStore</a> · <a href="https://sidestore.io">SideStore</a></li>
+            <li><b>Install Sift.</b> Download the IPA and open it in AltStore/SideStore, or use <em>Open in AltStore</em> on this iPhone.</li>
+            <li><b>Refresh every 7 days.</b> A free Apple ID signs for one week; AltStore/SideStore renew it on the same Wi-Fi. A paid account lasts a year.</li>
+          </ol>
           <div class="actions">
-            <a class="button" href="Sift-1.3.0-unsigned.ipa">Download the IPA</a>
-            <a class="button ghost" href="https://github.com/ModernAmusements/sift/blob/main/docs/INSTALL.md">Install guide</a>
+            <a class="button" href="Sift-1.3.0-unsigned.ipa" download>Download the IPA</a>
+            <a class="button ghost" id="altstore-install" href="altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa">Open in AltStore</a>
+            <button class="button ghost" type="button" id="copy-ipa">Copy IPA link</button>
           </div>
-          <p class="note" style="margin-top:14px;">MIT licensed. No account, ads, analytics or subscription.</p>
+          <p class="note" id="copy-status" aria-live="polite" style="margin-top:10px;"></p>
+          <p class="note" style="margin-top:14px;">Requires iOS 17+ and an iPhone 12 or newer. MIT licensed. No account, ads, analytics or subscription.</p>
           <p class="note" style="margin-top:8px;"><img class="ma-inline" src="ma-mark.svg" alt="" width="26">A ModernAmusement project · Bielefeld</p>
           <div class="qr-row">
             <img class="qr" src="qr-download.png" alt="QR code to download the Sift 1.3.0 IPA" width="256" height="256">
             <div class="qr-copy">
               <p class="label">Scan on iPhone</p>
-              <p>Downloads the unsigned IPA directly from this site. Install with AltStore, SideStore or Xcode — the guide above has the steps.</p>
+              <p>Downloads the unsigned IPA directly from this site. Install with AltStore or SideStore — the three steps above.</p>
             </div>
           </div>
+          <details class="why">
+            <summary>Why isn’t Sift on the App Store?</summary>
+            <p>Apple requires a paid Apple Developer Program membership (~€99/year) for the App Store, TestFlight, notarisation and alternative marketplaces. Sift is a free MIT project without that budget. The honest free path is this unsigned IPA: you sign it with your own Apple ID, the code stays public, and nothing is hidden.</p>
+          </details>
+          <p class="note" style="margin-top:12px;"><a href="altstore://source?url=https://modernamusements.github.io/sift/source.json">Add the Sift source to AltStore</a> for automatic update checks.</p>
         </div>
         <div class="build" aria-label="Build commands">
           <div class="dim"># Xcode 26 · no dependencies</div>
@@ -672,6 +706,41 @@
         });
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
       items.forEach(function (el) { observer.observe(el); });
+    })();
+
+    (function () {
+      var ipa = 'https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa';
+      var button = document.getElementById('copy-ipa');
+      var status = document.getElementById('copy-status');
+      if (!button || !status) return;
+      function announce(message) {
+        status.textContent = message;
+      }
+      function fallback() {
+        var field = document.createElement('textarea');
+        field.value = ipa;
+        field.setAttribute('readonly', '');
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.appendChild(field);
+        field.select();
+        try {
+          document.execCommand('copy');
+          announce('IPA link copied. Paste it into AltStore or SideStore.');
+        } catch (error) {
+          announce(ipa);
+        }
+        document.body.removeChild(field);
+      }
+      button.addEventListener('click', function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(ipa).then(function () {
+            announce('IPA link copied. Paste it into AltStore or SideStore.');
+          }, fallback);
+        } else {
+          fallback();
+        }
+      });
     })();
   </script>
 </body>

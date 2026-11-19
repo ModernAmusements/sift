@@ -37,10 +37,10 @@ You continue **Sift**, the open-source iPhone cleaner in this repository.
 ## Current state (1.3.0, released)
 
 - Features: 1.2 check-in (free-space delta, 45-day attribution, cumulative verified `Reclaimed`), Phone health diagnosis, proof-through-Recently-Deleted sheet, plus screenshots, duplicates, similar, blurry, large files ≥ 25 MB, duplicate contacts, Files & documents, Sift cache, System data guide, swipe review.
-- Verified: **40 unit + 9 UI tests**, Debug + Release builds, full suite green on the iOS 26 iPhone 12 simulator on 2026-11-17.
-- 1.3: black/white/orange, P5M5-only type, Sift lockup (icon, onboarding, nav, footer, Settings), MA credit with name/title/claim/services/Impressum, iOS 26 glass, background metadata loading + size cache, split scan progress, cancellable thumbnails.
+- Verified: **40 unit + 9 UI tests**, Debug + Release builds, full suite green on the iOS 26 iPhone 12 simulator on 2026-11-17; rerun green on 2026-11-19 after the branding refresh (1 conditional `XCTSkip`).
+- 1.3: black/white/orange, P5M5-only type, leading-aligned Sift lockup (Apple Icon Composer icon, onboarding, nav, footer, Settings), MA credit as landscape wordmark artwork with website link before Impressum (no typeset name or claim), iOS 26 glass, background metadata loading + size cache, split scan progress, cancellable thumbnails.
 - Repo: https://github.com/ModernAmusements/sift · Release v1.3.0 (unsigned IPA + EU install guide).
-- Device: 1.3.0 (build 4) installed on `Shadys iPhone` (iPhone 12, iOS 26.6.2), free Personal Team `QG32S7GZ56`, profile expires 2026-11-23. First launch/trust still needs the owner; `devicectl install` succeeded on retry.
+- Device: **1.3.0 build 5** installed on `Shadys iPhone` (iPhone 12, iOS 26.6.2), free Personal Team `QG32S7GZ56`, profile expires 2026-11-23. The 2026-11-19 branding refresh was installed after unlocking the phone (`./scripts/deploy-device.sh` → `Installed.`); owner confirmed the new icon/footer "looks good". First launch/trust still needs the owner after a reinstall.
 
 ## Workflow
 

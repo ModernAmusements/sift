@@ -529,32 +529,21 @@ private struct RiseIn: ViewModifier {
     }
 }
 
-/// The ModernAmusement signature. The mark is the owner's own artwork.
+/// The ModernAmusement signature. The wordmark is the owner's own artwork.
 struct MAByline: View {
     var compact = false
 
     var body: some View {
         VStack(spacing: compact ? 6 : 8) {
-            HStack(spacing: 8) {
-                Image("MAMark")
-                    .resizable()
-                    .renderingMode(.template)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: compact ? 14 : 17)
-                    .foregroundStyle(Theme.accent)
-                Text("MODERN AMUSEMENT")
-                    .font(Typo.label)
-                    .tracking(1.1)
-                    .foregroundStyle(Theme.secondaryInk)
-            }
+            Image("MAWordmark")
+                .resizable()
+                .renderingMode(.template)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: compact ? 18 : 26)
+                .foregroundStyle(Theme.accent)
             if !compact {
                 Text("Shady Nathan Tawfik · Bielefeld, DE")
                     .font(Typo.caption)
-                    .foregroundStyle(Theme.tertiaryInk)
-                Text("FOUNDATIONAL SOFTWARE OF TOMORROW.\nDELIVERED TODAY.™")
-                    .font(Typo.caption2)
-                    .tracking(0.5)
-                    .multilineTextAlignment(.center)
                     .foregroundStyle(Theme.tertiaryInk)
             }
         }

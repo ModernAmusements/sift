@@ -31,6 +31,7 @@ Reuse a component before creating one; components live in `Theme.swift` (there i
 - **Neo Grotesque-P5M5** for every text style — one bundled face. Hierarchy comes from size/colour/tracking. SF Symbols only for icons.
 - iOS 26: Liquid Glass (`glassEffect`, SwiftUICore, availability-gated) on primary/secondary buttons, toolbar controls, the scan panel and the selection bar; content cards stay opaque. iOS 17–25 keep flat fills.
 - Home uses an inline navigation bar with the **Sift lockup** as principal item and the system glass gear; pushed screens keep standard titles. No editorial index/chapter layout.
+- The **Sift lockup is leading-aligned** in the onboarding header, home footer and Settings About. The credit footer uses the owner's landscape wordmark (`MAWordmark.svg`) as template-tinted artwork in `Theme.accent`, never typeset "Modern Amusement"; no claim text. Settings About links to the website before Impressum.
 - Cards: 22–28pt radius, flat fill, no strokes, no shadows, no decorative gradients.
 - Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48. Screen margin: 20pt.
 - Buttons: 54pt tall, pill radius, label weight 600.

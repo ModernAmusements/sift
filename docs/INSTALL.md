@@ -35,19 +35,22 @@ A free Apple ID signs for **7 days**. Re-run from Xcode to renew. A paid Apple D
 The release includes an **unsigned IPA**. AltStore Classic and SideStore re-sign it with your own Apple ID and install it over USB/Wi-Fi, without the App Store and without a paid developer account. This works in the EU and elsewhere.
 
 1. Install [AltStore Classic](https://altstore.io) or [SideStore](https://sidestore.io) and complete its one-time setup with your Apple ID.
-2. Download the IPA:
+2. Install Sift in one tap from the site:
+   [Open in AltStore](altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) ·
+   [Download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa)
+3. Or add the source for automatic updates:
+   `altstore://source?url=https://modernamusements.github.io/sift/source.json`
+4. In AltStore: **My Apps → + → Sift-1.3.0-unsigned.ipa**. In SideStore: **Apps → + → choose the IPA**.
+5. Trust the developer certificate the same way as above.
+6. Refresh from the same app every 7 days with a free Apple ID (automatic refresh is available while on the same Wi-Fi).
 
-   **https://github.com/ModernAmusements/sift/releases/download/v1.3.0/Sift-1.3.0-unsigned.ipa**
-
-3. In AltStore: **My Apps → + → Sift-1.3.0-unsigned.ipa**. In SideStore: **Apps → + → choose the IPA**.
-4. Trust the developer certificate the same way as above.
-5. Refresh from the same app every 7 days with a free Apple ID (automatic refresh is available while on the same Wi-Fi).
+The source JSON and the currently published IPA are both served from this site (`source.json`, `Sift-1.3.0-unsigned.ipa`). Regenerate the IPA with `./scripts/make-ipa.sh` after a build change, then update the `versions` entry in `source.json`.
 
 Verify the download if you like:
 
 ```bash
 shasum -a 256 Sift-1.3.0-unsigned.ipa
-# a8da08a90873e82260d21576fca0aa9893c4d44a0292af3e15c097421e202cb0
+# ed0e00b789e14d3150b8aa0a9f9a79ed12d23ce21e16bb205b15c57555d82de8
 ```
 
 ## Option C — EU alternative distribution
