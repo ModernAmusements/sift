@@ -27,7 +27,9 @@ Branding refresh rerun (2026-11-19): `xcodegen generate` → Debug build → `xc
 - Pushed `0144c27` to `main`; GitHub Pages live at `https://modernamusements.github.io/sift/`.
 - Live checks: `source.json` reports `"buildVersion": "5"`; the live IPA downloads at the same size/checksum; the page contains the three-step flow, `altstore://install`, `altstore://source` and the copy-link control.
 - Playwright full-page screenshots of the live page measure **320 / 360 / 390 px exactly** — no horizontal overflow.
-- Owner device pass (2026-11-19): after tapping through the live install flow, the owner reports **Sift is running on the iPhone**. `devicectl` lists `Sift 1.3.0 (5)`; it does not list AltStore, so the installer's presence was not independently verified from the Mac — the owner's report is the evidence for the end-to-end run.
+- Owner device pass (2026-11-19): the owner first hit **“AltServer could not be found”**. AltServer 1.8.4 was then installed at `/Applications/AltServer.app` and is running, and the Mac sees the iPhone over USB (`ioreg` + `en12` link-local). The owner separately reports Sift running on the iPhone from the Xcode-signed build.
+- **PAL trap (2026-11-19):** `altstore.io/download` installs **AltStore PAL**, which only distributes notarized apps. Sift is not notarized (no paid account), so PAL cannot install it. The site, install guide and README now lead with **AltStore Classic** + AltServer and state the distinction explicitly.
+- Not yet proven: a complete Sift install through AltStore Classic on the phone. The remaining steps are iPhone unlocked + Wi-Fi sync enabled (or USB), AltServer → Install AltStore, then the deep link/IPA. Treat the AltStore-Classic path as **untested end-to-end** until the owner confirms it.
 
 ## 1.3 design pass
 
