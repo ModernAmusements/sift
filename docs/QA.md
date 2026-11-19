@@ -29,7 +29,7 @@ Branding refresh rerun (2026-11-19): `xcodegen generate` → Debug build → `xc
 - Playwright full-page screenshots of the live page measure **320 / 360 / 390 px exactly** — no horizontal overflow.
 - Owner device pass (2026-11-19): the owner first hit **“AltServer could not be found”**. AltServer 1.8.4 was then installed at `/Applications/AltServer.app` and is running, and the Mac sees the iPhone over USB (`ioreg` + `en12` link-local). The owner separately reports Sift running on the iPhone from the Xcode-signed build.
 - **PAL trap (2026-11-19):** `altstore.io/download` installs **AltStore PAL**, which only distributes notarized apps. Sift is not notarized (no paid account), so PAL cannot install it. The site, install guide and README now lead with **AltStore Classic** + AltServer and state the distinction explicitly.
-- **End-to-end success (2026-11-19):** the owner completed the AltStore Classic install and reports **“it works!!!!!”**. The free path is now proven on the iPhone 12: AltServer 1.8.4 → AltStore Classic → Sift 1.3.0 (build 5) signed with the owner's free Apple ID. The remaining weekly-refresh behaviour is still unexercised until the first 7-day cycle.
+- **End-to-end success (2026-11-19):** the owner completed the AltStore Classic install and reports **“it works!!!!!”**. The free path is now proven on the iPhone 12: AltServer 1.8.4 → AltStore Classic → Sift 1.3.0 (build 5) signed with the owner's free Apple ID. The first 7-day refresh is due **2026-11-26** (open AltStore Classic with AltServer running).
 
 ## 1.3 design pass
 
