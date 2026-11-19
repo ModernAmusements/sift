@@ -14,7 +14,7 @@ All notable changes to Sift are documented here. The format follows Keep a Chang
 
 ### Added
 
-- Free install flow on the site: three-step guide, `altstore://install` and `altstore://source` deep links, copy-IPA button and an honest "why no App Store" note.
+- AltStore-first install flow on the site: "Get AltStore" primary CTA, three-step guide, `altstore://install` and `altstore://source` deep links, direct-IPA fallback, copy-IPA button, and honest "What is AltStore?" / "Why no App Store?" notes.
 - `docs/source.json` AltStore Classic source with the current build, checksum, icon and screenshots for automatic update checks.
 - `scripts/make-ipa.sh` builds an unsigned Release IPA and refreshes its SHA-256.
 

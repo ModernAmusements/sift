@@ -440,7 +440,7 @@
         <a href="#privacy"><b>04</b>Privacy</a>
         <a href="#download"><b>05</b>Download</a>
       </nav>
-      <a class="header-cta" href="Sift-1.3.0-unsigned.ipa">Download</a>
+      <a class="header-cta" href="https://altstore.io">Get AltStore</a>
     </div>
   </header>
 
@@ -453,10 +453,10 @@
         <p class="meta">iPhone 12 <span>·</span> iOS 17+ <span>·</span> No account <span>·</span> No upload</p>
         <p class="lede">Sift finds the screenshots, duplicates, blurry photos, large files and repeated contacts you no longer need. It works on your iPhone and never sends anything anywhere.</p>
         <div class="actions">
-          <a class="button" href="Sift-1.3.0-unsigned.ipa">Download IPA</a>
+          <a class="button" href="https://altstore.io">Get AltStore</a>
           <a class="button ghost" href="#what">See what it does</a>
         </div>
-        <p class="note">Unsigned IPA. Re-sign with AltStore, SideStore or Xcode — no App Store required.</p>
+        <p class="note">AltStore is the free installer. It signs Sift with your own Apple ID — no App Store, no paid developer account. The direct IPA is in the download section.</p>
       </div>
       <div class="hero-stage">
         <figure class="phone">
@@ -616,35 +616,41 @@
           <p class="section-index">05 / Download</p>
           <h2>Take it with you.</h2>
         </div>
-        <p class="sub">Sift is a complete SwiftUI project with no packages to install. Build it in Xcode, sign it with your own team, keep it.</p>
+        <p class="sub">The free install uses AltStore and your own Apple ID. The full SwiftUI source is here too — build it in Xcode, sign it with your own team, keep it.</p>
       </div>
       <div class="download reveal">
         <div>
-          <h2 style="font-size:26px;margin-bottom:8px;">Install in three steps.</h2>
-          <p>Sift is free and open source. There is no App Store listing yet — that membership costs €99/year — so the free path signs the app with <em>your</em> Apple ID, not ours. No account with us, no ads, no analytics.</p>
+          <h2 style="font-size:26px;margin-bottom:8px;">Install with AltStore.</h2>
+          <p><b>AltStore</b> is a free, open-source installer for iPhone — not the App Store, and not made by Apple. It signs Sift with <em>your</em> Apple ID, so the app can live on your phone without a €99/year developer account. Install AltStore first, then install Sift from this page. No account with us, no ads, no analytics.</p>
           <ol class="steps">
-            <li><b>Install AltStore Classic or SideStore.</b> One-time setup with your free Apple ID. <a href="https://altstore.io">AltStore</a> · <a href="https://sidestore.io">SideStore</a></li>
-            <li><b>Install Sift.</b> Download the IPA and open it in AltStore/SideStore, or use <em>Open in AltStore</em> on this iPhone.</li>
-            <li><b>Refresh every 7 days.</b> A free Apple ID signs for one week; AltStore/SideStore renew it on the same Wi-Fi. A paid account lasts a year.</li>
+            <li><b>Get AltStore.</b> Download it at <a href="https://altstore.io">altstore.io</a> and run AltServer on your Mac or PC. Keep the phone and computer on the same Wi-Fi.</li>
+            <li><b>Install Sift.</b> On the iPhone, tap <em>Install Sift with AltStore</em> below, or open the direct IPA in AltStore → My Apps → +.</li>
+            <li><b>Refresh every 7 days.</b> A free Apple ID signs for one week. AltStore renews it through AltServer; a paid account lasts a year.</li>
           </ol>
           <div class="actions">
-            <a class="button" href="Sift-1.3.0-unsigned.ipa" download>Download the IPA</a>
-            <a class="button ghost" id="altstore-install" href="altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa">Open in AltStore</a>
+            <a class="button" href="https://altstore.io">Get AltStore</a>
+            <a class="button ghost" id="altstore-install" href="altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa">Install Sift with AltStore</a>
+            <a class="button ghost" href="Sift-1.3.0-unsigned.ipa" download>Direct IPA</a>
             <button class="button ghost" type="button" id="copy-ipa">Copy IPA link</button>
           </div>
           <p class="note" id="copy-status" aria-live="polite" style="margin-top:10px;"></p>
+          <p class="note" style="margin-top:10px;">“Install Sift with AltStore” only works on an iPhone that already has AltStore. On a computer, use the direct IPA. Already have SideStore? The same IPA works there.</p>
           <p class="note" style="margin-top:14px;">Requires iOS 17+ and an iPhone 12 or newer. MIT licensed. No account, ads, analytics or subscription.</p>
           <p class="note" style="margin-top:8px;"><img class="ma-inline" src="ma-mark.svg" alt="" width="26">A ModernAmusement project · Bielefeld</p>
           <div class="qr-row">
             <img class="qr" src="qr-download.png" alt="QR code to download the Sift 1.3.0 IPA" width="256" height="256">
             <div class="qr-copy">
               <p class="label">Scan on iPhone</p>
-              <p>Downloads the unsigned IPA directly from this site. Install with AltStore or SideStore — the three steps above.</p>
+              <p>Downloads the unsigned IPA directly from this site. Install it with AltStore or SideStore — the three steps above.</p>
             </div>
           </div>
           <details class="why">
+            <summary>What exactly is AltStore?</summary>
+            <p>AltStore is an independent, free installer that uses your Apple ID to sign apps the App Store would otherwise gate. It is not affiliated with Apple or Sift. Apple limits a free signature to <b>7 days</b> and to three active sideloaded apps; a paid Apple Developer membership extends it to a year. AltStore Classic needs AltServer running on a Mac or PC for the first install and the weekly refresh — that is the usual “AltServer could not be found” fix.</p>
+          </details>
+          <details class="why">
             <summary>Why isn’t Sift on the App Store?</summary>
-            <p>Apple requires a paid Apple Developer Program membership (~€99/year) for the App Store, TestFlight, notarisation and alternative marketplaces. Sift is a free MIT project without that budget. The honest free path is this unsigned IPA: you sign it with your own Apple ID, the code stays public, and nothing is hidden.</p>
+            <p>Apple requires a paid Apple Developer Program membership (~€99/year) for the App Store, TestFlight, notarisation and alternative marketplaces. Sift is a free MIT project without that budget. The honest free path is AltStore plus this unsigned IPA: you sign it with your own Apple ID, the code stays public, and nothing is hidden.</p>
           </details>
           <p class="note" style="margin-top:12px;"><a href="altstore://source?url=https://modernamusements.github.io/sift/source.json">Add the Sift source to AltStore</a> for automatic update checks.</p>
         </div>

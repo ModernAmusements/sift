@@ -12,11 +12,14 @@ Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, ne
 
 ## Download
 
-**Sift 1.3.0** ships as a source project and an unsigned iPhone build. The unsigned IPA is re-signed with your own Apple ID by AltStore Classic, SideStore or Xcode — no App Store and no paid developer account required. EU-friendly, and documented step by step.
+**Sift 1.3.0** ships as a source project and an unsigned iPhone build. The recommended free install is **AltStore**: it signs Sift with your own Apple ID — no App Store and no paid developer account. The same IPA works with SideStore or Xcode.
 
-- **[Download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa)** (3.4 MB, build 5)
+1. **[Get AltStore](https://altstore.io)** and run AltServer on a Mac or PC on the same Wi-Fi.
+2. Install Sift: [one tap with AltStore](altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) · [download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) (3.4 MB, build 5).
+3. Refresh every 7 days with a free Apple ID. AltStore does it through AltServer.
+
 - **AltStore source:** `https://modernamusements.github.io/sift/source.json` — automatic update checks
-- **[Install guide](docs/INSTALL.md)** — Xcode, AltStore/SideStore, and the honest EU distribution answer
+- **[Full install guide](docs/INSTALL.md)** — AltStore, Xcode, SideStore and the honest EU distribution answer
 - SHA-256: `ed0e00b789e14d3150b8aa0a9f9a79ed12d23ce21e16bb205b15c57555d82de8`
 
 <img src="docs/screenshots/01-home.png" width="240" alt="Sift home"> <img src="docs/screenshots/02-results.png" width="240" alt="Sift scan results"> <img src="docs/screenshots/05-similar.png" width="240" alt="Sift similar photos">
