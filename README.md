@@ -12,11 +12,11 @@ Sift is a free, open-source iPhone cleaner. It finds screenshots, duplicates, ne
 
 ## Download
 
-**Sift 1.3.0** ships as a source project and an unsigned iPhone build. The recommended free install is **AltStore**: it signs Sift with your own Apple ID — no App Store and no paid developer account. The same IPA works with SideStore or Xcode.
+**Sift 1.3.0** ships as a source project and an unsigned iPhone build. The recommended free install is **AltStore Classic**: it signs Sift with your own Apple ID — no App Store and no paid developer account. The same IPA works with SideStore or Xcode.
 
-1. **[Get AltStore](https://altstore.io)** and run AltServer on a Mac or PC on the same Wi-Fi.
+1. **[Get AltStore Classic](https://faq.altstore.io/altstore-classic/how-to-install-altstore-macos)** and run AltServer on a Mac or PC. Use Classic, **not AltStore PAL** — PAL only installs notarized apps, and Sift is not notarized.
 2. Install Sift: [one tap with AltStore](altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) · [download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) (3.4 MB, build 5).
-3. Refresh every 7 days with a free Apple ID. AltStore does it through AltServer.
+3. Refresh every 7 days with a free Apple ID. AltStore Classic does it through AltServer; USB works if Wi-Fi discovery fails.
 
 - **AltStore source:** `https://modernamusements.github.io/sift/source.json` — automatic update checks
 - **[Full install guide](docs/INSTALL.md)** — AltStore, Xcode, SideStore and the honest EU distribution answer

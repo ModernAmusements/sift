@@ -8,23 +8,28 @@ Sift 1.3.0 is a free, open-source iPhone app. It is **not on the App Store**, an
 - A Mac or PC for the AltStore first setup, and a free Apple ID.
 - About 5 minutes.
 
-## Option A — AltStore (recommended)
+## Option A — AltStore Classic (recommended)
 
-[AltStore Classic](https://altstore.io) is a free, open-source installer for iPhone. It signs Sift with **your own Apple ID**, so the app can live on your phone without the App Store and without a paid developer account. It is not affiliated with Apple or with Sift.
+[AltStore Classic](https://faq.altstore.io/altstore-classic/how-to-install-altstore-macos) is a free, open-source installer for iPhone. It signs Sift with **your own Apple ID**, so the app can live on your phone without the App Store and without a paid developer account. It is not affiliated with Apple or with Sift.
 
-1. Download AltStore from [altstore.io](https://altstore.io) and install **AltServer** on your Mac or PC.
-2. Launch AltServer. Keep the iPhone and the computer on the same Wi-Fi and allow AltServer through the firewall.
+**Use AltStore Classic, not AltStore PAL.** PAL is the Apple-authorized EU marketplace and only installs **notarized** apps. Sift has no paid developer account and is not notarized, so PAL cannot install it. The big “Download” button on altstore.io installs PAL — follow the Classic guide instead.
+
+1. Install **AltServer** on your computer:
+   [macOS](https://cdn.altstore.io/file/altstore/altserver.zip) ·
+   [Windows](https://cdn.altstore.io/file/altstore/altinstaller.zip).
+   Launch it and keep it running in the menu bar.
+2. Connect the iPhone, **unlock it**, and trust the computer. In Finder, enable **“Show this iPhone when on Wi-Fi”** (Wi-Fi sync).
 3. In the AltServer menu bar, choose **Install AltStore → your iPhone** and sign in with your Apple ID (two-factor authentication works).
-4. On the iPhone, install Sift:
+4. On the iPhone, enable **Developer Mode** if iOS asks: **Einstellungen → Datenschutz & Sicherheit → Entwicklermodus**, then restart.
+5. Install Sift:
    [Install Sift with AltStore](altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) ·
-   [Download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa)
-5. Or add the source for automatic updates:
-   `altstore://source?url=https://modernamusements.github.io/sift/source.json`
-6. In AltStore: **My Apps → + → Sift-1.3.0-unsigned.ipa**.
+   [Download the IPA](https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa) ·
+   [Add the source](altstore://source?url=https://modernamusements.github.io/sift/source.json) for automatic updates.
+6. In AltStore Classic: **My Apps → + → Sift-1.3.0-unsigned.ipa**.
 7. Trust the developer certificate: **Einstellungen → Allgemein → VPN & Geräteverwaltung → Apple Development: … → Vertrauen**.
-8. Refresh from AltStore every 7 days with a free Apple ID. AltStore renews through AltServer while the phone is on the same Wi-Fi; a paid account lasts a year.
+8. Refresh from AltStore Classic every 7 days with a free Apple ID. AltStore renews through AltServer while the phone is connected; a paid account lasts a year.
 
-**“AltServer could not be found”** means AltServer is not running, or the phone and computer are not on the same network. Launch AltServer, allow it through the macOS firewall, and retry. If the Wi-Fi isolates devices, connect the iPhone by USB and retry.
+**“AltServer could not be found”** means AltServer is not running, the phone is locked, or the phone and computer are not on the same network. Keep AltServer running, unlock the phone, allow AltServer through the macOS firewall, and retry. **A USB cable is the most reliable fallback** — AltServer can install and refresh over USB when Wi-Fi discovery is blocked.
 
 Verify the download if you like:
 

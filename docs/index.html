@@ -440,7 +440,7 @@
         <a href="#privacy"><b>04</b>Privacy</a>
         <a href="#download"><b>05</b>Download</a>
       </nav>
-      <a class="header-cta" href="https://altstore.io">Get AltStore</a>
+      <a class="header-cta" href="https://faq.altstore.io/altstore-classic/how-to-install-altstore-macos">Get AltStore</a>
     </div>
   </header>
 
@@ -453,10 +453,10 @@
         <p class="meta">iPhone 12 <span>·</span> iOS 17+ <span>·</span> No account <span>·</span> No upload</p>
         <p class="lede">Sift finds the screenshots, duplicates, blurry photos, large files and repeated contacts you no longer need. It works on your iPhone and never sends anything anywhere.</p>
         <div class="actions">
-          <a class="button" href="https://altstore.io">Get AltStore</a>
+          <a class="button" href="https://faq.altstore.io/altstore-classic/how-to-install-altstore-macos">Get AltStore Classic</a>
           <a class="button ghost" href="#what">See what it does</a>
         </div>
-        <p class="note">AltStore is the free installer. It signs Sift with your own Apple ID — no App Store, no paid developer account. The direct IPA is in the download section.</p>
+        <p class="note">AltStore <b>Classic</b> is the free installer. It signs Sift with your own Apple ID — no App Store, no paid developer account. AltStore PAL cannot install Sift because Sift is not notarized.</p>
       </div>
       <div class="hero-stage">
         <figure class="phone">
@@ -620,33 +620,34 @@
       </div>
       <div class="download reveal">
         <div>
-          <h2 style="font-size:26px;margin-bottom:8px;">Install with AltStore.</h2>
-          <p><b>AltStore</b> is a free, open-source installer for iPhone — not the App Store, and not made by Apple. It signs Sift with <em>your</em> Apple ID, so the app can live on your phone without a €99/year developer account. Install AltStore first, then install Sift from this page. No account with us, no ads, no analytics.</p>
+          <h2 style="font-size:26px;margin-bottom:8px;">Install with AltStore Classic.</h2>
+          <p><b>Use AltStore Classic, not AltStore PAL.</b> PAL is the EU marketplace and only installs notarized apps; Sift has no paid developer account and is not notarized. AltStore Classic is the free sideloading installer that signs Sift with <em>your</em> Apple ID. No account with us, no ads, no analytics.</p>
           <ol class="steps">
-            <li><b>Get AltStore.</b> Download it at <a href="https://altstore.io">altstore.io</a> and run AltServer on your Mac or PC. Keep the phone and computer on the same Wi-Fi.</li>
-            <li><b>Install Sift.</b> On the iPhone, tap <em>Install Sift with AltStore</em> below, or open the direct IPA in AltStore → My Apps → +.</li>
+            <li><b>Install AltServer on your Mac or PC.</b> <a href="https://cdn.altstore.io/file/altstore/altserver.zip">AltServer for macOS</a> · <a href="https://cdn.altstore.io/file/altstore/altinstaller.zip">AltServer for Windows</a>. Launch it and keep it running.</li>
+            <li><b>Install AltStore Classic on the iPhone.</b> Connect and unlock the iPhone, enable Wi-Fi sync in Finder, then choose <em>Install AltStore</em> from the AltServer menu and sign in with your Apple ID.</li>
+            <li><b>Install Sift.</b> Tap <em>Install Sift with AltStore</em> below, or open the direct IPA in AltStore → My Apps → +. If it says “AltServer could not be found”, keep AltServer running and the phone unlocked; USB also works.</li>
             <li><b>Refresh every 7 days.</b> A free Apple ID signs for one week. AltStore renews it through AltServer; a paid account lasts a year.</li>
           </ol>
           <div class="actions">
-            <a class="button" href="https://altstore.io">Get AltStore</a>
+            <a class="button" href="https://faq.altstore.io/altstore-classic/how-to-install-altstore-macos">Get AltStore Classic</a>
             <a class="button ghost" id="altstore-install" href="altstore://install?url=https://modernamusements.github.io/sift/Sift-1.3.0-unsigned.ipa">Install Sift with AltStore</a>
             <a class="button ghost" href="Sift-1.3.0-unsigned.ipa" download>Direct IPA</a>
             <button class="button ghost" type="button" id="copy-ipa">Copy IPA link</button>
           </div>
           <p class="note" id="copy-status" aria-live="polite" style="margin-top:10px;"></p>
-          <p class="note" style="margin-top:10px;">“Install Sift with AltStore” only works on an iPhone that already has AltStore. On a computer, use the direct IPA. Already have SideStore? The same IPA works there.</p>
+          <p class="note" style="margin-top:10px;">“Install Sift with AltStore” only works on an iPhone that already has AltStore Classic. On a computer, use the direct IPA. Already have SideStore? The same IPA works there.</p>
           <p class="note" style="margin-top:14px;">Requires iOS 17+ and an iPhone 12 or newer. MIT licensed. No account, ads, analytics or subscription.</p>
           <p class="note" style="margin-top:8px;"><img class="ma-inline" src="ma-mark.svg" alt="" width="26">A ModernAmusement project · Bielefeld</p>
           <div class="qr-row">
             <img class="qr" src="qr-download.png" alt="QR code to download the Sift 1.3.0 IPA" width="256" height="256">
             <div class="qr-copy">
               <p class="label">Scan on iPhone</p>
-              <p>Downloads the unsigned IPA directly from this site. Install it with AltStore or SideStore — the three steps above.</p>
+              <p>Downloads the unsigned IPA directly from this site. Install it with AltStore Classic or SideStore — the steps above.</p>
             </div>
           </div>
           <details class="why">
-            <summary>What exactly is AltStore?</summary>
-            <p>AltStore is an independent, free installer that uses your Apple ID to sign apps the App Store would otherwise gate. It is not affiliated with Apple or Sift. Apple limits a free signature to <b>7 days</b> and to three active sideloaded apps; a paid Apple Developer membership extends it to a year. AltStore Classic needs AltServer running on a Mac or PC for the first install and the weekly refresh — that is the usual “AltServer could not be found” fix.</p>
+            <summary>What exactly is AltStore Classic?</summary>
+            <p>AltStore Classic is an independent, free installer that uses your Apple ID to sign apps the App Store would otherwise gate. It is not affiliated with Apple or Sift. <b>AltStore PAL</b> is a different product — an Apple-authorized EU marketplace that only distributes notarized apps. Sift is not notarized, so Classic is the one to use. Apple limits a free signature to <b>7 days</b> and to three active sideloaded apps; a paid Apple Developer membership extends it to a year. AltServer must be running on a Mac or PC for the first install and the weekly refresh — that is the usual “AltServer could not be found” fix.</p>
           </details>
           <details class="why">
             <summary>Why isn’t Sift on the App Store?</summary>

@@ -14,7 +14,7 @@ All notable changes to Sift are documented here. The format follows Keep a Chang
 
 ### Added
 
-- AltStore-first install flow on the site: "Get AltStore" primary CTA, three-step guide, `altstore://install` and `altstore://source` deep links, direct-IPA fallback, copy-IPA button, and honest "What is AltStore?" / "Why no App Store?" notes.
+- AltStore Classic install flow on the site: "Get AltStore Classic" primary CTA, four-step AltServer guide with Wi-Fi-sync/USB fallbacks, `altstore://install` and `altstore://source` deep links, direct-IPA fallback, copy-IPA button, and honest "What is AltStore Classic?" / "Why no App Store?" notes. The copy explicitly warns that AltStore PAL cannot install Sift because it is not notarized.
 - `docs/source.json` AltStore Classic source with the current build, checksum, icon and screenshots for automatic update checks.
 - `scripts/make-ipa.sh` builds an unsigned Release IPA and refreshes its SHA-256.
 
