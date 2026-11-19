@@ -21,6 +21,13 @@ Full iOS 26 run: **40 unit + 9 UI, 0 failures** (2026-11-17, `build/full-test-io
 
 Branding refresh rerun (2026-11-19): `xcodegen generate` → Debug build → `xcodebuild test` → **40 unit + 9 UI, 0 failures (1 conditional `XCTSkip` in `testContactMerge`)** → Release device build → iOS 26 build, all green. `testHomeFooterCreditsModernAmusement` first failed because `MAByline`'s accessibility label changed with the artwork; restoring `ModernAmusement. …` made the focused rerun pass (8.7 s).
 
+### Free install (2026-11-19)
+
+- `scripts/make-ipa.sh` produced build 5: **3,553,469 bytes**, SHA-256 `ed0e00b789e14d3150b8aa0a9f9a79ed12d23ce21e16bb205b15c57555d82de8`, verified unsigned (no `_CodeSignature` or embedded profile).
+- Pushed `0144c27` to `main`; GitHub Pages live at `https://modernamusements.github.io/sift/`.
+- Live checks: `source.json` reports `"buildVersion": "5"`; the live IPA downloads at the same size/checksum; the page contains the three-step flow, `altstore://install`, `altstore://source` and the copy-link control.
+- Playwright full-page screenshots of the live page measure **320 / 360 / 390 px exactly** — no horizontal overflow. (The AltStore deep links themselves can only be exercised on an iPhone with AltStore installed; that remains untested on device.)
+
 ## 1.3 design pass
 
 - Black/white background and cards, orange `#FF6600` for the primary action, storage ring, selection and success. No shadows.
