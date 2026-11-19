@@ -26,7 +26,8 @@ Branding refresh rerun (2026-11-19): `xcodegen generate` → Debug build → `xc
 - `scripts/make-ipa.sh` produced build 5: **3,553,469 bytes**, SHA-256 `ed0e00b789e14d3150b8aa0a9f9a79ed12d23ce21e16bb205b15c57555d82de8`, verified unsigned (no `_CodeSignature` or embedded profile).
 - Pushed `0144c27` to `main`; GitHub Pages live at `https://modernamusements.github.io/sift/`.
 - Live checks: `source.json` reports `"buildVersion": "5"`; the live IPA downloads at the same size/checksum; the page contains the three-step flow, `altstore://install`, `altstore://source` and the copy-link control.
-- Playwright full-page screenshots of the live page measure **320 / 360 / 390 px exactly** — no horizontal overflow. (The AltStore deep links themselves can only be exercised on an iPhone with AltStore installed; that remains untested on device.)
+- Playwright full-page screenshots of the live page measure **320 / 360 / 390 px exactly** — no horizontal overflow.
+- Owner device pass (2026-11-19): after tapping through the live install flow, the owner reports **Sift is running on the iPhone**. `devicectl` lists `Sift 1.3.0 (5)`; it does not list AltStore, so the installer's presence was not independently verified from the Mac — the owner's report is the evidence for the end-to-end run.
 
 ## 1.3 design pass
 
